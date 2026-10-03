@@ -1,0 +1,79 @@
+{
+  "title": "Dots on Paper",
+  "config": {
+    "step": {
+      "reauth_confirm": {
+        "title": "Update bridge token",
+        "description": "Enter the bridge's current write/API token.",
+        "data": {"api_token": "Bridge API token"}
+      },
+      "user": {
+        "title": "Connect your dot bridge",
+        "description": "Use the bridge's address as reachable from Home Assistant. The API token stays in this integration; it is never included in entity attributes. Start with a 5-second polling interval.",
+        "data": {
+          "base_url": "Bridge URL",
+          "api_token": "Bridge API token",
+          "profile": "Image profile",
+          "poll_interval": "Poll interval (seconds)"
+        },
+        "data_description": {
+          "profile": "Use a profile provided by your bridge, such as trmnl_x.",
+          "poll_interval": "At least 2 seconds. This polls state; it does not force hardware refreshes."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot read state or render the selected image profile. Check the bridge address and profile.",
+      "invalid_auth": "The bridge rejected the API token.",
+      "invalid_url": "Enter an HTTP or HTTPS bridge URL without a username, password, query, or fragment."
+    },
+    "abort": {
+      "already_configured": "This bridge is already configured.",
+      "reauth_successful": "Bridge authentication was updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Screen and polling",
+        "data": {
+          "profile": "Image profile",
+          "poll_interval": "Poll interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "The selected profile could not render. Check the bridge and profile.",
+      "invalid_auth": "The bridge rejected the API token."
+    }
+  },
+  "services": {
+    "show_answer": {
+      "name": "Show answer",
+      "description": "Display a real answer received from your dot, agent, or automation.",
+      "fields": {
+        "entry_id": {"name": "Bridge", "description": "Choose the configured Dots on Paper bridge."},
+        "text": {"name": "Reply", "description": "The actual answer text."},
+        "character": {"name": "Character", "description": "Optional character override."},
+        "dot_name": {"name": "Dot name", "description": "The name of the replying dot or agent."},
+        "title": {"name": "Title", "description": "A short title above the answer."},
+        "event_id": {"name": "Event ID", "description": "An optional unique source event ID for bridge deduplication."},
+        "run_id": {"name": "Run ID", "description": "Reuse the fresh display run ID from thinking to its completion; omit for a standalone answer."}
+      }
+    },
+    "set_state": {
+      "name": "Set state",
+      "description": "Set idle, thinking, answer, or error as the real source changes state.",
+      "fields": {
+        "entry_id": {"name": "Bridge", "description": "Choose the configured Dots on Paper bridge."},
+        "status": {"name": "State", "description": "The current state of the source."},
+        "character": {"name": "Character", "description": "Optional character override."},
+        "text": {"name": "Text", "description": "Reply or error text; an answer requires nonempty text."},
+        "dot_name": {"name": "Dot name", "description": "The name of the dot or agent."},
+        "title": {"name": "Title", "description": "A short title for this state."},
+        "event_id": {"name": "Event ID", "description": "An optional unique source event ID for bridge deduplication."},
+        "run_id": {"name": "Run ID", "description": "Start thinking with a fresh display run ID, then reuse it for the answer, idle, or error event."}
+      }
+    }
+  }
+}

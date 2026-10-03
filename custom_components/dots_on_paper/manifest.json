@@ -1,0 +1,13 @@
+{
+  "domain": "dots_on_paper",
+  "name": "Dots on Paper",
+  "version": "0.1.0",
+  "config_flow": true,
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "dependencies": ["image"],
+  "requirements": [],
+  "documentation": "https://github.com/heinrihs-s/dots-on-paper#readme",
+  "issue_tracker": "https://github.com/heinrihs-s/dots-on-paper/issues",
+  "codeowners": ["@heinrihs-s"]
+}

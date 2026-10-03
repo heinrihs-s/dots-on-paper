@@ -1,0 +1,55 @@
+# Merge this script into your HA scripts.yaml, after editing entry/agent IDs.
+# Source: https://developers.home-assistant.io/docs/intent_conversation_api/
+# Real HA conversation replies; separate from ChatGPT Work dots.
+dots_ask_home_assistant:
+  alias: Ask a dot on paper
+  description: Show a real HA conversation agent response on the dot display.
+  mode: single
+  fields:
+    question:
+      required: true
+      selector:
+        text:
+  sequence:
+    - variables:
+        # A fresh display run ID for each call. The conversation ID identifies
+        # a continuing chat and must not be reused as the display run ID.
+        dot_run_id: "{{ 'ha-' ~ now().strftime('%Y%m%dT%H%M%S%f') }}"
+    - action: dots_on_paper.set_state
+      data:
+        entry_id: REPLACE_WITH_DOTS_CONFIG_ENTRY_ID
+        status: thinking
+        dot_name: Home Assistant
+        title: Thinking
+        run_id: "{{ dot_run_id }}"
+    - action: conversation.process
+      data:
+        text: "{{ question }}"
+        agent_id: conversation.REPLACE_WITH_YOUR_AGENT
+      response_variable: dot_answer
+      continue_on_error: true
+    - choose:
+        - conditions: >-
+            {{ dot_answer is defined and
+               dot_answer.response is defined and
+               dot_answer.response.response_type != 'error' and
+               dot_answer.response.speech is defined and
+               dot_answer.response.speech.plain is defined and
+               dot_answer.response.speech.plain.speech | default('') | length > 0 }}
+          sequence:
+            - action: dots_on_paper.show_answer
+              data:
+                entry_id: REPLACE_WITH_DOTS_CONFIG_ENTRY_ID
+                dot_name: Home Assistant
+                title: Your dot replied
+                text: "{{ dot_answer.response.speech.plain.speech }}"
+                run_id: "{{ dot_run_id }}"
+      default:
+        - action: dots_on_paper.set_state
+          data:
+            entry_id: REPLACE_WITH_DOTS_CONFIG_ENTRY_ID
+            status: error
+            dot_name: Home Assistant
+            title: Try again
+            text: The conversation agent did not return a plain text answer.
+            run_id: "{{ dot_run_id }}"

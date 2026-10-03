@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dots-on-paper"
+version = "0.1.0"
+description = "A local MCP and Home Assistant bridge for dots on e-ink displays"
+requires-python = ">=3.11"
+dependencies = ["Pillow>=11.2,<13"]
+
+[project.scripts]
+dots-on-paper = "dots_on_paper.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dots_on_paper = ["assets/*", "web.html"]

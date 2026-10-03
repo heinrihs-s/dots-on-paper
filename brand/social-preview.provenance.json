@@ -1,0 +1,12 @@
+{
+  "source": "tools/build-brand.mjs",
+  "vector_source": "tools/build_brand.py",
+  "artwork": "Original Dots on Paper folded-sheet/four-dot identity",
+  "license": "MIT",
+  "external_messages_sent": false,
+  "source_artwork": "brand/social-preview.html; campaign/media/dot-reminders-native.png (scripted scene)",
+  "scripted_scene": true,
+  "width": 1280,
+  "height": 640,
+  "sha256": "8f07c23aa7529e7e13968e828b6a09880d3117608fcdc7a97bbfb185cb9b4df0"
+}

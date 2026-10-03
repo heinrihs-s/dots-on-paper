@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "checked_date": "2026-10-03",
+  "timezone": "Europe/Riga",
+  "content_type": "staged-concept-demo",
+  "live_dot_connected": false,
+  "hardware_tested": false,
+  "external_message_sent": false,
+  "assets": [
+    {
+      "id": "reminders-film",
+      "path": "media/dot-reminders.mp4",
+      "status": "verified",
+      "kind": "video",
+      "width": 1600,
+      "height": 1200,
+      "duration_target_seconds": 16,
+      "caption": "posts.md#1-calendar-chaos",
+      "bytes": 3103757,
+      "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5",
+      "duration_seconds": 15.9861,
+      "codec": "H.264 / avc1",
+      "provenance": "media/dot-reminders.provenance.json"
+    },
+    {
+      "id": "reminders-poster",
+      "path": "media/dot-reminders.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 827137,
+      "sha256": "c1f5d11f492e1f7b664fa4c0ef0a6b3a26f31144c6455de0a9bb452c4bc8ec99",
+      "embedded_provenance": true
+    },
+    {
+      "id": "reminders-native",
+      "path": "media/dot-reminders-native.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1872,
+      "height": 1404,
+      "physical_device_photo": false,
+      "bytes": 1223614,
+      "sha256": "558e70cec99ee005c12ac54940c06d4de52e07911326141d0ebd42339ce2103b",
+      "embedded_provenance": true
+    },
+    {
+      "id": "noo-film",
+      "path": "media/dot-noo.mp4",
+      "status": "verified",
+      "kind": "video",
+      "width": 1600,
+      "height": 1200,
+      "duration_target_seconds": 16,
+      "caption": "posts.md#2-noo",
+      "bytes": 2431940,
+      "sha256": "c2e1715c64f905304b046bb13f64f55b648d8a97fd0ba8eb36b922f49b77ad4d",
+      "duration_seconds": 15.986933,
+      "codec": "H.264 / avc1",
+      "provenance": "media/dot-noo.provenance.json",
+      "draft_status": "Draft ready · Waiting for approval",
+      "outcome": "Cancelled. Nothing sent."
+    },
+    {
+      "id": "noo-poster",
+      "path": "media/dot-noo.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 816207,
+      "sha256": "b3d9439fbe5df4f5bdca9e57116921eda0ed75b8de9526140fc3b1fc5c68da7b",
+      "embedded_provenance": true
+    },
+    {
+      "id": "noo-native",
+      "path": "media/dot-noo-native.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1872,
+      "height": 1404,
+      "physical_device_photo": false,
+      "bytes": 1199709,
+      "sha256": "7249a3554ffbe181bab1462d9e87d91f405cd56acbf1145bcd383f00760eade2",
+      "embedded_provenance": true
+    },
+    {
+      "id": "instinct-poster",
+      "path": "media/instinct-on-paper.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1600,
+      "height": 1200,
+      "caption": "posts.md#4-instinct-concept",
+      "persistent_label": "INSTINCT-INSPIRED CONCEPT · SCRIPTED OUTPUT",
+      "studio_footer": "INSTINCT-INSPIRED CONCEPT / NO CONNECTOR",
+      "live_product_connected": false,
+      "bytes": 842857,
+      "sha256": "a86a096a0aab54c4f703bf5a249914037b08cc97055beed056bbba43f80e0fda",
+      "embedded_provenance": true
+    },
+    {
+      "id": "instinct-native",
+      "path": "media/instinct-on-paper-native.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1872,
+      "height": 1404,
+      "physical_device_photo": false,
+      "live_product_connected": false,
+      "bytes": 1223732,
+      "sha256": "c938294f3a5a8362094dbd3077b0cb950f0a16cbde378103873f013f00f800dc",
+      "embedded_provenance": true
+    },
+    {
+      "id": "reminders-gif",
+      "path": "media/dot-reminders.gif",
+      "kind": "animation",
+      "status": "verified",
+      "width": 960,
+      "height": 720,
+      "bytes": 444781,
+      "encoded_frames": 179,
+      "distinct_frames": 176,
+      "duration_seconds": 16.0,
+      "loop": 0,
+      "embedded_provenance": true,
+      "sha256": "247f6e6aba12269018ec00b78606b0168aacb49395c1cd6a60a1704bd8fc7d6d",
+      "source_film": {
+        "name": "dot-reminders.mp4",
+        "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5"
+      },
+      "loop_start_source_seconds": 9,
+      "poster": "media/dot-reminders.png",
+      "provenance": "media/dot-reminders.gif.provenance.json"
+    },
+    {
+      "id": "noo-gif",
+      "path": "media/dot-noo.gif",
+      "kind": "animation",
+      "status": "verified",
+      "width": 960,
+      "height": 720,
+      "bytes": 494266,
+      "encoded_frames": 191,
+      "distinct_frames": 191,
+      "duration_seconds": 16.0,
+      "loop": 0,
+      "embedded_provenance": true,
+      "sha256": "b42c6946a121e6b19b0d6bc911352e24fe9991546f2d0555c197280fc1b3d6eb",
+      "source_film": {
+        "name": "dot-noo.mp4",
+        "sha256": "c2e1715c64f905304b046bb13f64f55b648d8a97fd0ba8eb36b922f49b77ad4d"
+      },
+      "loop_start_source_seconds": 12,
+      "poster": "media/dot-noo.png",
+      "provenance": "media/dot-noo.gif.provenance.json"
+    }
+  ],
+  "pending": [
+    {
+      "id": "release-link",
+      "reason": "Replace REPOSITORY_URL in the release caption after the repository is published and verified."
+    }
+  ],
+  "caption_character_counts": [
+    173,
+    154,
+    137,
+    141,
+    190,
+    186,
+    196,
+    174
+  ],
+  "verification": {
+    "png_dimensions_and_provenance": true,
+    "mp4_browser_decode": true,
+    "mp4_h264_and_checksum": true,
+    "gif_playback_loop_dimensions_and_provenance": true
+  },
+  "source_files": [
+    {
+      "path": "demo/demo.js",
+      "sha256": "1be09c5bdc3cdb143455a148d7f7fd59917ef3bcaaee148b7a615cc4888f1be9"
+    },
+    {
+      "path": "demo/assets/cool-dot.png",
+      "sha256": "979d5e01e4b7817a5e4a154779204cd83ba1ef0aa8a13981a0d50c8dce0884cb"
+    },
+    {
+      "path": "demo/assets/cool-dot.prompt.md",
+      "sha256": "c9d85d6b41c8fb7b77ac3db4e74da66791ce17e0ebb7b674863768d0a50b5530"
+    },
+    {
+      "path": "demo/assets/Figtree.ttf",
+      "sha256": "26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714"
+    }
+  ],
+  "regeneration": {
+    "campaign": "node demo/tools/export-campaign.mjs",
+    "github_gifs": "node demo/tools/export-github.mjs",
+    "verification": "python tools/finalize_campaign.py"
+  }
+}

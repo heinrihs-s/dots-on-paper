@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dots on Paper — display bridge</title>
+<style>
+@font-face{font-family:Figtree;src:url('/assets/Figtree.ttf')}*{box-sizing:border-box}body{margin:0;background:#e9ece3;color:#20271e;font-family:Figtree,system-ui,sans-serif}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #486436;outline-offset:4px}main{max-width:1200px;margin:auto;padding:38px 40px 30px}.mast{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase}.brand{font-weight:750}.status{display:flex;gap:8px;align-items:center}.status:before{content:'';width:7px;height:7px;border-radius:50%;background:#8d9786}.status.connected:before{background:#426d30}h1{font-size:clamp(32px,5vw,58px);line-height:1.02;font-weight:550;letter-spacing:-.05em;margin:44px 0 12px}.intro{color:#596151;font-size:16px;line-height:1.6;max-width:480px;margin:0 0 26px}.stage{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:38px;align-items:center}.device{padding:22px;background:#34382f;border-radius:18px;box-shadow:0 20px 38px #2f382627,0 1px 0 #ffffff70 inset;position:relative}.paper{aspect-ratio:4/3;background:#fff;overflow:hidden;border-radius:3px;display:flex;align-items:center;justify-content:center}.paper>img#screen{width:100%;height:100%;object-fit:contain;display:none}.waiting{text-align:center;width:100%;padding:20px}.waiting img{width:55%;max-height:360px;object-fit:contain;filter:grayscale(1)}.waiting h2{font-weight:500;font-size:clamp(18px,3vw,32px);letter-spacing:-.035em;margin:0 0 9px}.waiting p{color:#6b6b64;font-size:12px;margin:0}.device-mark{font-size:9px;letter-spacing:.13em;color:#c6cdbd;position:absolute;bottom:7px;right:23px}.caption{margin:14px 0;font-size:11px;letter-spacing:.06em;color:#65705b;display:flex;justify-content:space-between;gap:12px}.cast-title{font-size:11px;letter-spacing:.13em;text-transform:uppercase;margin:0 0 18px;color:#65705b}.cast{display:grid;gap:10px}.cast button{display:flex;align-items:center;gap:12px;border:1px solid #d1d9c9;border-radius:12px;padding:7px 12px;background:transparent;color:inherit;text-align:left;transition:background .15s,border-color .15s}.cast button[aria-pressed=true]{background:#f8faf4;border-color:#718763}.cast img{width:50px;height:50px;object-fit:contain}.cast b{font-weight:600;display:block;font-size:14px}.cast small{color:#6e7965;font-size:11px}.options{margin-top:26px}.options label{display:block;font-size:11px;margin-bottom:7px;color:#66715b}.options select{width:100%;padding:10px;border:1px solid #c6d0bc;border-radius:8px;color:inherit;background:transparent}.connection{margin-top:30px;border-top:1px solid #cad3c0;padding-top:18px;display:flex;justify-content:space-between;gap:24px;align-items:start}.connection summary{cursor:pointer;font-size:13px;font-weight:600}.connection details{flex:1}.form{max-width:550px;margin-top:14px;display:grid;grid-template-columns:1fr auto;gap:10px}.form label{grid-column:1/-1;font-size:12px;color:#627057}.form input[type=password]{min-width:0;background:#f7faf2;border:1px solid #c5cfb8;border-radius:8px;padding:10px}.form button{border:0;border-radius:8px;background:#344b29;color:#fff;padding:11px 18px}.file{grid-column:1/-1}.file input{max-width:100%;font-size:12px}.hint{font-size:12px;color:#65705a;line-height:1.5;max-width:520px;margin:12px 0 0}.connection a{color:#4a6139;font-size:12px}#message{font-size:12px;color:#535f49;min-height:18px;margin-top:12px}.footer{font-size:11px;color:#697461;margin-top:25px;display:flex;justify-content:space-between;gap:18px}@media(max-width:760px){main{padding:25px 20px}.stage{grid-template-columns:1fr;gap:18px}.cast{grid-template-columns:repeat(4,1fr);gap:6px}.cast button{padding:8px 3px;gap:2px;flex-direction:column;text-align:center}.cast small{display:none}.cast-title{margin-bottom:10px}.options{margin-top:15px}.device{padding:16px}.device-mark{bottom:5px}.caption{font-size:10px}.connection{flex-direction:column}h1{margin-top:34px}.footer{line-height:1.5}}
+</style>
+<main>
+<header class="mast"><span class="brand">dots on paper / 01</span><span class="status" id="status">Bridge online</span></header>
+<h1>Your dot.<br>A little more tangible.</h1>
+<p class="intro">A quiet place for your dot's next answer. Pick a face, connect the bridge, and give your words somewhere to land.</p>
+<div class="stage"><section aria-label="Display preview"><div class="device"><div class="paper" id="paper"><img id="screen" alt="Current e-ink frame"><div class="waiting" id="waiting"><img id="mascot" src="/assets/beret-dot.png" alt="Artist dot"><h2>Waiting for your dot.</h2><p>Connect below to see the actual display.</p></div></div><span class="device-mark">DOTS / E-INK</span></div><div class="caption"><span id="frame-label">TRMNL X · 1872 × 1404 · 16 gray</span><span id="reply-label">No reply connected</span></div></section>
+<aside><p class="cast-title">Choose your company</p><div class="cast" role="group" aria-label="Dot character">
+<button data-dot="artist" aria-pressed="true"><img src="/assets/beret-dot.png" alt=""><span><b>Artist</b><small>A touch of imagination</small></span></button>
+<button data-dot="curious" aria-pressed="false"><img src="/assets/curious-dot.png" alt=""><span><b>Curious</b><small>Eyes on everything</small></span></button>
+<button data-dot="bookish" aria-pressed="false"><img src="/assets/bookish-dot.png" alt=""><span><b>Bookish</b><small>A considered answer</small></span></button>
+<button data-dot="cool" aria-pressed="false"><img src="/assets/cool-dot.png" alt=""><span><b>Cool</b><small>Very unbothered</small></span></button>
+</div><div class="options"><label for="profile">DISPLAY FORMAT</label><select id="profile"><option value="trmnl_x">TRMNL X / 16 gray</option><option value="trmnl">TRMNL / monochrome</option><option value="inkplate">Inkplate / 16 gray</option><option value="kindle">Portrait / 16 gray</option><option value="oep_296">Shelf tag / 296 × 128</option><option value="oep_400">Shelf tag / 400 × 300</option></select></div></aside></div>
+<div class="connection"><details open id="connection"><summary>Connect your display bridge</summary><div class="form"><label for="token">Publishing key · kept in this page's memory</label><input id="token" type="password" autocomplete="off" placeholder="Paste your API key" aria-describedby="hint"><button id="connect">Connect</button><label class="file">Or select your local credentials.json <input id="credentials" type="file" accept=".json,application/json"></label></div><p class="hint" id="hint">Keys are generated by run.ps1 -Init. Your dot connects through the bundled MCP plugin; Home Assistant and displays use the same bridge.</p></details><a href="https://learn.chatgpt.com/docs/dots/computers-and-apps" target="_blank" rel="noreferrer">About dot tools ↗</a></div>
+<p role="status" aria-live="polite" id="message"></p><footer class="footer"><span>Four personalities. One real answer.</span><span>Display updates follow your hardware's refresh rate.</span></footer>
+</main>
+<script>
+let token='', state=null, lastImage='', objectUrl='', inFlight=false, generation=0;
+const ids=id=>document.getElementById(id), names={artist:'Artist',curious:'Curious',bookish:'Bookish',cool:'Cool'}, assets={artist:'beret-dot.png',curious:'curious-dot.png',bookish:'bookish-dot.png',cool:'cool-dot.png'};
+const profiles={trmnl_x:[1872,1404,16,'TRMNL X'],trmnl:[800,480,2,'TRMNL'],inkplate:[800,600,16,'Inkplate'],kindle:[1072,1448,16,'Portrait'],oep_296:[296,128,2,'Shelf tag'],oep_400:[400,300,2,'Shelf tag']};
+function selected(character){document.querySelectorAll('[data-dot]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.dot===character)));ids('mascot').src='/assets/'+assets[character];ids('mascot').alt=names[character]+' dot';}
+function format(){const [w,h,g,n]=profiles[ids('profile').value];ids('paper').style.aspectRatio=w+'/'+h;ids('frame-label').textContent=n+' · '+w+' × '+h+' · '+(g===2?'monochrome':'16 gray');lastImage='';}
+async function api(path,options={}){const response=await fetch(path,{...options,headers:{Authorization:'Bearer '+token,...(options.body?{'Content-Type':'application/json'}:{}),...options.headers},cache:'no-store'});if(!response.ok)throw new Error(response.status===401?'That key did not connect.':'Bridge request failed ('+response.status+').');return response;}
+async function refresh(){
+  if(!token||inFlight)return;
+  inFlight=true;
+  const currentGeneration=generation, profile=ids('profile').value;
+  try{
+    const nextState=await(await api('/api/state')).json();
+    const step=Math.max(0,Math.floor((Date.now()-Date.parse(nextState.updated_at))/2000));
+    const frame=nextState.status==='thinking'?step%12:nextState.status==='answer'?Math.min(step,11):0;
+    const key=nextState.revision+'-'+profile+'-'+frame;
+    if(key!==lastImage){
+      const blob=await(await api('/image.png?profile='+profile+'&frame='+frame)).blob();
+      if(currentGeneration!==generation)return;
+      const previous=objectUrl;
+      objectUrl=URL.createObjectURL(blob);
+      ids('screen').src=objectUrl;
+      await ids('screen').decode();
+      if(previous)URL.revokeObjectURL(previous);
+      if(currentGeneration!==generation)return;
+      lastImage=key;
+      ids('screen').style.display='block';
+      ids('waiting').style.display='none';
+    }
+    if(currentGeneration!==generation)return;
+    state=nextState;
+    ids('screen').dataset.character=state.character;
+    ids('screen').dataset.revision=state.revision;
+    selected(state.character);
+    ids('status').textContent=state.status==='thinking'?'Dot thinking':'Connected';
+    ids('status').classList.add('connected');
+    ids('reply-label').textContent=state.status==='answer'?'Reply '+state.revision:state.status==='thinking'?'Thinking…':'Ready for your dot';
+    ids('message').textContent='';
+    ids('connection').open=false;
+  }catch(error){
+    if(currentGeneration===generation){
+      ids('status').textContent='Connection needs attention';
+      ids('status').classList.remove('connected');
+      ids('message').textContent=error.message;
+    }
+  }finally{
+    inFlight=false;
+    if(currentGeneration!==generation)refresh();
+  }
+}
+ids('connect').onclick=()=>{generation++;token=ids('token').value.trim();ids('token').value='';lastImage='';refresh();};
+ids('credentials').onchange=async event=>{try{const file=event.target.files[0];if(!file)return;const data=JSON.parse(await file.text());if(typeof data.api_token!=='string')throw new Error();generation++;token=data.api_token;event.target.value='';lastImage='';refresh();}catch{ids('message').textContent='Select the credentials.json created by the bridge.';}};
+document.querySelectorAll('[data-dot]').forEach(button=>button.onclick=async()=>{if(!token){selected(button.dataset.dot);return;}generation++;try{await api('/api/settings',{method:'PATCH',body:JSON.stringify({character:button.dataset.dot})});await refresh();}catch(error){ids('message').textContent=error.message;}});
+ids('profile').onchange=()=>{generation++;format();refresh();};format();setInterval(refresh,2000);
+</script>
+</html>

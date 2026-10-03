@@ -1,0 +1,56 @@
+{
+  "title": "Calendar reminders — scripted reply",
+  "fictional": true,
+  "output": "Scripted demo output; no calendar or message was accessed or sent.",
+  "connector": "No live dot connector used for this export.",
+  "source": "demo/demo.js canvas renderer",
+  "example": "calendar-chaos",
+  "character": "cool",
+  "asset": {
+    "path": "demo/assets/cool-dot.png",
+    "sha256": "979d5e01e4b7817a5e4a154779204cd83ba1ef0aa8a13981a0d50c8dce0884cb",
+    "generator": "OpenAI image generation",
+    "prompt": "Generated with built-in imagegen; reference images supplied for shape and plush finish.\n\nUse case: product-mockup\nAsset type: transparent character body sprite for a monochrome e-ink animation demo.\nPrimary request: Create a NEW blank plush character body representing the FOURTH character (pink heart with sunglasses) from the first reference, but STRICTLY GRAYSCALE and WITHOUT THE SUNGLASSES or any facial features. Use the second reference solely for precise material, finish, soft lighting, and front-on photographic style.\nInput images: Image 1 is shape reference only: the rightmost pink heart pillow. Image 2 is material and grayscale product photography reference only: existing gray plush body wearing a beret.\nSubject: One squat, plump heart-shaped plush pillow. Two generous rounded top lobes and a visible gentle notch at the center top. Rounded broad lower body narrows gently toward a short, flat broad base, rather than a pointed cartoon-heart tip. Lower base should be almost half the body width. No legs, arms, hat, or accessories. Front surface is completely blank to allow an animated face overlay.\nMaterials/textures: Soft silver-gray plush, tactile fine short pile velvet identical in realism, delicate fur grain, and softness to the second reference. Photographic toy product finish; three dimensional pillowy volume.\nComposition/framing: Strictly front-on orthographic product shot, no tilt or perspective. Centered on a square transparent canvas. Complete figure, comfortably within frame, fills 85 percent of canvas width. Its body has proportions comparable to the pink heart pillow in image 1. Clear area available for two round sunglass lenses centered at approximately x=38 and 62 percent of figure width, y=58 percent of figure height.\nLighting/mood: Uniform soft studio illumination; subtle form shading on the plush itself. No floor, no ground shadow.\nColor palette: Entire asset STRICTLY neutral grayscale. Silver-gray plush, no color tints.\nConstraints: Genuine alpha-transparent background. No background pixels, scene, ground or shadow. No eyes, mouth, nose, brows, sunglasses, glasses, face markings, hats, seams across the face, text, logos, watermarks, limbs, or additional characters. Do not reproduce the existing beret shape; create the heart shape.\n"
+  },
+  "font": {
+    "name": "Figtree",
+    "license": "SIL Open Font License 1.1"
+  },
+  "reproduction": "node demo/tools/export-github.mjs",
+  "width": 960,
+  "height": 720,
+  "requestedFramesPerSecond": 24,
+  "sourceFiles": [
+    {
+      "path": "demo/demo.js",
+      "sha256": "1be09c5bdc3cdb143455a148d7f7fd59917ef3bcaaee148b7a615cc4888f1be9"
+    },
+    {
+      "path": "demo/assets/cool-dot.png",
+      "sha256": "979d5e01e4b7817a5e4a154779204cd83ba1ef0aa8a13981a0d50c8dce0884cb"
+    },
+    {
+      "path": "demo/assets/cool-dot.prompt.md",
+      "sha256": "c9d85d6b41c8fb7b77ac3db4e74da66791ce17e0ebb7b674863768d0a50b5530"
+    },
+    {
+      "path": "demo/assets/Figtree.ttf",
+      "sha256": "26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714"
+    }
+  ],
+  "format": "GIF",
+  "framesPerSecond": 12,
+  "sourceFrames": 192,
+  "loopStartSourceSeconds": 9,
+  "timeline": "sourceSeconds = (9 + gifSeconds) % 16; same full scripted performance, rotated to start with its readable result",
+  "sourceFilm": {
+    "name": "dot-reminders.mp4",
+    "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5"
+  },
+  "encodedFrames": 179,
+  "distinctFrames": 176,
+  "durationSeconds": 16,
+  "loop": 0,
+  "bytes": 444781,
+  "sha256": "247f6e6aba12269018ec00b78606b0168aacb49395c1cd6a60a1704bd8fc7d6d"
+}

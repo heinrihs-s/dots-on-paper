@@ -1,0 +1,35 @@
+# MERGE FRAGMENT: this is not a complete board firmware.
+# Add your ESPHome board, Wi-Fi, API encryption, and the exact display platform,
+# pins, model, dimensions, busy pin, and refresh mode from its vendor docs.
+# Your existing display must have `id: eink_display` and this drawing lambda:
+#   lambda: |-
+#     it.image(0, 0, id(dots_screen), COLOR_OFF, COLOR_ON);
+# Validate panel polarity with a test frame; some panels invert those colors.
+# Configure the bridge to render exactly the panel's pixel dimensions.
+# Do not paste a generic display driver/pinout onto different hardware.
+# Official: https://esphome.io/components/image/online_image/
+
+http_request:
+  timeout: 15s
+  # Use HTTPS with trusted certificates for traffic outside a trusted LAN.
+
+image:
+  - platform: online_image
+    id: dots_screen
+    # In secrets.yaml: dots_image_url: "http://YOUR_BRIDGE_HOST:9035/image.png?width=800&height=480&levels=2"
+    url: !secret dots_image_url
+    format: PNG
+    type: BINARY
+    # In secrets.yaml: dots_image_authorization: "Bearer YOUR_SCOPED_DOTS_IMAGE_TOKEN"
+    request_headers:
+      Authorization: !secret dots_image_authorization
+    # Conservative default. Match your panel's permitted refresh cadence.
+    update_interval: 30s
+    on_download_finished:
+      - component.update: eink_display
+
+# Optional fast/partial animation requires a panel/driver that supports it.
+# Set its documented refresh mode and slow down to avoid overlapping refreshes.
+# The bridge's frames can be selected with &frame=0 through &frame=11.
+# `online_image.set_url` triggers a new fetch. Screen refresh stays under the
+# display component's control; this fragment does not promise video playback.

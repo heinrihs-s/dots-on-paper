@@ -1,0 +1,60 @@
+show_answer:
+  fields:
+    entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: dots_on_paper
+    text:
+      required: true
+      selector:
+        text:
+          multiline: true
+    character:
+      selector:
+        select:
+          options: [artist, curious, bookish, cool]
+    dot_name:
+      selector:
+        text:
+    title:
+      selector:
+        text:
+    event_id:
+      selector:
+        text:
+    run_id:
+      selector:
+        text:
+set_state:
+  fields:
+    entry_id:
+      required: true
+      selector:
+        config_entry:
+          integration: dots_on_paper
+    status:
+      required: true
+      selector:
+        select:
+          options: [idle, thinking, answer, error]
+    character:
+      selector:
+        select:
+          options: [artist, curious, bookish, cool]
+    text:
+      selector:
+        text:
+          multiline: true
+    dot_name:
+      selector:
+        text:
+    title:
+      selector:
+        text:
+    event_id:
+      selector:
+        text:
+    run_id:
+      selector:
+        text:

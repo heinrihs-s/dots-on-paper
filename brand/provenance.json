@@ -1,0 +1,8 @@
+{
+  "creator": "Original vector artwork for Dots on Paper",
+  "source": "tools/build_brand.py",
+  "brief": "Four dots on a folded sheet. Mineral-green studio, charcoal ink, cool paper. One tiny dot has eyes. Crisp geometry that survives monochrome e-ink and small icons.",
+  "font": "Figtree, SIL Open Font License, outlined from demo/assets/Figtree.ttf",
+  "license": "MIT for original artwork; SIL OFL for the font",
+  "affiliation": "Independent community project; not an OpenAI, Instinct, Home Assistant, or TRMNL logo"
+}

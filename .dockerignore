@@ -1,0 +1,12 @@
+data
+.env
+.venv
+__pycache__
+tests
+dist
+build
+release
+demo
+campaign
+.github
+.git

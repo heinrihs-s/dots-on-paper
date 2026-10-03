@@ -1,0 +1,38 @@
+name: Bug report
+description: Report a bridge, renderer, MCP, or platform example problem.
+body:
+  - type: markdown
+    attributes:
+      value: Do not include keys, credentials files, private replies, or private image URLs. For a security issue, follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version or commit.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python/Node version, platform, and actual display model when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps and a minimal example using invented data and generated credentials.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Checks or hardware tried
+      description: Include relevant sanitized errors and whether this was tested on a physical device.

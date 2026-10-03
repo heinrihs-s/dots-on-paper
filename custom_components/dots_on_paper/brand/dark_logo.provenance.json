@@ -1,0 +1,12 @@
+{
+  "source": "tools/build-brand.mjs",
+  "vector_source": "tools/build_brand.py",
+  "artwork": "Original Dots on Paper folded-sheet/four-dot identity",
+  "license": "MIT",
+  "external_messages_sent": false,
+  "source_artwork": "brand/logo-dark.svg",
+  "scripted_scene": false,
+  "width": 1024,
+  "height": 221,
+  "sha256": "dfac3372e42620d77242b7e850eed2326288903a2b009f56b420e58367ffd68a"
+}

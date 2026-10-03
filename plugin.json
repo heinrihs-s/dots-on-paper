@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "dots-on-paper",
+  "version": "0.1.0",
+  "description": "Send real dot answers to an e-ink display through the Dots on Paper bridge.",
+  "keywords": ["e-ink", "home-assistant", "trmnl", "dots", "mcp"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Dots on Paper",
+        "shortDescription": "Your dot on e-ink.",
+        "longDescription": "Publish an answer from your real dot to a private display bridge, with four switchable characters and e-ink friendly states.",
+        "developerName": "Heinrihs",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "defaultPrompt": [
+          "Use Dots on Paper to send this answer to my e-ink display.",
+          "Use Dots on Paper when answering me in this conversation."
+        ],
+        "brandColor": "#161613"
+      }
+    }
+  }
+}

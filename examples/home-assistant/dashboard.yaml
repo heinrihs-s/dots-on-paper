@@ -1,0 +1,15 @@
+# Example cards. Adjust entity IDs to those created by your HA installation.
+type: vertical-stack
+cards:
+  - type: picture-entity
+    entity: image.dots_on_paper_screen
+    show_name: false
+    show_state: false
+  - type: entities
+    entities:
+      - entity: select.dots_on_paper_character
+      - entity: sensor.dots_on_paper_status
+      - entity: sensor.dots_on_paper_reply
+  - type: markdown
+    content: >-
+      {{ state_attr('sensor.dots_on_paper_reply', 'text') | default('', true) }}

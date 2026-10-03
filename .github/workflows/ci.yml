@@ -1,0 +1,44 @@
+name: Source checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Install renderer dependency and package
+        run: python -m pip install .
+      - name: Installed package cold-start smoke
+        run: python tools/smoke.py
+      - name: Bridge and renderer tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: MCP adapter tests
+        run: node --test tests/test_mcp.mjs
+      - name: Home Assistant Python syntax
+        run: python -m compileall -q custom_components/dots_on_paper
+      - name: Initialize isolated test credentials
+        run: python -m dots_on_paper --init --data-dir ./data
+      - name: Offline installation diagnostics
+        run: python tools/doctor.py --offline

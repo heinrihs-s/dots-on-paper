@@ -1,0 +1,23 @@
+services:
+  bridge:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9035:9035"
+    environment:
+      DOTS_PUBLIC_URL: ${DOTS_PUBLIC_URL:-http://127.0.0.1:9035}
+      DOTS_ALLOWED_HOSTS: ${DOTS_ALLOWED_HOSTS:-127.0.0.1,localhost}
+      DOTS_PROFILE: ${DOTS_PROFILE:-trmnl_x}
+      DOTS_REFRESH_SECONDS: ${DOTS_REFRESH_SECONDS:-60}
+      DOTS_FRAME_SECONDS: ${DOTS_FRAME_SECONDS:-5}
+      DOTS_TRMNL_DEVICE_ID: ${DOTS_TRMNL_DEVICE_ID:-}
+      DOTS_TRMNL_ACCESS_TOKEN: ${DOTS_TRMNL_ACCESS_TOKEN:-}
+    volumes:
+      - dots-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9035/api/health', timeout=4)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  dots-data:

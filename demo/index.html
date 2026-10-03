@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#dfe9e3">
+  <title>dots on paper — a TRMNL X daydream</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%231d2925'/%3E%3Cellipse cx='24' cy='33' rx='3' ry='6' fill='white'/%3E%3Cellipse cx='40' cy='33' rx='3' ry='6' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- THESIS: An ink companion performs a tiny thought on a physical paper display; the animation is the entire experience.
+OWN-WORLD: Mineral-green studio ground, charcoal hardware, cool paper, tactile grayscale plush, generous Figtree lettering.
+STORY: Pick one of four plush dots. It wakes, thinks, has an idea, and prints its answer. Replay, personalize, and capture the loop.
+FIRST VIEWPORT: A dominant 4:3 TRMNL X screen in a black bezel, centered under one bold line; transport sits directly below.
+FORM: Object specimen studio, grounded candidate 6, seed d6ad8d89. A single 16-second authored performance; no integration.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance -->
+  <header class="masthead">
+    <a class="wordmark" href="#" aria-label="dots on paper home">
+      <svg class="mark" viewBox="0 0 40 30" aria-hidden="true"><circle cx="9" cy="15" r="5"/><circle cx="22" cy="9" r="5"/><circle cx="22" cy="23" r="5"/><circle cx="35" cy="15" r="5"/></svg>
+      <span>dots <span class="wordmark-light">on paper</span></span>
+    </a>
+    <span class="masthead-note">A TRMNL X daydream</span>
+    <a class="download" id="download-film" href="exports/dots-on-paper.mp4" download>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 17v4h14v-4"/></svg>
+      <span>Download film</span>
+    </a>
+  </header>
+  <main>
+    <h1 class="sr-only">A little dot. A lot to say.</h1>
+    <div class="stage" id="stage" aria-busy="true">
+      <canvas id="scene" width="1600" height="1200" role="img" aria-label="A grayscale plush dot in a black beret thinks, then answers on a TRMNL X e-ink display."></canvas>
+      <div class="loading" id="loading">Waking up your dot…</div>
+      <div class="load-error" id="load-error" hidden>Something interrupted the preview. <button id="reload">Reload the demo</button></div>
+    </div>
+    <div class="cast-picker" role="group" aria-label="Choose which dot answers">
+      <span class="cast-label">Pick your dot.</span>
+      <div class="cast-options">
+        <button class="dot-choice active" data-dot="artist" aria-pressed="true" aria-label="Choose Artist, the dot in a beret"><canvas class="dot-avatar" width="120" height="112" aria-hidden="true"></canvas><span>Artist</span></button>
+        <button class="dot-choice" data-dot="curious" aria-pressed="false" aria-label="Choose Curious, the dot with googly eyes" disabled><canvas class="dot-avatar" width="120" height="112" aria-hidden="true"></canvas><span>Curious</span></button>
+        <button class="dot-choice" data-dot="bookish" aria-pressed="false" aria-label="Choose Bookish, the dot with round glasses" disabled><canvas class="dot-avatar" width="120" height="112" aria-hidden="true"></canvas><span>Bookish</span></button>
+        <button class="dot-choice" data-dot="cool" aria-pressed="false" aria-label="Choose Cool, the heart-shaped dot with sunglasses" disabled><canvas class="dot-avatar" width="120" height="112" aria-hidden="true"></canvas><span>Cool</span></button>
+      </div>
+    </div>
+    <div class="controls" aria-label="Animation controls">
+      <div class="transport">
+        <button class="play icon-button" id="play" aria-label="Pause animation" title="Pause animation">
+          <svg id="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>
+          <svg id="play-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="m8 5 11 7-11 7z"/></svg>
+        </button>
+        <button class="icon-button" id="replay" aria-label="Replay from the beginning" title="Replay">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9a8 8 0 1 1-1 7M5 3v6h6"/></svg>
+        </button>
+        <span class="state-label" id="state-label">Daydreaming</span>
+      </div>
+      <label class="scrub-label" for="scrub"><span class="sr-only">Animation position</span><input id="scrub" type="range" min="0" max="16" value="0" step="0.01"><span class="time" id="time">0:00 / 0:16</span></label>
+      <div class="view-switch" role="group" aria-label="Preview format">
+        <button id="scene-view" class="active" aria-pressed="true">Studio</button>
+        <button id="screen-view" aria-pressed="false">Screen only</button>
+      </div>
+    </div>
+    <div class="studio-tools">
+      <div class="material-switch" role="group" aria-label="Animation style">
+        <button id="smooth-mode" class="active" aria-pressed="true">Smooth</button>
+        <button id="ink-mode" aria-pressed="false">E-ink steps</button>
+      </div>
+      <span class="demo-note">A playful concept. Made for the feed.</span>
+      <button id="edit-toggle" class="text-button" aria-expanded="false" aria-controls="answer-editor">Edit reply <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+    </div>
+    <div class="example-switch" role="group" aria-label="Choose a demo conversation">
+      <button data-example="" class="active" aria-pressed="true">A little thought</button>
+      <button data-example="calendar-chaos" aria-pressed="false">Reminders</button>
+      <button data-example="wife-noo" aria-pressed="false">The NOO moment</button>
+    </div>
+    <form class="answer-editor" id="answer-editor" hidden>
+      <label for="answer">What should your dot say?</label>
+      <div class="answer-row"><textarea id="answer" maxlength="4000" rows="6" aria-describedby="reply-help">Good ideas deserve a little paper.</textarea><button class="solid-button" type="submit">Show reply <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div>
+      <p id="reply-help">Use paragraphs or bullet points, just like a conversation. Longer replies continue in the conversation.</p>
+    </form>
+    <p class="screen-reader-state sr-only" id="spoken-state" aria-live="polite"></p>
+  </main>
+  <footer><span>One tiny thought, sixteen shades of grey.</span><a id="save-screen" href="exports/screen-1872x1404.png" download>Save screen <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7"/></svg></a></footer>
+  <script src="demo.js"></script>
+</body>
+</html>
