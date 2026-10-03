@@ -1,0 +1,14 @@
+{
+  "creator": "Original vector artwork for Dots on Paper",
+  "source": "tools/build_cool_logo.py",
+  "brief": "Original minimal premium product logo for Dots on Paper. A softened heart-shaped Cool dot with sunglasses cut through the silhouette as clear negative space. Precise monochrome geometry, outlined lowercase Figtree wordmark, transparent background. Product-studio restraint; no Apple logo, no OpenAI trademark, no imitation knot. Preserve clear recognition at 32 pixels.",
+  "assets": [
+    "icon-cool.svg",
+    "icon-cool-dark.svg",
+    "logo-cool.svg",
+    "logo-cool-dark.svg"
+  ],
+  "font": "Figtree, SIL Open Font License, outlined from demo/assets/Figtree.ttf",
+  "license": "MIT for original artwork; SIL OFL for font",
+  "affiliation": "Independent community project; no Apple or OpenAI trademark artwork"
+}

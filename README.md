@@ -1,4 +1,4 @@
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="brand/logo-dark.svg"><source media="(prefers-color-scheme: light)" srcset="brand/logo.svg"><img src="brand/logo.svg" width="440" alt="Dots on Paper"></picture></p>
+![Dots on Paper — four sculptural dots in a warm-white studio, with the sunglasses heart in front](brand/header-cool-v1.png)
 
 # Dots on Paper
 

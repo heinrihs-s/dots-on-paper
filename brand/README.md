@@ -1,5 +1,16 @@
 # Dots on Paper artwork
 
+The premium header is `header-cool-v1.png`: four tactile silver-white companions
+in a quiet studio, led by Cool. It is generated with the built-in image tool;
+the exact brief is in `header-cool-v1.prompt.md` and output provenance is adjacent.
+
+The matching independent vector family is `logo-cool.svg`,
+`logo-cool-dark.svg`, `icon-cool.svg`, and `icon-cool-dark.svg`. It uses a
+softened heart and sunglasses as clear negative space, with outlined Figtree
+lettering. Source and licensing are in `cool-logo.source.md`; rebuild with
+`tools/build_cool_logo.py`. These are the premium companion assets used with
+the GitHub header. The folded-sheet family below remains available.
+
 Four dots on a folded sheet. The rightmost dot has eyes: one little protagonist,
 three companions, all on paper. The mark remains legible without color.
 

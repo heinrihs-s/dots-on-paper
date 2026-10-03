@@ -1,0 +1,18 @@
+{
+  "creator": "Built-in OpenAI image generation",
+  "kind": "Original independent project header",
+  "source": "brand/header-cool-v1.prompt.md",
+  "character_references": [
+    "User-supplied four-dot reference photograph",
+    "demo/assets/cool-dot.png"
+  ],
+  "width": 1774,
+  "height": 887,
+  "sha256": "01ade600286a5e266c9a1f4694357b2c6a63f61ffe9a69a769e114eee6b75569",
+  "text": [
+    "dots on paper",
+    "A little dot. A lot to say."
+  ],
+  "official_endorsement": false,
+  "runtime_screenshot": false
+}

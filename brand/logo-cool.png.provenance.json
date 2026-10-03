@@ -1,0 +1,10 @@
+{
+  "source": "brand/logo-cool.svg",
+  "renderer": "tools/render-cool-brand.mjs",
+  "creator": "Original Dots on Paper vector artwork",
+  "license": "MIT; Figtree lettering SIL OFL",
+  "transparent_background": true,
+  "width": 1600,
+  "height": 323,
+  "sha256": "b44961fc12668dc9527d41e068d6f78ca2a9ba3b8a4e023df16e2aae4acea5e4"
+}
