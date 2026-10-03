@@ -32,4 +32,4 @@ python -m compileall -q custom_components/dots_on_paper
 
 With the standalone preview running, `node demo/tools/verify-replies.mjs` performs the browser reply checks. `node demo/tools/export-campaign.mjs` recreates campaign media with Playwright and an H.264-capable browser. `DOTS_BROWSER` selects the export browser; `DOTS_BROWSER_PATH` selects the verification browser. Renderer and source checks require no live account credentials.
 
-The manifest records per-file checksums; release downloads have `release/SHA256SUMS.txt`. The supplied source targets `heinrihs-s/dots-on-paper`, with owner/URL fields prepared. The repository is not published yet; public links, GitHub-hosted CI, downloads, and HACS installation must be verified after publication.
+The manifest records per-file checksums; locally built release packages have `release/SHA256SUMS.txt`. The source repository is [heinrihs-s/dots-on-paper](https://github.com/heinrihs-s/dots-on-paper). GitHub-hosted CI reports separately from these local checks. Tagged release downloads and HACS registration are not included in the source push; account and hardware verification remain as described above.

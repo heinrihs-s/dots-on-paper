@@ -1,6 +1,6 @@
 # Publish Dots on Paper on GitHub
 
-The prepared repository target is **`heinrihs-s/dots-on-paper`**, owned by the verified account `heinrihs-s`. It is not published yet. Use this directory as the repository root.
+The source repository is [**heinrihs-s/dots-on-paper**](https://github.com/heinrihs-s/dots-on-paper), owned by `heinrihs-s`. Use this directory as the repository root. This guide covers subsequent tagged releases and HACS preparation.
 
 ## Repository identity
 
@@ -12,22 +12,22 @@ The prepared repository target is **`heinrihs-s/dots-on-paper`**, owned by the v
 | Personal dot | `heidot`; readers can use their own dot name. |
 | Topics | `e-ink`, `e-paper`, `mcp`, `home-assistant`, `trmnl`, `esphome`, `openepaperlink`, `chatgpt`, `python`, `automation` |
 | Social preview | `brand/social-preview.png`, 1280 × 640 |
-| Planned URL | `https://github.com/heinrihs-s/dots-on-paper` — pending publication |
+| Source URL | `https://github.com/heinrihs-s/dots-on-paper` |
 
-The logo is in `brand/logo.svg`, with a dark variant and icon. The editable social preview source is `brand/social-preview.html`. The README's GIF starts on a readable result; the MP4 links provide the full films.
+The current coloured paper-dot header is `brand/header-paper-v2.png`; its exact generation brief is adjacent. The monochrome Cool logo is `brand/logo-cool.svg`, with a dark variant and icon. The editable calendar social preview source is `brand/social-preview.html`. The README's GIF starts on a readable result; the MP4 links provide the full films.
 
 After creating the repository, set its About description/topics and upload the preview through **Settings → Social preview → Edit → Upload an image**. The supplied PNG is under 1 MB and uses GitHub's recommended 1280 × 640 size. [GitHub social-preview guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview)
 
 ## Publication steps
 
-1. Create `heinrihs-s/dots-on-paper` and push the prepared source. Retain `LICENSE`, `NOTICE.md`, the font license, and asset provenance. Exclude `data/`, credentials, databases, `.env`, caches, and local Python environments.
+1. Push the release source to `main`. Retain `LICENSE`, `NOTICE.md`, the font license, and asset provenance. Exclude `data/`, credentials, databases, `.env`, caches, and local Python environments.
 2. Confirm the README, GIFs, logo, documentation, and source resolve from that repository. The HA manifest already targets this owner/name; its documentation and issue URLs become usable after publication.
 3. Let the configured GitHub CI run, and inspect its results. It is prepared for Python 3.11/3.12 on Linux/Windows, with Node 22. A local pass does not establish a GitHub-hosted CI pass.
 4. Rebuild the release archives using `python tools/package.py`, inspect the included files, and attach the archives plus `release/SHA256SUMS.txt` to a `v0.1.0` release. List actual test results for the released commit.
-5. Replace `[REPOSITORY_URL]` in the [release caption](../campaign/posts.md#3-integration-release) with the verified public URL. Publish that post only when its source/download links work.
+5. Use the verified repository URL in the [release caption](../campaign/posts.md#3-integration-release). Publish that post only when its source/download links work.
 6. Enable private vulnerability reporting if you want the private report route described in [SECURITY.md](../SECURITY.md) available.
 
-Repository creation, push, release publication, and X posting are separate account actions. This source package prepares the files; it does not perform those actions.
+Tagged release publication and X posting are separate account actions. The source push does not publish either one.
 
 ## Checks before release
 
@@ -55,7 +55,7 @@ Use actual results for the released commit instead of copying an old test count.
 
 ## HACS and live integrations
 
-The source has the HACS directory layout, owner/URL fields, and brand assets. HACS registration and public installation links are still pending. After publication, verify current [HACS requirements](https://www.hacs.xyz/docs/publish/integration/) and its checks before advertising a HACS installation.
+The source has the HACS directory layout, owner/URL fields, and brand assets. HACS registration and installation validation are still pending. Verify current [HACS requirements](https://www.hacs.xyz/docs/publish/integration/) and its checks before advertising a HACS installation.
 
 A GitHub release does not connect a private ChatGPT dot or provision a display. The actual dot needs the supported MCP connection and enabled tools; the display needs a reachable image URL and tested refresh configuration. Instinct remains an independent visual concept, with no implemented connector.
 
@@ -63,4 +63,4 @@ A GitHub release does not connect a private ChatGPT dot or provision a display. 
 
 Use the [campaign](../campaign/README.md) for the tiny dot's calm calendar judgment, the user's NOO reaction, and the code reveal. The captions and embedded source metadata identify the staged output. Preserve the Instinct still's own concept labels. A future live demonstration should name its actual answer source and tested hardware.
 
-The package is prepared for publication. The remaining release steps are creating/pushing the public repository, running hosted CI, verifying its links, and publishing the release. The remaining live-integration steps are account access and physical HA/display verification.
+The source is published. A tagged release still needs its hosted CI results, verified download links, and release assets. The remaining live-integration steps are account access and physical HA/display verification.

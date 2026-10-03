@@ -1,6 +1,6 @@
 # X captions
 
-Copy one caption per post. All eight captions were checked with Node using `[...caption].length`; counts include newlines and punctuation. The release counts include the literal `[REPOSITORY_URL]` placeholder. Replace it with the verified public repository URL after publication. These drafts fit within 280 characters with an ordinary X link.
+Copy one caption per post. All eight captions were checked with Node using `[...caption].length`; counts include newlines and punctuation. The release captions include the public repository URL. These drafts fit within 280 characters with an ordinary X link.
 
 ## 1. Calendar chaos
 
@@ -56,7 +56,7 @@ Attach `media/dot-noo.mp4`. The poster is `media/dot-noo.png`; the looping previ
 
 ## 3. Integration release
 
-Primary — 190 characters before replacing the URL placeholder:
+Primary — 217 characters:
 
 ```text
 Dots on Paper: give your assistant a tiny e-ink face.
@@ -65,20 +65,20 @@ MCP publishing + Home Assistant. TRMNL BYOS, ESPHome and OpenEPaperLink examples
 
 Hardware untested. Clip is staged.
 
-[REPOSITORY_URL]
+https://github.com/heinrihs-s/dots-on-paper
 ```
 
-Alternate — 186 characters before replacing the URL placeholder:
+Alternate — 213 characters:
 
 ```text
 I built Dots on Paper so assistants can publish replies to e-ink.
 
 Four tiny faces. Home Assistant + MCP. Account/device setup required; hardware untested. Staged clip.
 
-[REPOSITORY_URL]
+https://github.com/heinrihs-s/dots-on-paper
 ```
 
-Attach either film. The prepared target is `heinrihs-s/dots-on-paper`, which is not published yet. Publish the repository, verify its links, then replace the placeholder. The project includes MCP publishing, native HA integration, authenticated PNG/BMP output, TRMNL BYOS endpoints, and ESPHome/OpenEPaperLink examples. Private dot access and display configuration still need the [connection guide](../docs/real-dot.md). The project has no SMS sender or automatic feed of every dot reply; hardware compatibility needs device verification.
+Attach either film. The source repository is `heinrihs-s/dots-on-paper`. Check the public links before posting. The project includes MCP publishing, native HA integration, authenticated PNG/BMP output, TRMNL BYOS endpoints, and ESPHome/OpenEPaperLink examples. Private dot access and display configuration still need the [connection guide](../docs/real-dot.md). The project has no SMS sender or automatic feed of every dot reply; hardware compatibility needs device verification.
 
 ## 4. Instinct concept
 

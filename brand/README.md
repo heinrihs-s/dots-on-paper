@@ -1,8 +1,11 @@
 # Dots on Paper artwork
 
-The premium header is `header-cool-v1.png`: four tactile silver-white companions
-in a quiet studio, led by Cool. It is generated with the built-in image tool;
-the exact brief is in `header-cool-v1.prompt.md` and output provenance is adjacent.
+The current header is `header-paper-v2.png`: four colourful, matte paper-pulp
+companions in blue, green, yellow and pink, led by Cool. Fine cellulose fibers
+and dry pigment give the scene its e-ink paper character. It is generated with
+the built-in image tool; the exact brief is in `header-paper-v2.prompt.md` and
+output provenance is adjacent. The previous silver-white studio version remains
+available as `header-cool-v1.png`.
 
 The matching independent vector family is `logo-cool.svg`,
 `logo-cool-dark.svg`, `icon-cool.svg`, and `icon-cool-dark.svg`. It uses a

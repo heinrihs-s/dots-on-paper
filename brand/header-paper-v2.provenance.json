@@ -1,0 +1,22 @@
+{
+  "creator": "Built-in OpenAI image generation",
+  "source": "brand/header-paper-v2.prompt.md",
+  "edit_target": "brand/header-cool-v1.png",
+  "reference": "User-supplied original colourful dot photograph",
+  "width": 1774,
+  "height": 887,
+  "sha256": "98ff5a08face96b58c46b65ae82d4b8e30d1a1a84f4494c5ee71bfca60710abe",
+  "material": "Matte dyed paper pulp/cellulose; paper fibers; dry pigment",
+  "colors": {
+    "artist": "blue",
+    "curious": "green",
+    "bookish": "yellow",
+    "cool": "pink"
+  },
+  "text": [
+    "dots on paper",
+    "A little dot. A lot to say."
+  ],
+  "official_endorsement": false,
+  "runtime_screenshot": false
+}

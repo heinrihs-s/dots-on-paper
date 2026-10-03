@@ -1,4 +1,4 @@
-![Dots on Paper — four sculptural dots in a warm-white studio, with the sunglasses heart in front](brand/header-cool-v1.png)
+![Dots on Paper — blue, green, yellow and pink matte paper dots, with the sunglasses heart in front](brand/header-paper-v2.png)
 
 # Dots on Paper
 
@@ -83,6 +83,6 @@ The [campaign](campaign/README.md) includes GIFs, MP4s, native screen stills, an
 
 ## Publish and contribute
 
-The source targets **`heinrihs-s/dots-on-paper`**. GitHub publication, public-link verification, and HACS availability are still pending. [GitHub release guide](docs/github-release.md)
+The source is on [GitHub](https://github.com/heinrihs-s/dots-on-paper). HACS registration and a tagged release remain separate steps. [GitHub release guide](docs/github-release.md)
 
 [Contributing and checks](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT license](LICENSE) · [Asset provenance](NOTICE.md)
