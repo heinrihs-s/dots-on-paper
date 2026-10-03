@@ -1,6 +1,7 @@
 """Create install archives containing source and assets, never local keys or replies."""
 from pathlib import Path
 import hashlib
+import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,7 +58,12 @@ def main():
         with zipfile.ZipFile(path) as archive:
             assert archive.testzip() is None
         print(f"Created {path.name}: {path.stat().st_size:,} bytes")
-    downloads = [plugin_path, ha_path, campaign_path, *sorted((ROOT / "dist").glob("*.whl"))]
+    wheels = []
+    for wheel in sorted((ROOT / "dist").glob("*.whl")):
+        destination = RELEASE / wheel.name
+        shutil.copy2(wheel, destination)
+        wheels.append(destination)
+    downloads = [plugin_path, ha_path, campaign_path, *wheels]
     sums = "".join(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n" for path in downloads)
     (RELEASE / "SHA256SUMS.txt").write_text(sums, encoding="utf-8")
     print("Created SHA256SUMS.txt for the source, HA, and available wheel downloads")
