@@ -89,4 +89,12 @@ The [campaign](campaign/README.md) includes GIFs, MP4s, native screen stills, an
 
 The source is on [GitHub](https://github.com/heinrihs-s/dots-on-paper). A tagged release and HACS registration are still pending. [GitHub release guide](docs/github-release.md)
 
+The repository also includes a Codex plugin catalog:
+
+```sh
+codex plugin marketplace add heinrihs-s/dots-on-paper --ref main
+```
+
+This adds the repository as an install source on your computer. Install Dots on Paper from that source in the Plugins Directory, then follow the [connection guide](docs/real-dot.md). Public directory publication uses OpenAI's separate submission and review process. [Distribution and publishing](docs/publishing.md)
+
 [Contributing and checks](CONTRIBUTING.md) · [Security](SECURITY.md) · [MIT license](LICENSE) · [Asset provenance](NOTICE.md)

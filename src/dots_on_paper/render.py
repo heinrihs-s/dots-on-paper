@@ -183,6 +183,29 @@ class ReplyLayout:
     clipped: bool
 
 
+@dataclass(frozen=True)
+class ConversationMessage:
+    """A display turn supplied by its caller, with no inferred action."""
+
+    role: str
+    content: str
+    meta: str = ""
+
+
+def _conversation_messages(state: dict) -> tuple[ConversationMessage, ...]:
+    values = state.get("messages")
+    if not isinstance(values, list):
+        return ()
+    messages = []
+    for value in values:
+        if not isinstance(value, dict) or value.get("role") not in ("assistant", "user"):
+            continue
+        content = _clean(value.get("content"))
+        if content:
+            messages.append(ConversationMessage(value["role"], content, _clean(value.get("meta"))))
+    return tuple(messages)
+
+
 def _parse_reply(value: str) -> tuple[ReplyBlock, ...]:
     """Keep Markdown paragraphs and lists without requiring a special schema.
 
@@ -382,6 +405,13 @@ def _display_text(state: dict, status: str) -> str:
     actual = _clean(state.get("text"))
     if actual:
         return actual
+    messages = _conversation_messages(state) if status == "answer" else ()
+    if messages:
+        name = _clean(state.get("dot_name"), "Dot") or "Dot"
+        return "\n\n".join(
+            f"{'You' if message.role == 'user' else name}: {message.content}"
+            for message in messages
+        )
     return {
         "idle": "Waiting for your dot.",
         "thinking": "Your dot is thinking.",
@@ -446,6 +476,101 @@ def _reply(canvas: Image.Image, state: dict, character: str, frame: int, monochr
     preferred = max(16, min(64, round(short_side * .0456)))
     minimum = max(14, min(42, round(short_side * .030)))
     _reply_text(canvas, _display_text(state, "answer"), (column_left, body_y, column_width, body_height), preferred, minimum)
+
+
+def _conversation(canvas: Image.Image, state: dict, character: str, frame: int, monochrome: bool = False) -> None:
+    """Retain actual turns, with a dark right-aligned user reply on paper.
+
+    This is an optional renderer input, not a messaging transport. Small panels
+    use the ordinary compact text representation; roomy panels keep speaker
+    identity and turn boundaries visible. Excess content is visibly clipped.
+    """
+    width, height = canvas.size
+    short_side = min(width, height)
+    margin = max(12, round(short_side * .066))
+    avatar_size = max(24, round(min(width * .115, height * .15)))
+    column_left = margin + avatar_size + max(6, round(short_side * .030))
+    column_width = width - column_left - margin
+    name_y = round(height * .20)
+    name_size = max(13, min(44, round(short_side * .0314)))
+    name_height = round(name_size * 1.3)
+    name = _clean(state.get("dot_name"), character.title()) or character.title()
+    _mascot(canvas, character, (margin, round(height * .155), avatar_size, avatar_size), "answer", frame, monochrome)
+    _text_block(canvas, name, (column_left, name_y, column_width, name_height), name_size, name_size, 700)
+    label_size = max(11, min(24, round(short_side * .022)))
+    title_y = name_y + name_height + max(4, round(short_side * .009))
+    _text_block(canvas, _clean(state.get("title")) or "Conversation", (column_left, title_y, column_width, round(label_size * 1.3)), label_size, label_size, 500, color=SECONDARY)
+    body_y = name_y + max(name_height + 12, round(short_side * .098))
+    body_height = height - margin - body_y
+    messages = _conversation_messages(state)
+    omitted = len(messages) > 6
+    messages = messages[-6:]
+    if omitted:
+        _text_block(canvas, "Earlier messages omitted", (column_left, body_y, column_width, label_size * 2), label_size, label_size, 500, color=SECONDARY)
+        body_y += label_size * 2
+        body_height -= label_size * 2
+
+    preferred = max(16, min(58, round(short_side * .043)))
+    minimum = max(14, min(38, round(short_side * .029)))
+    for size in range(preferred, minimum - 1, -1):
+        font = _font(size, 500)
+        leading = round(size * 1.30)
+        small = max(10, round(size * .54))
+        small_height = round(small * 1.4)
+        padding = max(8, round(size * .54))
+        gap = max(8, round(size * .74))
+        rows = []
+        for index, message in enumerate(messages):
+            user = message.role == "user"
+            measure = round(column_width * .64) - 2 * padding if user else column_width
+            lines, clipped = _wrap(message.content.replace("**", ""), _font(size, 650 if user else 500), measure, 64)
+            overhead = (small_height + 2 * padding if user else (small_height if index else 0))
+            overhead += small_height + round(size * .25) if message.meta else 0
+            rows.append([message, lines, clipped, measure, overhead])
+        total = sum(len(row[1]) * leading + row[4] for row in rows) + gap * max(0, len(rows) - 1)
+        if total <= body_height or size == minimum:
+            break
+    # Give every visible turn a line before spending spare room on longer
+    # paragraphs. Clip the longest paragraphs first, preserving later replies.
+    while total > body_height and any(len(row[1]) > 1 for row in rows):
+        row = max(rows, key=lambda item: len(item[1]))
+        row[1].pop()
+        row[2] = True
+        total -= leading
+    draw = ImageDraw.Draw(canvas)
+    y = body_y
+    for index, (message, lines, clipped, measure, overhead) in enumerate(rows):
+        if clipped:
+            lines[-1] = _ellipsize(lines[-1], _font(size, 650 if message.role == "user" else 500), measure)
+        user = message.role == "user"
+        row_height = len(lines) * leading + overhead
+        if y + row_height > height - margin:
+            break
+        left = column_left
+        color = INK
+        if user:
+            text_width = max(_advance(_font(size, 650), line) for line in lines)
+            text_width = max(text_width, _advance(_font(small, 650), "You"))
+            bubble_width = min(round(column_width * .64), round(text_width + 2 * padding))
+            left = width - margin - bubble_width
+            draw.rounded_rectangle((left, y, width - margin, y + row_height), radius=max(6, round(size * .40)), fill=INK)
+            left += padding
+            text_y = y + padding
+            color = PAPER
+            draw.text((left, text_y), "You", font=_font(small, 650), fill=color, anchor="lt")
+            text_y += small_height
+        else:
+            text_y = y
+            if index:
+                _text_block(canvas, name, (left, text_y, column_width, small_height), small, small, 650, color=SECONDARY)
+                text_y += small_height
+        for line in lines:
+            draw.text((left, text_y), line, font=_font(size, 650 if user else 500), fill=color, anchor="lt")
+            text_y += leading
+        if message.meta:
+            text_y += round(size * .25)
+            _text_block(canvas, message.meta, (left, text_y, measure, small_height), small, small, 500, color=color if user else SECONDARY)
+        y += row_height + gap
 
 
 def _hero(canvas: Image.Image, state: dict, character: str, status: str, frame: int, monochrome: bool = False) -> None:
@@ -523,6 +648,10 @@ def render_image(state: dict, width: int, height: int, levels: int = 16, format:
         _tiny(canvas, state, character, status, frame, levels == 2)
     elif height <= 180 or width / height >= 1.85:
         _compact(canvas, state, character, status, frame, levels == 2)
+    elif status == "answer" and _conversation_messages(state) and min(width, height) < 300:
+        _compact(canvas, state, character, status, frame, levels == 2)
+    elif status == "answer" and _conversation_messages(state):
+        _conversation(canvas, state, character, frame, levels == 2)
     elif status == "answer":
         _reply(canvas, state, character, frame, levels == 2)
     else:

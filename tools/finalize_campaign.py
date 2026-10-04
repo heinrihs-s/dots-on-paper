@@ -3,11 +3,37 @@ from pathlib import Path
 import hashlib
 import json
 import re
+import sys
 
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 CAMPAIGN = ROOT / "campaign"
+sys.path.insert(0, str(ROOT / "src"))
+from dots_on_paper.render import render_image
+
+_verified_native_frames = set()
+
+
+def verify_recorded_renderer_frames(provenance):
+    """Keep archived source provenance while proving current compatibility.
+
+    Adding an optional renderer layout changes its source checksum without
+    changing earlier states. That is acceptable only if every native snapshot
+    recorded by the old export still renders to exactly the original bytes.
+    Other changed source assets continue to fail the checksum check.
+    """
+    native = provenance["native"]
+    assert native["source"] == "src/dots_on_paper/render.py"
+    assert native["frames"]
+    dimensions = (native["nativeWidth"], native["nativeHeight"], native["nativeLevels"])
+    for frame in native["frames"]:
+        key = (*dimensions, frame["sha256"])
+        if key in _verified_native_frames:
+            continue
+        rendered = render_image(frame["state"], dimensions[0], dimensions[1], levels=dimensions[2], frame=frame["frame"])
+        assert hashlib.sha256(rendered).hexdigest() == frame["sha256"], f"Archived native frame changed: {frame['id']}"
+        _verified_native_frames.add(key)
 
 
 def main():
@@ -63,7 +89,9 @@ def main():
                 source_path = (ROOT / source["path"]).resolve()
                 source_path.relative_to(ROOT.resolve())
                 assert source_path.is_file(), source_path
-                assert hashlib.sha256(source_path.read_bytes()).hexdigest() == source["sha256"]
+                if hashlib.sha256(source_path.read_bytes()).hexdigest() != source["sha256"]:
+                    assert source["path"] == "src/dots_on_paper/render.py", f"Source changed: {source['path']}"
+                    verify_recorded_renderer_frames(provenance)
             film = asset.parent / provenance["sourceFilm"]["name"]
             assert hashlib.sha256(film.read_bytes()).hexdigest() == provenance["sourceFilm"]["sha256"]
             item["provenance"] = str(provenance_path.relative_to(CAMPAIGN)).replace("\\", "/")

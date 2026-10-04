@@ -8,7 +8,7 @@ import unittest
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from dots_on_paper.render import _parse_reply, _reply_layout, render_image
+from dots_on_paper.render import _conversation_messages, _parse_reply, _reply_layout, render_image
 
 
 class RendererTests(unittest.TestCase):
@@ -191,6 +191,57 @@ class RendererTests(unittest.TestCase):
         self.assertNotEqual(start.tobytes(), moving.tobytes())
         self.assertEqual(start.tobytes(), settled.tobytes())
         self.assertEqual(start.crop((346, 0, 1872, 1404)).tobytes(), moving.crop((346, 0, 1872, 1404)).tobytes())
+
+    def test_conversation_roles_are_distinct_and_stages_retain_prior_turns(self):
+        messages = [
+            {"role": "assistant", "content": "The draft is ready.", "meta": "Waiting for approval"},
+            {"role": "user", "content": "Stop."},
+            {"role": "assistant", "content": "Cancelled. Nothing sent."},
+        ]
+        state = self.state(dot_name="heidot", text="", title="Conversation", messages=messages)
+        final = self.decode(render_image(state, 960, 720, frame=11))
+        stages = [render_image({**state, "messages": messages[:count]}, 960, 720, frame=11) for count in (1, 2, 3)]
+        self.assertEqual(len(set(stages)), 3)
+        assistant_only = self.decode(render_image({**state, "messages": [{**message, "role": "assistant"} for message in messages]}, 960, 720, frame=11))
+        # The user's dark bubble sits to the right, separate from the dot's
+        # unboxed reading column. A role change removes that dark surface.
+        region = (700, 250, 914, 500)
+        dark = sum(value < 34 for value in final.crop(region).tobytes())
+        plain = sum(value < 34 for value in assistant_only.crop(region).tobytes())
+        self.assertGreater(dark - plain, 4000)
+        self.assertEqual(state["messages"], messages)
+
+    def test_invalid_conversation_turns_fall_back_to_the_actual_reply(self):
+        state = self.state()
+        expected = render_image(state, 800, 600)
+        for messages in (None, "hello", [], [{"role": "tool", "content": "Hidden"}], [{"role": "user", "content": []}]):
+            with self.subTest(messages=messages):
+                self.assertEqual(render_image({**state, "messages": messages}, 800, 600), expected)
+        cleaned = _conversation_messages({"messages": [{"role": "user", "content": "  Hi\r\nthere\x00  ", "meta": "  Received  "}]})
+        self.assertEqual(cleaned[0].content, "Hi\nthere")
+        self.assertEqual(cleaned[0].meta, "Received")
+
+    def test_conversation_remains_native_on_small_and_monochrome_panels(self):
+        state = self.state(text="", messages=[
+            {"role": "assistant", "content": "Here is the result."},
+            {"role": "user", "content": "Thanks!"},
+        ])
+        for dimensions in ((64, 64), (296, 128), (296, 296), (600, 800), (960, 720)):
+            with self.subTest(dimensions=dimensions):
+                image = self.decode(render_image(state, *dimensions, levels=2))
+                self.assertEqual(image.size, dimensions)
+                self.assertEqual(image.mode, "1")
+                self.assertEqual(set(image.convert("L").tobytes()), {0, 255})
+        with_user = render_image(state, 296, 128)
+        without_user = render_image({**state, "messages": state["messages"][:1]}, 296, 128)
+        self.assertNotEqual(with_user, without_user)
+
+    def test_long_conversation_does_not_mutate_its_source(self):
+        messages = [{"role": "assistant" if index % 2 == 0 else "user", "content": f"Turn {index}. " + "Long response " * 100} for index in range(8)]
+        state = self.state(text="", messages=messages)
+        original = [dict(message) for message in messages]
+        self.assertEqual(self.decode(render_image(state, 600, 800)).size, (600, 800))
+        self.assertEqual(state["messages"], original)
 
 
 if __name__ == "__main__":

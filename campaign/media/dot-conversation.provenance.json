@@ -1,0 +1,290 @@
+{
+  "width": 1600,
+  "height": 1200,
+  "duration": 15.9986,
+  "stability": 0.0007673177083333333,
+  "accuracy": 0.206271875,
+  "codec": "H.264 / avc1",
+  "source": "src/dots_on_paper/render.py",
+  "rendererSha256": "e650c91dd495eece401b5683c9c2589617f7e84ab7895f42ade6f9dffbda96a7",
+  "demonstration": "Scripted conversation. No account, calendar, messaging service, or device is accessed.",
+  "nativeWidth": 1872,
+  "nativeHeight": 1404,
+  "levels": 16,
+  "snapshotIntervalSeconds": 0.5,
+  "timeline": [
+    {
+      "start": 0,
+      "end": 3,
+      "thinking": true
+    },
+    {
+      "start": 3,
+      "end": 7,
+      "id": "draft"
+    },
+    {
+      "start": 7,
+      "end": 9,
+      "id": "interruption"
+    },
+    {
+      "start": 9,
+      "end": 16,
+      "id": "result"
+    }
+  ],
+  "endsOnRetainedResult": true,
+  "resultHoldSeconds": 7,
+  "sha256": "f74846bc679bf6fecf14cdb802602dc0f57ba2e8473daa9ede046cf576e3f9d8",
+  "frames": [
+    {
+      "id": "thinking-0",
+      "frame": 0,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+    },
+    {
+      "id": "thinking-1",
+      "frame": 1,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "5020fa9225ab96918531ff2d9848e5f5d971f4e67eeae08985a2fc3dbf50144a"
+    },
+    {
+      "id": "thinking-2",
+      "frame": 2,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+    },
+    {
+      "id": "thinking-3",
+      "frame": 3,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "dbfc426afb8cfb0f6b7f89850d74dfd0301925209fdcecaed427503c833cab0d"
+    },
+    {
+      "id": "thinking-4",
+      "frame": 4,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+    },
+    {
+      "id": "thinking-5",
+      "frame": 5,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "570bb86095470c8d77fcbb5d233a56c8610c1b42847bcfd598827d48c88680e6"
+    },
+    {
+      "id": "thinking-6",
+      "frame": 6,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+    },
+    {
+      "id": "thinking-7",
+      "frame": 7,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "8172e5d06f7158e1a62eabf080c6af42a44919421e59e3ccfe2b66fd6fe45623"
+    },
+    {
+      "id": "thinking-8",
+      "frame": 8,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+    },
+    {
+      "id": "thinking-9",
+      "frame": 9,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "a550c4a143b26729907587bbd0f542fffa1ecfc644d9d11d10f011c8f5d9e114"
+    },
+    {
+      "id": "thinking-10",
+      "frame": 10,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+    },
+    {
+      "id": "thinking-11",
+      "frame": 11,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "",
+        "status": "thinking",
+        "text": ""
+      },
+      "sha256": "66b3aedc5da6d910eecbdb5f4d484d4319f8c558a46f7307c41b04cad57e1eac"
+    },
+    {
+      "id": "draft",
+      "frame": 11,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "Conversation",
+        "status": "answer",
+        "messages": [
+          {
+            "role": "assistant",
+            "content": "Okay, understood. Texting your wife about your date with Paula tonight.",
+            "meta": "Draft ready \u00c2\u00b7 Waiting for approval"
+          }
+        ]
+      },
+      "sha256": "9e3e38c0c71d765014262b0b0ce204f3ea528aab5bf9e5a7400e0035fab76209"
+    },
+    {
+      "id": "interruption",
+      "frame": 11,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "Conversation",
+        "status": "answer",
+        "messages": [
+          {
+            "role": "assistant",
+            "content": "Okay, understood. Texting your wife about your date with Paula tonight.",
+            "meta": "Draft ready \u00c2\u00b7 Waiting for approval"
+          },
+          {
+            "role": "user",
+            "content": "NOO"
+          }
+        ]
+      },
+      "sha256": "a29368c98f2b35c2b778f11f77812125736b5b2dd17b3579e506415ec39be7bc"
+    },
+    {
+      "id": "result",
+      "frame": 11,
+      "state": {
+        "character": "cool",
+        "dot_name": "heidot",
+        "title": "Conversation",
+        "status": "answer",
+        "messages": [
+          {
+            "role": "assistant",
+            "content": "Okay, understood. Texting your wife about your date with Paula tonight.",
+            "meta": "Draft ready \u00c2\u00b7 Waiting for approval"
+          },
+          {
+            "role": "user",
+            "content": "NOO"
+          },
+          {
+            "role": "assistant",
+            "content": "Cancelled. Nothing sent."
+          }
+        ]
+      },
+      "sha256": "9fcd49379cdacd4f95f4c1130d2618558501eb84b80e0c757f7be62855e5f9a7"
+    }
+  ],
+  "reproduction": "python tools/export_conversation.py; node demo/serve.mjs; node tools/export-conversation.mjs",
+  "native": {
+    "source": "src/dots_on_paper/render.py",
+    "rendererSha256": "e650c91dd495eece401b5683c9c2589617f7e84ab7895f42ade6f9dffbda96a7",
+    "nativeWidth": 1872,
+    "nativeHeight": 1404,
+    "nativeLevels": 16,
+    "snapshotIntervalSeconds": 0.5,
+    "timeline": [
+      {
+        "start": 0,
+        "end": 3,
+        "thinking": true
+      },
+      {
+        "start": 3,
+        "end": 7,
+        "id": "draft"
+      },
+      {
+        "start": 7,
+        "end": 9,
+        "id": "interruption"
+      },
+      {
+        "start": 9,
+        "end": 16,
+        "id": "result"
+      }
+    ],
+    "resultStartsAt": 9,
+    "resultHoldSeconds": 7,
+    "resultFrameSha256": "9fcd49379cdacd4f95f4c1130d2618558501eb84b80e0c757f7be62855e5f9a7"
+  },
+  "resultFrameBrowserDecode": {
+    "stableMeanPixelDifference": 0.0007673177083333333,
+    "expectedResultMeanPixelDifference": 0.206271875
+  }
+}

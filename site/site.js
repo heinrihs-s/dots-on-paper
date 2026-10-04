@@ -5,20 +5,37 @@
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const replies = {
     reminders: 'heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.',
-    noo: 'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO. Cancelled. Nothing sent.',
+    conversation: 'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO. heidot: Cancelled. Nothing sent.',
   };
-  let character = 'cool', example = 'reminders', frame = 11;
+  const turns = [
+    'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval.',
+    'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO.',
+    replies.conversation,
+  ];
+  let character = 'cool', example = 'reminders', frame = 11, turn = 3;
   let timer = null, generation = 0, playing = false;
   const loaded = new Map();
   const frameUrl = (id, index) => `./assets/frames/${id}-thinking-${index}.png`;
   function stop() { clearTimeout(timer); timer = null; playing = false; generation++; }
   function setScreen(url, alt) { $('screen').src = url; $('screen').alt = alt; }
+  function setTurn(index) {
+    turn = index;
+    setScreen(`./assets/frames/${character}-conversation-${turn}.png`, turns[turn - 1]);
+    document.querySelectorAll('[data-turn]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.turn) === turn)));
+    $('demo-status').textContent = ['Draft ready', 'Your reply', 'Conversation retained'][turn - 1];
+  }
+  function resetReplay() {
+    $('replay').disabled = false;
+    $('replay').querySelector('span').textContent = example === 'conversation' ? 'Replay conversation' : 'Replay thinking';
+  }
   function showResult() {
     playing = false;
-    setScreen(`./assets/frames/${character}-${example}.png`, replies[example]);
-    $('demo-status').textContent = 'Answer retained';
-    $('replay').disabled = false;
-    $('replay').querySelector('span').textContent = 'Replay thinking';
+    if (example === 'conversation') setTurn(3);
+    else {
+      setScreen(`./assets/frames/${character}-${example}.png`, replies[example]);
+      $('demo-status').textContent = 'Answer retained';
+    }
+    resetReplay();
   }
   function loadFrames(id) {
     if (!loaded.has(id)) {
@@ -33,6 +50,7 @@
     return loaded.get(id);
   }
   async function replay() {
+    closeFilm(false);
     stop();
     if (reducedMotion.matches) {
       showResult();
@@ -61,13 +79,28 @@
     $('demo-status').textContent = 'Thinking · accelerated preview';
     const tick = () => {
       if (token !== generation) return;
-      if (frame >= 12) { showResult(); return; }
+      if (frame >= 12) {
+        if (example !== 'conversation') { showResult(); return; }
+        const advance = index => {
+          if (token !== generation) return;
+          setTurn(index);
+          if (index === 3) { playing = false; resetReplay(); return; }
+          $('replay').querySelector('span').textContent = 'Conversation…';
+          timer = setTimeout(() => advance(index + 1), index === 1 ? 2200 : 1400);
+        };
+        advance(1);
+        return;
+      }
       setScreen(frameUrl(character, frame++), `${character} companion thinking. Accelerated demonstration.`);
       timer = setTimeout(tick, 500);
     };
     tick();
   }
   $('replay').addEventListener('click', replay);
+  document.querySelectorAll('[data-turn]').forEach(button => button.addEventListener('click', () => {
+    if (example !== 'conversation') return;
+    stop(); setTurn(Number(button.dataset.turn)); resetReplay();
+  }));
   document.querySelectorAll('[data-character]').forEach(button => button.addEventListener('click', () => {
     if (!characters.includes(button.dataset.character)) return;
     stop(); character = button.dataset.character;
@@ -75,14 +108,46 @@
     showResult();
   }));
   document.querySelectorAll('[data-example]').forEach(button => button.addEventListener('click', () => {
+    if (!Object.hasOwn(replies, button.dataset.example)) return;
     stop(); example = button.dataset.example;
     document.querySelectorAll('[data-example]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
     $('demo-punchline').textContent = example === 'reminders' ? '“Your calendar needs a lawyer.”' : '“Cancelled. Nothing sent.”';
-    $('film-link').href = `./assets/dot-${example}.mp4`;
+    $('conversation-controls').hidden = example !== 'conversation';
+    closeFilm(false);
     showResult();
   }));
+  const film = $('film');
+  function closeFilm(restoreFocus = true) {
+    film.pause();
+    $('film-panel').hidden = true;
+    $('film-link').setAttribute('aria-expanded', 'false');
+    if (restoreFocus) $('film-link').focus({ preventScroll: true });
+  }
+  $('film-link').addEventListener('click', () => {
+    if (!$('film-panel').hidden) { closeFilm(); return; }
+    stop(); showResult();
+    const source = `./assets/dot-${example}.mp4`;
+    $('film-title').textContent = example === 'conversation' ? 'The whole conversation.' : 'A reply that stays.';
+    $('film-status').textContent = '';
+    film.poster = `./assets/frames/cool-${example}.png`;
+    if (film.getAttribute('src') !== source) { film.src = source; film.load(); }
+    else film.currentTime = 0;
+    $('film-panel').hidden = false;
+    $('film-link').setAttribute('aria-expanded', 'true');
+    $('film-panel').scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    film.focus({ preventScroll: true });
+    film.play().catch(() => { if (!$('film-panel').hidden) $('film-status').textContent = 'Press play to start the film.'; });
+  });
+  $('close-film').addEventListener('click', () => closeFilm());
+  $('film-panel').addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); closeFilm(); } });
+  film.addEventListener('error', () => { $('film-status').textContent = 'The film couldn’t load. Close it and try again.'; });
+  film.addEventListener('ended', () => { $('film-status').textContent = 'The result stays on the screen.'; });
   reducedMotion.addEventListener('change', () => { if (playing || timer || $('replay').disabled) { stop(); showResult(); } });
-  document.addEventListener('visibilitychange', () => { if (document.hidden && (playing || $('replay').disabled)) { stop(); showResult(); } });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) return;
+    film.pause();
+    if (playing || $('replay').disabled) { stop(); showResult(); }
+  });
 
   document.querySelectorAll('[data-os]').forEach(button => button.addEventListener('click', () => {
     document.querySelectorAll('[data-os]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));

@@ -164,6 +164,33 @@
       "provenance": "media/dot-noo.gif.provenance.json",
       "ends_on_retained_result": true,
       "result_hold_seconds": 7
+    },
+    {
+      "id": "conversation-film",
+      "path": "media/dot-conversation.mp4",
+      "status": "verified",
+      "kind": "video",
+      "width": 1600,
+      "height": 1200,
+      "duration_target_seconds": 16,
+      "duration_seconds": 15.9986,
+      "bytes": 703037,
+      "sha256": "f74846bc679bf6fecf14cdb802602dc0f57ba2e8473daa9ede046cf576e3f9d8",
+      "codec": "H.264 / avc1",
+      "provenance": "media/dot-conversation.provenance.json",
+      "ends_on_retained_result": true,
+      "result_hold_seconds": 7
+    },
+    {
+      "id": "conversation-poster",
+      "path": "media/dot-conversation.png",
+      "status": "verified",
+      "kind": "image",
+      "width": 1600,
+      "height": 1200,
+      "bytes": 143012,
+      "sha256": "fe63a7348d0cf72a1ca43786f69f49fb1525cc05d6d9b55c38f08bed1f2bcadf",
+      "embedded_provenance": true
     }
   ],
   "pending": [
@@ -246,6 +273,7 @@
   "regeneration": {
     "campaign": "node demo/tools/export-campaign.mjs",
     "github_gifs": "node demo/tools/export-github.mjs",
-    "verification": "python tools/finalize_campaign.py"
+    "verification": "python tools/finalize_campaign.py",
+    "conversation": "python tools/export_conversation.py; node tools/export-conversation.mjs"
   }
 }

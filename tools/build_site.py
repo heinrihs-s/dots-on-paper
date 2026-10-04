@@ -16,8 +16,12 @@ from dots_on_paper.render import _mascot, _source_image, render_image
 OUTPUT = ROOT / "site" / "dist" / "dotsonpaper"
 REPLIES = {
     "reminders": "Here are your reminders:\n\n- Tonight: Date with Paula.\n- Tomorrow morning: Breakfast with Amy.\n- Lunch: With your wife.\n\nYour calendar needs a lawyer.",
-    "noo": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO\n\nCancelled. Nothing sent.",
 }
+MESSAGES = [
+    {"role": "assistant", "content": "Okay, understood. Texting your wife about your date with Paula tonight.", "meta": "Draft ready · Waiting for approval"},
+    {"role": "user", "content": "NOO"},
+    {"role": "assistant", "content": "Cancelled. Nothing sent."},
+]
 ASSETS = {"artist": "beret-dot.png", "curious": "curious-dot.png", "bookish": "bookish-dot.png", "cool": "cool-dot.png"}
 
 
@@ -31,6 +35,9 @@ def main() -> None:
     assets = OUTPUT / "assets"
     frames = assets / "frames"
     frames.mkdir(parents=True, exist_ok=True)
+    # Remove only known, retired showcase assets from a previous build.
+    for path in [assets / "dot-noo.mp4", *(frames / f"{character}-noo.png" for character in ASSETS)]:
+        path.unlink(missing_ok=True)
     for name in ("index.html", "styles.css", "site.js"):
         copy_text(ROOT / "site" / name, OUTPUT / name)
     for name in ("logo-cool.svg", "icon-cool.svg"):
@@ -51,9 +58,15 @@ def main() -> None:
         for frame in range(12):
             (frames / f"{character}-thinking-{frame}.png").write_bytes(render_image(state, 960, 720, levels=16, frame=frame))
         for example, text in REPLIES.items():
-            result = {**state, "status": "answer", "title": "Reply" if example == "reminders" else "Conversation", "text": text}
+            result = {**state, "status": "answer", "title": "Reply", "text": text}
             (frames / f"{character}-{example}.png").write_bytes(render_image(result, 960, 720, levels=16, frame=11))
-    for name in ("dot-reminders.mp4", "dot-noo.mp4"):
+        for turn in range(1, 4):
+            result = {**state, "status": "answer", "title": "Conversation", "messages": MESSAGES[:turn], "text": ""}
+            content = render_image(result, 960, 720, levels=16, frame=11)
+            (frames / f"{character}-conversation-{turn}.png").write_bytes(content)
+            if turn == 3:
+                (frames / f"{character}-conversation.png").write_bytes(content)
+    for name in ("dot-reminders.mp4", "dot-conversation.mp4"):
         shutil.copy2(ROOT / "campaign" / "media" / name, assets / name)
     metadata = {
         "source": "https://github.com/heinrihs-s/dots-on-paper",

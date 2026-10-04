@@ -17,8 +17,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="./assets/icon-cool.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/Figtree.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./site.js" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=conversation-1">
+  <script src="./site.js?v=conversation-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -59,7 +59,7 @@
           </div>
           <div class="example-picker" role="group" aria-label="Choose an example">
             <button data-example="reminders" aria-pressed="true">The reminders</button>
-            <button data-example="noo" aria-pressed="false">The NOO</button>
+            <button data-example="conversation" aria-pressed="false">Full conversation</button>
           </div>
           <p class="punchline" id="demo-punchline">“Your calendar needs a lawyer.”</p>
         </div>
@@ -68,10 +68,23 @@
             <img id="screen" src="./assets/frames/cool-reminders.png" width="960" height="720" alt="heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.">
             <span class="device-mark" aria-hidden="true"></span>
           </div>
+          <div class="conversation-controls" id="conversation-controls" role="group" aria-label="Step through the conversation" hidden>
+            <span>Follow the exchange</span>
+            <div>
+              <button data-turn="1" aria-pressed="false">The draft</button>
+              <button data-turn="2" aria-pressed="false">Your reply</button>
+              <button data-turn="3" aria-pressed="true">Dot’s reply</button>
+            </div>
+          </div>
           <div class="demo-transport">
             <button class="replay" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 2 8M4 4v6h6"/></svg><span>Replay thinking</span></button>
             <span class="demo-status" id="demo-status" role="status" aria-live="polite">Answer retained</span>
-            <a class="text-link film-link" href="./assets/dot-reminders.mp4" id="film-link">Watch the film <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+            <button class="text-link film-link" id="film-link" aria-expanded="false" aria-controls="film-panel">Watch the film <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7Z"/></svg></button>
+          </div>
+          <div class="film-panel" id="film-panel" hidden>
+            <div class="film-heading"><h3 id="film-title">A reply that stays.</h3><button id="close-film" aria-label="Close the film"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+            <video id="film" controls playsinline muted preload="none" tabindex="0" aria-labelledby="film-title" poster="./assets/frames/cool-reminders.png"></video>
+            <p id="film-status" role="status"></p>
           </div>
           <figcaption>Scripted example. Actual renderer frames at an accelerated pace; physical e-ink refresh is slower and varies by panel.</figcaption>
           <noscript><p>The result is shown above. Enable JavaScript to switch companions and replay thinking, or <a href="./assets/dot-reminders.mp4">watch the film</a>.</p></noscript>
@@ -125,10 +138,11 @@ python tools/setup.py</code></pre>
               <p>The bridge exposes three tools: read the display state, set it to thinking, and publish an answer.</p>
               <h4>For local Codex tasks</h4>
               <div class="terminal">
-                <div class="terminal-bar"><span>Plugin marketplace</span><button class="copy" data-copy="dot-code" aria-label="Copy marketplace command">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
+                <div class="terminal-bar"><span>Add the GitHub catalog</span><button class="copy" data-copy="dot-code" aria-label="Copy marketplace command">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
                 <pre><code id="dot-code">codex plugin marketplace add heinrihs-s/dots-on-paper --ref main</code></pre>
               </div>
               <p>Install Dots on Paper from the Plugins Directory. Point <code>DOTS_CONFIG_FILE</code> to the running bridge’s credentials, then start a new conversation. The guide includes direct MCP configuration.</p>
+              <p class="platform-note">This adds the repository catalog to your Codex installation. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/publishing.md">Publishing to OpenAI’s public directory</a> uses a separate submission and review process.</p>
               <h4>For a cloud ChatGPT dot</h4>
               <p>Use a private Secure MCP Tunnel. It needs a tunnel ID, a Platform runtime API key, and the appropriate workspace permissions. Keep the bridge and tunnel running.</p>
               <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/real-dot.md">Connect your dot <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
@@ -172,7 +186,6 @@ $env:DOTS_ALLOWED_HOSTS = 'YOUR_LAN_IP,localhost,127.0.0.1'</code></pre>
       <div class="faq-list">
         <details><summary>Will it show every ChatGPT reply automatically?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The dot publishes through an enabled MCP tool. There is no automatic feed of every reply. Ask it to set thinking when it starts and publish a short version of the actual answer when it finishes.</p></details>
         <details><summary>Can e-ink really animate?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>Yes, by drawing successive images. The panel and driver set the pace. A sleeping device may miss a short thinking phase, and stock TRMNL X can flash. The website and films run faster for demonstration. OpenEPaperLink’s portable example sends only the final result.</p></details>
-        <details><summary>Did the demo actually text anyone?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>No. The calendar and NOO exchange are scripted examples. This bridge publishes display state; it has no messaging sender and never accesses a calendar for the demo.</p></details>
         <details><summary>What has been tested?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The bridge, renderer, MCP adapter, HA image lifecycle and installed package have passing tests. ESPHome configuration validation passed. A live dot account, physical e-ink panels and a running HA installation still need verification. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/verification.md">Read the verification record.</a></p></details>
       </div>
     </section>
