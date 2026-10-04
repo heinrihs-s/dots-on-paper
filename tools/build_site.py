@@ -21,16 +21,22 @@ REPLIES = {
 ASSETS = {"artist": "beret-dot.png", "curious": "curious-dot.png", "bookish": "bookish-dot.png", "cool": "cool-dot.png"}
 
 
+def copy_text(source: Path, destination: Path) -> None:
+    # Git normalizes text in the deployment checkout. Match those exact bytes
+    # even when the build runs on Windows with CRLF source assets.
+    destination.write_text(source.read_text(encoding="utf-8"), encoding="utf-8", newline="\n")
+
+
 def main() -> None:
     assets = OUTPUT / "assets"
     frames = assets / "frames"
     frames.mkdir(parents=True, exist_ok=True)
     for name in ("index.html", "styles.css", "site.js"):
-        shutil.copy2(ROOT / "site" / name, OUTPUT / name)
+        copy_text(ROOT / "site" / name, OUTPUT / name)
     for name in ("logo-cool.svg", "icon-cool.svg"):
-        shutil.copy2(ROOT / "brand" / name, assets / name)
-    for name in ("Figtree.ttf", "Figtree-LICENSE.txt"):
-        shutil.copy2(ROOT / "demo" / "assets" / name, assets / name)
+        copy_text(ROOT / "brand" / name, assets / name)
+    shutil.copy2(ROOT / "demo/assets/Figtree.ttf", assets / "Figtree.ttf")
+    copy_text(ROOT / "demo/assets/Figtree-LICENSE.txt", assets / "Figtree-LICENSE.txt")
     Image.open(ROOT / "brand" / "header-paper-v2.png").save(assets / "header-paper.webp", "WEBP", quality=88, method=6)
     for character, filename in ASSETS.items():
         # The source bodies are blank sprites; use the native renderer for the
@@ -54,7 +60,7 @@ def main() -> None:
         "canonical": "https://heinrihs.org/dotsonpaper/",
         "renderer_sha256": hashlib.sha256((ROOT / "src/dots_on_paper/render.py").read_bytes()).hexdigest(),
         "demonstration": "Fictional replies; offline native renderer; 0.5-second thinking snapshots; no account, bridge data, calendar or device accessed.",
-        "files": {str(path.relative_to(OUTPUT)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(OUTPUT.rglob("*")) if path.is_file() and path.name != "build.json"},
+        "files": {path.relative_to(OUTPUT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(OUTPUT.rglob("*")) if path.is_file() and path.name != "build.json"},
     }
     (OUTPUT / "build.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
     total = sum(path.stat().st_size for path in OUTPUT.rglob("*") if path.is_file())
