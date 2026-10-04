@@ -2,6 +2,8 @@
 
 # Dots on Paper
 
+[Meet the dots, try the demo, and set up your display](https://heinrihs.org/dotsonpaper/).
+
 Display your dot's replies on an e-ink screen.
 
 Dots on Paper is a local MCP and Home Assistant bridge. It stores an assistant's answer and renders a PNG or BMP for your display. Choose one of four characters; the face changes while the answer stays put.

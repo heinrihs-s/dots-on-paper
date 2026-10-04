@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f2">
+  <title>Dots on Paper — Your dot’s replies, on e-ink</title>
+  <meta name="description" content="Give your dot a little desk space. An open-source MCP and Home Assistant bridge for e-ink, with thinking animation, four companions, and answers that stay put.">
+  <link rel="canonical" href="https://heinrihs.org/dotsonpaper/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dots on Paper — A little dot. A lot to say.">
+  <meta property="og:description" content="Your dot’s replies, on e-ink. Meet the companions, watch a thought land, and build your own.">
+  <meta property="og:url" content="https://heinrihs.org/dotsonpaper/">
+  <meta property="og:image" content="https://heinrihs.org/dotsonpaper/assets/header-paper.webp">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="./assets/icon-cool.svg" type="image/svg+xml">
+  <link rel="preload" href="./assets/Figtree.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./site.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header wrap">
+    <a class="wordmark" href="./" aria-label="Dots on Paper home"><img src="./assets/logo-cool.svg" width="773" height="156" alt="Dots on Paper"></a>
+    <nav aria-label="Main navigation">
+      <a href="#demo">The demo</a>
+      <a href="#setup">Set up</a>
+      <a class="nav-github" href="https://github.com/heinrihs-s/dots-on-paper">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">Give your dot<br>a little desk space.</h1>
+        <div class="hero-aside">
+          <p>An open-source bridge that puts your dot’s answers on e-ink. A little thinking animation. A reply that stays put.</p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/heinrihs-s/dots-on-paper">Get it on GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <a class="text-link" href="#demo">See it think <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <img class="hero-art" src="./assets/header-paper.webp" width="1774" height="887" fetchpriority="high" alt="Four colorful paper companions: a blue artist in a beret, a curious green dot, a pink heart in sunglasses and a yellow dot with round glasses. Dots on Paper: A little dot. A lot to say.">
+      <div class="hero-foot"><span>Built for a little screen beside you.</span><span>TRMNL · Home Assistant · ESPHome · PNG / BMP</span></div>
+    </section>
+
+    <section class="demo-section" id="demo" aria-labelledby="demo-title">
+      <div class="wrap demo-layout">
+        <div class="demo-intro">
+          <h2 id="demo-title">Watch a<br>thought land.</h2>
+          <p>A dot thinks. The answer arrives.<br>Then the paper keeps it.</p>
+          <div class="character-picker" role="group" aria-label="Choose a companion">
+            <button data-character="artist" aria-pressed="false"><span class="portrait blue"><img src="./assets/artist.png" width="80" height="80" alt=""></span><span>Artist</span></button>
+            <button data-character="curious" aria-pressed="false"><span class="portrait green"><img src="./assets/curious.png" width="80" height="80" alt=""></span><span>Curious</span></button>
+            <button data-character="bookish" aria-pressed="false"><span class="portrait yellow"><img src="./assets/bookish.png" width="80" height="80" alt=""></span><span>Bookish</span></button>
+            <button data-character="cool" aria-pressed="true"><span class="portrait pink"><img src="./assets/cool.png" width="80" height="80" alt=""></span><span>Cool</span></button>
+          </div>
+          <div class="example-picker" role="group" aria-label="Choose an example">
+            <button data-example="reminders" aria-pressed="true">The reminders</button>
+            <button data-example="noo" aria-pressed="false">The NOO</button>
+          </div>
+          <p class="punchline" id="demo-punchline">“Your calendar needs a lawyer.”</p>
+        </div>
+        <figure class="demo-figure">
+          <div class="device">
+            <img id="screen" src="./assets/frames/cool-reminders.png" width="960" height="720" alt="heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.">
+            <span class="device-mark" aria-hidden="true"></span>
+          </div>
+          <div class="demo-transport">
+            <button class="replay" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 2 8M4 4v6h6"/></svg><span>Replay thinking</span></button>
+            <span class="demo-status" id="demo-status" role="status" aria-live="polite">Answer retained</span>
+            <a class="text-link film-link" href="./assets/dot-reminders.mp4" id="film-link">Watch the film <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+          </div>
+          <figcaption>Scripted example. Actual renderer frames at an accelerated pace; physical e-ink refresh is slower and varies by panel.</figcaption>
+          <noscript><p>The result is shown above. Enable JavaScript to switch companions and replay thinking, or <a href="./assets/dot-reminders.mp4">watch the film</a>.</p></noscript>
+        </figure>
+      </div>
+    </section>
+
+    <section class="how-section wrap" aria-labelledby="how-title">
+      <div class="how-intro">
+        <h2 id="how-title">A small bridge.<br>A proper little companion.</h2>
+        <p>The display lives beside your chat. Your assistant publishes a short reply; the bridge gives it a face and a place to stay.</p>
+        <a class="text-link" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/api.md">Explore the three MCP tools <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+      </div>
+      <ol class="how-steps">
+        <li><span class="step-index" aria-hidden="true">1</span><div><h3>Your dot starts thinking.</h3><p>A tool call sets the state. The selected companion cycles through twelve e-ink poses.</p></div></li>
+        <li><span class="step-index" aria-hidden="true">2</span><div><h3>The answer gets a little paper.</h3><p>The bridge renders the reply as grayscale PNG or BMP, sized for your screen.</p></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><h3>It stays until there’s more to say.</h3><p>One stable result image replaces the thinking frames. No endless redraw after the answer.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="setup-section" id="setup" aria-labelledby="setup-title">
+      <div class="wrap">
+        <div class="section-heading"><h2 id="setup-title">Make room for your dot.</h2><p>Run the bridge on your computer, then choose your connection.<br>Python 3.11+ and Node.js 22+ required.</p></div>
+        <div class="install-layout">
+          <div class="install-guide">
+            <h3>Start with the bridge.</h3>
+            <p>Clone the repo and run setup. It installs the package and creates private keys on your computer.</p>
+            <div class="terminal">
+              <div class="terminal-bar"><span>Install</span><button class="copy" data-copy="install-code" aria-label="Copy install commands">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
+              <pre><code id="install-code">git clone https://github.com/heinrihs-s/dots-on-paper.git
+cd dots-on-paper
+python tools/setup.py</code></pre>
+            </div>
+            <div class="os-switch" role="group" aria-label="Choose your operating system"><button data-os="unix" aria-pressed="true">macOS / Linux</button><button data-os="windows" aria-pressed="false">Windows</button></div>
+            <div class="terminal launch-terminal">
+              <div class="terminal-bar"><span>Start the bridge</span><button class="copy" data-copy="launch-code" aria-label="Copy start command">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
+              <pre><code id="launch-code">.venv/bin/python -m dots_on_paper --data-dir ./data</code></pre>
+            </div>
+            <p class="install-note">Use <code>python3</code> if your system needs it. Open <a href="http://127.0.0.1:9035" target="_blank" rel="noopener">127.0.0.1:9035 on your computer</a> and select <code>data/credentials.json</code> in the local preview. Keep that file private.</p>
+            <a class="text-link" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/setup.md">Full setup &amp; troubleshooting <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+          </div>
+          <div class="platform-guide">
+            <div class="platform-tabs" role="tablist" aria-label="Connection instructions">
+              <button id="tab-dot" role="tab" aria-controls="panel-dot" aria-selected="true" tabindex="0">Dot / MCP</button>
+              <button id="tab-trmnl" role="tab" aria-controls="panel-trmnl" aria-selected="false" tabindex="-1">TRMNL</button>
+              <button id="tab-ha" role="tab" aria-controls="panel-ha" aria-selected="false" tabindex="-1">Home Assistant</button>
+              <button id="tab-esphome" role="tab" aria-controls="panel-esphome" aria-selected="false" tabindex="-1">ESPHome</button>
+            </div>
+            <section id="panel-dot" class="platform-panel" role="tabpanel" aria-labelledby="tab-dot" tabindex="0">
+              <h3>Let your assistant<br>do the publishing.</h3>
+              <p>The bridge exposes three tools: read the display state, set it to thinking, and publish an answer.</p>
+              <h4>For local Codex tasks</h4>
+              <div class="terminal">
+                <div class="terminal-bar"><span>Plugin marketplace</span><button class="copy" data-copy="dot-code" aria-label="Copy marketplace command">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
+                <pre><code id="dot-code">codex plugin marketplace add heinrihs-s/dots-on-paper --ref main</code></pre>
+              </div>
+              <p>Install Dots on Paper from the Plugins Directory. Point <code>DOTS_CONFIG_FILE</code> to the running bridge’s credentials, then start a new conversation. The guide includes direct MCP configuration.</p>
+              <h4>For a cloud ChatGPT dot</h4>
+              <p>Use a private Secure MCP Tunnel. It needs a tunnel ID, a Platform runtime API key, and the appropriate workspace permissions. Keep the bridge and tunnel running.</p>
+              <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/real-dot.md">Connect your dot <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            </section>
+            <section id="panel-trmnl" class="platform-panel" role="tabpanel" aria-labelledby="tab-trmnl" tabindex="0" hidden>
+              <h3>A little home<br>on your TRMNL.</h3>
+              <p>Use an existing BYOS device and a bridge address reachable from its network. Choose the native TRMNL X profile or the original TRMNL profile.</p>
+              <ol><li>Configure your LAN address and allowed hosts before starting the bridge.</li><li>Set your existing <code>DOTS_TRMNL_DEVICE_ID</code> and <code>DOTS_TRMNL_ACCESS_TOKEN</code>.</li><li>Configure the device’s BYOS origin separately. The bridge advances a thinking pose per wake, then returns one stable result filename.</li></ol>
+              <div class="terminal">
+                <div class="terminal-bar"><span>Windows · replace YOUR_LAN_IP</span><button class="copy" data-copy="trmnl-code" aria-label="Copy TRMNL LAN settings">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
+                <pre><code id="trmnl-code">$env:DOTS_HOST = '0.0.0.0'
+$env:DOTS_PUBLIC_URL = 'http://YOUR_LAN_IP:9035'
+$env:DOTS_ALLOWED_HOSTS = 'YOUR_LAN_IP,localhost,127.0.0.1'</code></pre>
+              </div>
+              <p class="platform-note">Thinking uses a 15-second sleep; the answer returns to 60 seconds. Boot, Wi-Fi and drawing add time. Stock TRMNL X can flash between frames. The cloud private-plugin route is separate.</p>
+              <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/platforms.md#existing-trmnl-byos-device">TRMNL configuration <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            </section>
+            <section id="panel-ha" class="platform-panel" role="tabpanel" aria-labelledby="tab-ha" tabindex="0" hidden>
+              <h3>Give your home<br>assistant a face.</h3>
+              <p>A custom integration provides an image entity, reply and status sensors, character selection, actions, and a new-reply event.</p>
+              <ol><li>Copy <code>custom_components/dots_on_paper</code> into HA’s <code>/config/custom_components/</code>.</li><li>Restart Home Assistant. Open Settings → Devices &amp; services → Add integration → Dots on Paper.</li><li>Enter the reachable bridge address, its publishing key, and your screen profile.</li></ol>
+              <p>The image updates only while thinking and holds the completed result. The guide also forwards actual replies from an HA conversation agent.</p>
+              <p class="platform-note">Manual install for now; HACS listing is pending. Live Home Assistant verification is still needed.</p>
+              <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/examples/home-assistant/README.md">Home Assistant setup <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            </section>
+            <section id="panel-esphome" class="platform-panel" role="tabpanel" aria-labelledby="tab-esphome" tabindex="0" hidden>
+              <h3>Your panel.<br>Your pace.</h3>
+              <p>The ESPHome example polls display metadata, downloads successive thinking frames, then draws the completed reply once.</p>
+              <ol><li>Merge the example into your board configuration. Use your panel’s actual pins, model, dimensions and busy signal.</li><li>Set the display ID to <code>eink_display</code> and its <code>update_interval</code> to <code>never</code>.</li><li>Keep image and metadata URLs plus the read-only image token in <code>secrets.yaml</code>.</li></ol>
+              <p class="platform-note">Schema checked with ESPHome 2026.9.1. The default redraw interval is 30 seconds; shorten it only if your exact panel and driver support it. This is a merge fragment, not complete firmware.</p>
+              <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/examples/esphome.yaml">Get the ESPHome example <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            </section>
+            <noscript><p>Other connection guides: <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/platforms.md">TRMNL and ESPHome</a> · <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/examples/home-assistant/README.md">Home Assistant</a>.</p></noscript>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section wrap" aria-labelledby="faq-title">
+      <div><h2 id="faq-title">A few things<br>before you build.</h2><p>Small screens have their own pace.<br>Here’s what to expect.</p></div>
+      <div class="faq-list">
+        <details><summary>Will it show every ChatGPT reply automatically?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The dot publishes through an enabled MCP tool. There is no automatic feed of every reply. Ask it to set thinking when it starts and publish a short version of the actual answer when it finishes.</p></details>
+        <details><summary>Can e-ink really animate?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>Yes, by drawing successive images. The panel and driver set the pace. A sleeping device may miss a short thinking phase, and stock TRMNL X can flash. The website and films run faster for demonstration. OpenEPaperLink’s portable example sends only the final result.</p></details>
+        <details><summary>Did the demo actually text anyone?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>No. The calendar and NOO exchange are scripted examples. This bridge publishes display state; it has no messaging sender and never accesses a calendar for the demo.</p></details>
+        <details><summary>What has been tested?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The bridge, renderer, MCP adapter, HA image lifecycle and installed package have passing tests. ESPHome configuration validation passed. A live dot account, physical e-ink panels and a running HA installation still need verification. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/verification.md">Read the verification record.</a></p></details>
+      </div>
+    </section>
+
+    <section class="closing wrap">
+      <img src="./assets/icon-cool.svg" width="100" height="100" alt="" loading="lazy">
+      <h2>A little dot.<br>A lot to make.</h2>
+      <a class="button primary" href="https://github.com/heinrihs-s/dots-on-paper">Build yours on GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+    </section>
+  </main>
+  <footer class="footer wrap"><p>Made by <a href="https://heinrihs.org/">Heinrihs</a>. Open source. MIT licensed.</p><div><a href="https://github.com/heinrihs-s/dots-on-paper">Source</a><a href="https://github.com/heinrihs-s/dots-on-paper/issues">Feedback</a><a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/NOTICE.md">Artwork credits</a></div><p class="independent">An independent project. No official affiliation with OpenAI or TRMNL.</p></footer>
+  <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
+</body>
+</html>
