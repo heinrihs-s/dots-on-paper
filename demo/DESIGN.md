@@ -159,6 +159,10 @@ The optional `calendar-chaos` preset is ordinary reply data: a short introductio
 
 The `wife-noo` preset supplies timed assistant and user messages to a reusable conversation renderer. A draft status appears with the first assistant message, the user's “NOO” uses a compact right-aligned chat bubble, and a final assistant message confirms that nothing was sent. Extra reply/demo footer labels are omitted for the requested clean composition. These are scripted messages; the animation performs no messaging action. Example choices sit beneath the transport controls. Edited replies can be saved as the actual current studio or native-screen PNG.
 
+### Retained result and native film exports
+
+Playback finishes on the result and pauses after sixteen seconds. The result's composition and pixels remain fixed; replay is an explicit action. Reduced motion still opens directly on the answer. The published dot films and GIFs replace the illustrative canvas screen with native grayscale snapshots from the bridge's Python renderer. Thinking uses poses 0–11; every reply uses settled pose 11. Half-second snapshot timing is an accelerated preview. The reminder and character result screens hold for ten seconds, the NOO cancellation for seven. GIFs play once and keep their last frame visible. The studio framing, colors, typography, and controls retain the existing visual world.
+
 ## Do's and Don'ts
 
 ### Do:

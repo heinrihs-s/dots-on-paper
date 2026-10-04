@@ -1,16 +1,16 @@
 {
-  "title": "NOO — fictional conversation, nothing sent",
+  "title": "bookish — thinking then retained reply",
   "fictional": true,
   "output": "Scripted demo output; no calendar or message was accessed or sent.",
   "connector": "No live dot connector used for this export.",
   "source": "src/dots_on_paper/render.py",
-  "example": "wife-noo",
-  "character": "cool",
+  "example": "",
+  "character": "bookish",
   "asset": {
-    "path": "demo/assets/cool-dot.png",
-    "sha256": "979d5e01e4b7817a5e4a154779204cd83ba1ef0aa8a13981a0d50c8dce0884cb",
+    "path": "demo/assets/bookish-dot.png",
+    "sha256": "4557bfaf07de7b78ed5259c01326a7843079fd1144d136c71586d31f41357523",
     "generator": "OpenAI image generation",
-    "prompt": "Generated with built-in imagegen; reference images supplied for shape and plush finish.\n\nUse case: product-mockup\nAsset type: transparent character body sprite for a monochrome e-ink animation demo.\nPrimary request: Create a NEW blank plush character body representing the FOURTH character (pink heart with sunglasses) from the first reference, but STRICTLY GRAYSCALE and WITHOUT THE SUNGLASSES or any facial features. Use the second reference solely for precise material, finish, soft lighting, and front-on photographic style.\nInput images: Image 1 is shape reference only: the rightmost pink heart pillow. Image 2 is material and grayscale product photography reference only: existing gray plush body wearing a beret.\nSubject: One squat, plump heart-shaped plush pillow. Two generous rounded top lobes and a visible gentle notch at the center top. Rounded broad lower body narrows gently toward a short, flat broad base, rather than a pointed cartoon-heart tip. Lower base should be almost half the body width. No legs, arms, hat, or accessories. Front surface is completely blank to allow an animated face overlay.\nMaterials/textures: Soft silver-gray plush, tactile fine short pile velvet identical in realism, delicate fur grain, and softness to the second reference. Photographic toy product finish; three dimensional pillowy volume.\nComposition/framing: Strictly front-on orthographic product shot, no tilt or perspective. Centered on a square transparent canvas. Complete figure, comfortably within frame, fills 85 percent of canvas width. Its body has proportions comparable to the pink heart pillow in image 1. Clear area available for two round sunglass lenses centered at approximately x=38 and 62 percent of figure width, y=58 percent of figure height.\nLighting/mood: Uniform soft studio illumination; subtle form shading on the plush itself. No floor, no ground shadow.\nColor palette: Entire asset STRICTLY neutral grayscale. Silver-gray plush, no color tints.\nConstraints: Genuine alpha-transparent background. No background pixels, scene, ground or shadow. No eyes, mouth, nose, brows, sunglasses, glasses, face markings, hats, seams across the face, text, logos, watermarks, limbs, or additional characters. Do not reproduce the existing beret shape; create the heart shape.\n"
+    "prompt": "# Bookish dot\n\nGenerated with the built-in `image_gen` tool and `transparent_background: true`.\n\n## Exact prompt\n\nUse case: stylized-concept\nAsset type: transparent plush character body sprite for a monochrome e-ink animation.\nPrimary request: Create one premium plush dot body with the silhouette of a gently rounded triangular wedge, like the third yellow glasses-wearing character in the visible reference, but completely face-free and entirely grayscale.\nSubject: A soft tall-ish rounded triangle with a smooth domed peak at the center top, symmetric rounded sloping sides, and a wide flat pillowy base. Silhouette is simple, plump, compact and cute. The center and lower face are uniformly light gray, suitable for later animated eyes and glasses to be drawn over it.\nStyle/medium: Photoreal studio product sprite; dense short-pile plush, microfiber fuzz texture, soft fabric fibers, subtle felt-like shading. Match the visible beret-dot body material and front-on camera quality. This is a NEW blank body, no beret or accessory.\nComposition/framing: Square canvas, single centered full figure, front-on orthographic view. Entire body visible with margin around all edges. Body fills about 85% of the canvas width and about 75% of its height. The widest point is the low base. Peak around 15% image height and base around 88% image height. Face placement will be at 38% and 62% canvas width, around 60% canvas height, so keep those regions smooth and unobstructed.\nLighting/mood: Uniform soft studio illumination, gentle dimensional shading, premium tactile look.\nColor palette: STRICTLY GRAYSCALE, light neutral gray plush. No yellow, no tint, no color anywhere.\nScene/backdrop: Actual fully transparent alpha background. No background, no ground, no floor shadow.\nConstraints: No eyes, face, mouth, glasses, eyebrows, hats, limbs, seams, symbols, marks, or other accessories. No text, logos, watermarks, extra characters, scenery, props or checkerboard printed into image. Only one blank rounded triangular gray plush body.\n"
   },
   "font": {
     "name": "Figtree",
@@ -31,215 +31,181 @@
     "timeline": [
       {
         "start": 0,
-        "end": 3,
+        "end": 6,
         "thinking": true
       },
       {
-        "start": 3,
-        "end": 7,
-        "id": "draft"
-      },
-      {
-        "start": 7,
-        "end": 9,
-        "id": "interruption"
-      },
-      {
-        "start": 9,
+        "start": 6,
         "end": 16,
         "id": "result"
       }
     ],
-    "resultStartsAt": 9,
-    "resultHoldSeconds": 7,
-    "resultFrameSha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944",
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "aac3b20ff75bcc8a75e864e82dd5a41f8ae751394a0b95c440f0fa867c836920",
     "frames": [
       {
         "id": "thinking-0",
         "frame": 0,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+        "sha256": "3000ea449fb08b27434245304781178621d857190dc682ff1b2ee8d3037920cd"
       },
       {
         "id": "thinking-1",
         "frame": 1,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "5020fa9225ab96918531ff2d9848e5f5d971f4e67eeae08985a2fc3dbf50144a"
+        "sha256": "71fcc3218e2008ce1f534931c26f284c54a4e4491414118f64feaeb6d11f31c1"
       },
       {
         "id": "thinking-2",
         "frame": 2,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+        "sha256": "c88ee2fd82e00a2e21685eec92fe6de15c40b232c57197b5a866522bbf8a335e"
       },
       {
         "id": "thinking-3",
         "frame": 3,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "dbfc426afb8cfb0f6b7f89850d74dfd0301925209fdcecaed427503c833cab0d"
+        "sha256": "628cca348d32736df2c0b18107a5bea4d5538fd28f6424f98d589d97bda8c6c9"
       },
       {
         "id": "thinking-4",
         "frame": 4,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+        "sha256": "9d03fa50bfe16215c5260b993eb99f972524ab9e0756a19b9dcd219f1d7990f3"
       },
       {
         "id": "thinking-5",
         "frame": 5,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "570bb86095470c8d77fcbb5d233a56c8610c1b42847bcfd598827d48c88680e6"
+        "sha256": "c3838d87a384200c938d5467c0fc3c5a2a701f5ec26da6e118010298e2a287eb"
       },
       {
         "id": "thinking-6",
         "frame": 6,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+        "sha256": "85922f67231c47ec3e777ab1057cb011e22bf00f6c1278b76920001fea460bc2"
       },
       {
         "id": "thinking-7",
         "frame": 7,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "8172e5d06f7158e1a62eabf080c6af42a44919421e59e3ccfe2b66fd6fe45623"
+        "sha256": "25dbc89bd55960287bdb37d640c86cc977015462b5f5f69469bbfd2eff940c2a"
       },
       {
         "id": "thinking-8",
         "frame": 8,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+        "sha256": "297ce33c078a791b6aeeb934eb050a6b1266792fa015e48b7a6a1780fc350871"
       },
       {
         "id": "thinking-9",
         "frame": 9,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "a550c4a143b26729907587bbd0f542fffa1ecfc644d9d11d10f011c8f5d9e114"
+        "sha256": "1797fe0039fd1846d201d37b70ec4d71b7d5748a944efc3be38eb83b439f90ca"
       },
       {
         "id": "thinking-10",
         "frame": 10,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+        "sha256": "6fe9cb8668476c54aac4ea6930daeedaa0cc778004574509aee5bc8023ced468"
       },
       {
         "id": "thinking-11",
         "frame": 11,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
           "title": "",
           "status": "thinking",
           "text": ""
         },
-        "sha256": "66b3aedc5da6d910eecbdb5f4d484d4319f8c558a46f7307c41b04cad57e1eac"
-      },
-      {
-        "id": "draft",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Draft ready",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval"
-        },
-        "sha256": "65fdf8d8d679de990a12c952927b47881dd297ab3bcdc3f5ffcc2e843968f78f"
-      },
-      {
-        "id": "interruption",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Interrupted",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO"
-        },
-        "sha256": "69ce9c671edb9e49e2099cd48afdf5013260ba09eed8814537d45215ac33935e"
+        "sha256": "58953a86ef24e2af09c7faf97b871984a5755fd2843e091731a875200726448d"
       },
       {
         "id": "result",
         "frame": 11,
         "state": {
-          "character": "cool",
+          "character": "bookish",
           "dot_name": "heidot",
-          "title": "Conversation",
+          "title": "Reply",
           "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO\n\nCancelled. Nothing sent."
+          "text": "Good ideas deserve a little paper."
         },
-        "sha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944"
+        "sha256": "aac3b20ff75bcc8a75e864e82dd5a41f8ae751394a0b95c440f0fa867c836920"
       }
     ]
   },
   "endsOnRetainedResult": true,
   "resultFrameBrowserDecode": {
-    "stableMeanPixelDifference": 0.017873958333333332,
-    "expectedResultMeanPixelDifference": 0.20694713541666668
+    "stableMeanPixelDifference": 0.013059244791666667,
+    "expectedResultMeanPixelDifference": 0.20440846354166667
   },
   "sourceFiles": [
     {
@@ -302,12 +268,12 @@
   "loop": null,
   "timeline": "Forward-only native snapshots: thinking, then a settled reply retained after playback ends. No GIF loop extension.",
   "sourceFilm": {
-    "name": "dot-noo.mp4",
-    "sha256": "997e5061d4301a127b05b1b3e3b6c01ba4d581043b2508a1bd08a70b9f51fa1b"
+    "name": "dots-on-paper-bookish.mp4",
+    "sha256": "d41faec83163e5a653fa1236c268555051b482dab7f1c9335b5054d8d0dfd27e"
   },
-  "encodedFrames": 9,
-  "distinctFrames": 9,
+  "encodedFrames": 13,
+  "distinctFrames": 13,
   "durationSeconds": 16,
-  "bytes": 134811,
-  "sha256": "00cd0ae3fb0604e93063400528ec40eca81f057bafa193308e0cb3464c143acf"
+  "bytes": 208275,
+  "sha256": "f3fe85196141cca8ea7160a3d98929f590c49e5f376e0b225447dfa0fde29828"
 }

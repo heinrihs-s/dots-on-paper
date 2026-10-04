@@ -25,7 +25,7 @@ Authenticated publishing, rendering, browser preview, and MCP forwarding have pa
 Your dot or HA assistant → authenticated bridge → PNG / BMP → e-ink display
 ```
 
-Publishing is an explicit tool call from the dot. There is no automatic feed of every ChatGPT reply. Your device controls its refresh rate, so the smooth animation in the films is a concept for the demo.
+Publishing is an explicit tool call from the dot. During thinking, the bridge serves changing e-ink frames. When the answer arrives, it switches to one fixed result image and holds it until the next update. There is no automatic feed of every ChatGPT reply. The films use the actual e-ink renderer at an accelerated cadence; physical refresh depends on your device.
 
 ## Run the bridge
 
@@ -61,15 +61,17 @@ heidot is the personal dot that inspired the project. Configure your own dot's d
 
 | Platform | Included path | Current validation |
 | --- | --- | --- |
-| TRMNL / TRMNL X BYOS | Authenticated device-pull endpoint; native screen profiles | HTTP and renderer checked; hardware untested |
-| Home Assistant | Custom integration and conversation-agent forwarding example | Source checks; live HA runtime untested |
-| ESPHome e-paper | Online-image configuration fragment | Driver, pins, and panel refresh need your setup |
+| TRMNL / TRMNL X BYOS | Thinking pose per wake; stable result filename | Firmware contract, HTTP and renderer checked; hardware untested |
+| Home Assistant | Thinking image frames, held result, conversation-agent example | Source checks; live HA runtime untested |
+| ESPHome e-paper | State-aware image fetching; held result | Driver, pins, and panel refresh need your setup |
 | OpenEPaperLink | HA `drawcustom` image automation | Documentation-checked; tag untested |
 | Generic PNG/BMP clients, Inkplate, portrait viewers | Scoped image URL with named or custom dimensions | Renderer checked; device client required |
 
 Copy `custom_components/dots_on_paper` into HA's `/config/custom_components/`, restart HA, and add Dots on Paper in Devices & services. Use a bridge address reachable from HA. [HA setup](examples/home-assistant/README.md) · [Profiles, authentication, and refresh behavior](docs/platforms.md)
 
 TRMNL cloud private-plugin rendering follows a different schedule and is not connected by this release. HACS publication is also pending.
+
+TRMNL uses a 15-second sleep while thinking and returns to the normal 60-second interval after the answer. Boot, Wi-Fi, download, and panel refresh add time. Stock TRMNL X may flash between frames; faster partial animation needs a compatible panel and driver. A sleeping device may miss a short thinking phase. [Animation setup and platform limits](docs/platforms.md#animation-and-physical-panels)
 
 ## Try the animation
 

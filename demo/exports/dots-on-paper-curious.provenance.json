@@ -1,0 +1,214 @@
+{
+  "title": "curious — thinking then retained reply",
+  "fictional": true,
+  "output": "Scripted demo output; no calendar or message was accessed or sent.",
+  "connector": "No live dot connector used for this export.",
+  "source": "src/dots_on_paper/render.py",
+  "example": "",
+  "character": "curious",
+  "asset": {
+    "path": "demo/assets/curious-dot.png",
+    "sha256": "5025eae02bcc5513a128afbcf6a7e3156b53f0974af7251d5b57ebbb97132c52",
+    "generator": "OpenAI image generation",
+    "prompt": "# Curious dot\n\nGenerated with the built-in image generation tool, transparent_background=true.\n\n```text\nUse case: stylized-concept\nAsset type: transparent plush character sprite for a polished monochrome e-ink animation.\nInput images: Image 1 is a character identity reference: reproduce ONLY the SECOND, green character's silhouette and protruding eye globes. Image 2 is the exact material, grayscale, studio light and camera style reference: match its soft short-pile velvet plush finish.\nPrimary request: one friendly squat rounded wide pebble/blob plush with TWO large light-white spherical eye globes protruding from the TOP, evenly spaced and perfectly symmetric. Convert the green character to strictly neutral grayscale. The body is light silver gray, visibly darker than the white eye globes. Eye globes must be entirely blank WHITE with NO black pupils, eyelids or marks; animated pupils will be drawn in code. The lower front body is also entirely blank with no facial features.\nComposition/framing: front-on orthographic product sprite centered on a square canvas. Entire figure visible and filling 80–90 percent of the canvas width. Wide gently flattened base. The two eye-globe centers should be close to 40 percent and 60 percent of image width and 30 percent of image height. Globes attach to upper body like the green character in reference 1.\nMaterials/textures: tactile short-pile soft fluffy velvet, meticulous fine plush texture identical to reference 2.\nLighting/mood: uniform soft studio illumination; refined photographic quality.\nScene/backdrop: actual transparent alpha background; no floor and no ground shadow.\nConstraints: exactly one character, no black pupils, no mouth, no nose, no face marks, no eyebrows, no hats, no accessories, no text, no watermark, no colored light, strictly grayscale. Real alpha transparency.\n```\n"
+  },
+  "font": {
+    "name": "Figtree",
+    "license": "SIL Open Font License 1.1"
+  },
+  "reproduction": "node demo/tools/export-campaign.mjs",
+  "width": 1600,
+  "height": 1200,
+  "duration": 15.944867,
+  "codec": "H.264 / avc1",
+  "requestedFramesPerSecond": 24,
+  "native": {
+    "source": "src/dots_on_paper/render.py",
+    "rendererSha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40",
+    "nativeWidth": 1872,
+    "nativeHeight": 1404,
+    "nativeLevels": 16,
+    "snapshotIntervalSeconds": 0.5,
+    "cadence": "Accelerated preview: one native snapshot every 0.5 seconds while thinking. Actual refresh is controlled by the display client and hardware.",
+    "timeline": [
+      {
+        "start": 0,
+        "end": 6,
+        "thinking": true
+      },
+      {
+        "start": 6,
+        "end": 16,
+        "id": "result"
+      }
+    ],
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "2b22e8fde52bb5f62720fcc491cc3fce548a9b43a267a08242d10c0006ee8be1",
+    "frames": [
+      {
+        "id": "thinking-0",
+        "frame": 0,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "c57ef9b0652646d16fff708915be868168c6f27640768c6d51db7f138085fe88"
+      },
+      {
+        "id": "thinking-1",
+        "frame": 1,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "4e3062a22227d9c64d100c462abf86de8fa201104bc42580f40ff62ad24ed7fe"
+      },
+      {
+        "id": "thinking-2",
+        "frame": 2,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "d9c2616482f36dc19f49f2b5ea7c33c9deda2933e2b7eb21d01a4e89aa18c276"
+      },
+      {
+        "id": "thinking-3",
+        "frame": 3,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "d9f75c1f69c16835e722bd4cfa7e2f6c761c3e622c55ea5d2279b7217f2632f8"
+      },
+      {
+        "id": "thinking-4",
+        "frame": 4,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "7a98561857ea486476270ab327412ad159b8c0534d8c861e80038b4ea16844d0"
+      },
+      {
+        "id": "thinking-5",
+        "frame": 5,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "bee1ac6f76299339d83648888959784fdf0f9ee8195b408874dadd5f66d1093b"
+      },
+      {
+        "id": "thinking-6",
+        "frame": 6,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "bbc432bdafc035ac1d46f1cbd38695093bc586cfd9ae245ccc45fb296161eb7a"
+      },
+      {
+        "id": "thinking-7",
+        "frame": 7,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "6b8517aa88bdc4561e52d292598c1f96561ce4e5ee90dacd3f45492655340875"
+      },
+      {
+        "id": "thinking-8",
+        "frame": 8,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "344faa585f25d552f63058d5ad66654b7e0223fe0ccaff86dda1629b11ec6368"
+      },
+      {
+        "id": "thinking-9",
+        "frame": 9,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "e09fc6327e8643a97342a0c33d95057d6078a4d77cdd71266300b3073686f510"
+      },
+      {
+        "id": "thinking-10",
+        "frame": 10,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "3082792eb2262ec4348127f6c1e9492677bcea471323d9885ccfe4010d29cc44"
+      },
+      {
+        "id": "thinking-11",
+        "frame": 11,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "355856c86f8408305e0f1e9c8844399dd611d9547c8e223597bf64ff637f69b5"
+      },
+      {
+        "id": "result",
+        "frame": 11,
+        "state": {
+          "character": "curious",
+          "dot_name": "heidot",
+          "title": "Reply",
+          "status": "answer",
+          "text": "Good ideas deserve a little paper."
+        },
+        "sha256": "2b22e8fde52bb5f62720fcc491cc3fce548a9b43a267a08242d10c0006ee8be1"
+      }
+    ]
+  },
+  "endsOnRetainedResult": true,
+  "resultFrameBrowserDecode": {
+    "stableMeanPixelDifference": 0.01298671875,
+    "expectedResultMeanPixelDifference": 0.204322265625
+  },
+  "bytes": 895691,
+  "sha256": "4aa225546e44a88e12a9783263ca1c42df7f9c35e57db35a0de12ea1f1578e03"
+}

@@ -26,7 +26,7 @@ Cute face. Brutal calendar review.
 heidot, imagined on e-ink. A staged demo of Dots on Paper; the calendar is fictional.
 ```
 
-Attach `media/dot-reminders.mp4`. The poster is `media/dot-reminders.png`; the looping GitHub preview is `media/dot-reminders.gif`. Keep the complete reminder list and lawyer punchline readable.
+Attach `media/dot-reminders.mp4`. The poster is `media/dot-reminders.png`; the GitHub preview is `media/dot-reminders.gif`. Both animations finish on the complete reminder list and lawyer punchline.
 
 ## 2. NOO
 
@@ -52,7 +52,7 @@ Draft cancelled. Nothing sent.
 A staged e-ink joke with heidot. No actual message sent.
 ```
 
-Attach `media/dot-noo.mp4`. The poster is `media/dot-noo.png`; the looping preview is `media/dot-noo.gif`. The film pairs “Texting your wife…” with **Draft ready · Waiting for approval**, then the user's NOO and **Cancelled. Nothing sent.** The caption identifies the scripted scene; no message was sent.
+Attach `media/dot-noo.mp4`. The poster is `media/dot-noo.png`; the GIF preview is `media/dot-noo.gif`. Both finish on the cancellation. The film pairs “Texting your wife…” with **Draft ready · Waiting for approval**, then the user's NOO and **Cancelled. Nothing sent.** The caption identifies the scripted scene; no message was sent.
 
 ## 3. Integration release
 

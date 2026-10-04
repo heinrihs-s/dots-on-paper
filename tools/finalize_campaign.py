@@ -37,7 +37,7 @@ def main():
             with Image.open(asset) as image:
                 assert image.format == "GIF"
                 assert image.size == (item["width"], item["height"])
-                assert image.info.get("loop") == 0
+                assert image.info.get("loop") is None, "GIF must stop on the final result"
                 embedded = json.loads(image.info["comment"].decode("utf-8"))
                 assert embedded["fictional"] is True
                 assert embedded["sourceFiles"] == provenance["sourceFiles"]
@@ -54,7 +54,10 @@ def main():
                 item["encoded_frames"] = image.n_frames
                 item["distinct_frames"] = len(distinct)
                 item["duration_seconds"] = duration / 1000
-                item["loop"] = 0
+                item["loop"] = None
+                assert provenance["endsOnRetainedResult"] is True
+                assert provenance["native"]["resultHoldSeconds"] >= 7
+                item["ends_on_retained_result"] = True
                 item["embedded_provenance"] = True
             for source in provenance["sourceFiles"]:
                 source_path = (ROOT / source["path"]).resolve()
@@ -72,6 +75,10 @@ def main():
             assert (provenance["width"], provenance["height"]) == (item["width"], item["height"])
             assert 15.5 <= provenance["duration"] <= 16.5
             assert b"avc1" in payload
+            assert provenance["endsOnRetainedResult"] is True
+            assert provenance["native"]["resultHoldSeconds"] >= 7
+            assert provenance["resultFrameBrowserDecode"]["stableMeanPixelDifference"] <= 1
+            assert provenance["resultFrameBrowserDecode"]["expectedResultMeanPixelDifference"] <= 3
             item["duration_seconds"] = provenance["duration"]
             item["codec"] = provenance["codec"]
             item["provenance"] = str(provenance_path.relative_to(CAMPAIGN)).replace("\\", "/")
@@ -82,7 +89,8 @@ def main():
     counts = [len(caption) for caption in captions]
     assert max(counts) <= 280
     manifest["caption_character_counts"] = counts
-    manifest["verification"] = {"png_dimensions_and_provenance": True, "mp4_browser_decode": True, "mp4_h264_and_checksum": True, "gif_playback_loop_dimensions_and_provenance": True}
+    manifest["checked_date"] = "2026-10-04"
+    manifest["verification"] = {"png_dimensions_and_provenance": True, "mp4_browser_decode": True, "mp4_h264_and_checksum": True, "mp4_decoded_final_result_and_hold": True, "gif_stops_on_result_dimensions_and_provenance": True}
     path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Verified {len(manifest['assets'])} campaign assets and {len(captions)} captions: {counts}")
 

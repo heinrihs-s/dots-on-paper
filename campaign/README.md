@@ -2,7 +2,7 @@
 
 Lead with a tiny cute dot calmly delivering **“Your calendar needs a lawyer.”** Then use the **NOO** interruption for a second joke, and the source release for the payoff. The personal dot is **heidot**; the integration is **Dots on Paper**. The visuals are staged output. The software can accept an actual reply through MCP after the dot is connected. A separate Instinct-inspired still is an independent concept, with no Instinct connector.
 
-Use [posts.md](posts.md) for captions, [storyboards.md](storyboards.md) for the cuts, and [media-manifest.json](media-manifest.json) for the media files, dimensions, durations, and checksums. The [reminders GIF](media/dot-reminders.gif) and [NOO GIF](media/dot-noo.gif) are readable 960 × 720 loops for the GitHub README or a quick preview; the MP4s are the primary films.
+Use [posts.md](posts.md) for captions, [storyboards.md](storyboards.md) for the cuts, and [media-manifest.json](media-manifest.json) for the media files, dimensions, durations, and checksums. The [reminders GIF](media/dot-reminders.gif) and [NOO GIF](media/dot-noo.gif) are 960 × 720 animations for the GitHub README or a quick preview. They play once and leave the result visible; the MP4s are the primary films.
 
 ## Post sequence
 
@@ -25,7 +25,7 @@ The campaign uses lowercase **heidot** as the display name. For a live demonstra
 
 ## Media use
 
-The master films are 1600 × 1200, H.264, approximately 16 seconds. GIFs are 960 × 720, 16 seconds, with infinite loops and a readable first frame. Use a clean poster with the whole answer visible, and give readers enough time to read it in the film. Native 1872 × 1404 screen images offer a closer view of the reply and work well as an additional image post; they are not photographs of a physical TRMNL X. A 4:3 clip can be uploaded directly. The regeneration instructions are in [media/README.md](media/README.md); `node demo/tools/export-github.mjs` recreates the GIFs from the packaged demo.
+The master films are 1600 × 1200, H.264, approximately 16 seconds. GIFs are 960 × 720 and play once. Both use snapshots from the bridge's native renderer, with an accelerated half-second thinking cadence. The reminder result is held for ten seconds and the NOO cancellation for seven; no animation restarts after the result. Native 1872 × 1404 screen images offer a closer view of the reply and work well as an additional image post; they are not photographs of a physical TRMNL X. A 4:3 clip can be uploaded directly. The regeneration instructions are in [media/README.md](media/README.md).
 
 Use the staged-demo caption when reposting the dot films. Keep the Instinct concept labels when cropping its image or adding a thumbnail. Use invented names only; the provided names are fictional scenario copy. Generated dot assets and font licensing are documented in [NOTICE.md](../NOTICE.md).
 

@@ -25,6 +25,7 @@ let token='', state=null, lastImage='', objectUrl='', inFlight=false, generation
 const ids=id=>document.getElementById(id), names={artist:'Artist',curious:'Curious',bookish:'Bookish',cool:'Cool'}, assets={artist:'beret-dot.png',curious:'curious-dot.png',bookish:'bookish-dot.png',cool:'cool-dot.png'};
 const profiles={trmnl_x:[1872,1404,16,'TRMNL X'],trmnl:[800,480,2,'TRMNL'],inkplate:[800,600,16,'Inkplate'],kindle:[1072,1448,16,'Portrait'],oep_296:[296,128,2,'Shelf tag'],oep_400:[400,300,2,'Shelf tag']};
 const frameSeconds=Number(document.documentElement.dataset.frameSeconds);
+const reducedMotion=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
 function selected(character){document.querySelectorAll('[data-dot]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.dot===character)));ids('mascot').src='/assets/'+assets[character];ids('mascot').alt=names[character]+' dot';}
 function format(){const [w,h,g,n]=profiles[ids('profile').value];ids('paper').style.aspectRatio=w+'/'+h;ids('frame-label').textContent=n+' · '+w+' × '+h+' · '+(g===2?'monochrome':'16 gray');lastImage='';}
 async function api(path,options={}){const response=await fetch(path,{...options,headers:{Authorization:'Bearer '+token,...(options.body?{'Content-Type':'application/json'}:{}),...options.headers},cache:'no-store'});if(!response.ok)throw new Error(response.status===401?'That key did not connect.':'Bridge request failed ('+response.status+').');return response;}
@@ -35,7 +36,7 @@ async function refresh(){
   try{
     const nextState=await(await api('/api/state')).json();
     const step=Math.max(0,Math.floor((Date.now()-Date.parse(nextState.updated_at))/(frameSeconds*1000)));
-    const frame=nextState.status==='thinking'?step%12:nextState.status==='answer'?Math.min(step,11):0;
+    const frame=nextState.status==='thinking'?(reducedMotion.matches?0:step%12):nextState.status==='answer'?11:0;
     const key=nextState.revision+'-'+profile+'-'+frame;
     if(key!==lastImage){
       const blob=await(await api('/image.png?profile='+profile+'&frame='+frame)).blob();

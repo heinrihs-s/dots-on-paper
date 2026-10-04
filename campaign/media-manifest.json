@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_date": "2026-10-03",
+  "checked_date": "2026-10-04",
   "timezone": "Europe/Riga",
   "content_type": "staged-concept-demo",
   "live_dot_connected": false,
@@ -16,11 +16,13 @@
       "height": 1200,
       "duration_target_seconds": 16,
       "caption": "posts.md#1-calendar-chaos",
-      "bytes": 3103757,
-      "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5",
-      "duration_seconds": 15.9861,
+      "bytes": 873813,
+      "sha256": "4ad8081496b1d8dccd7901713951a1e16f36ccd24e8cc39cc316cd36afcb8e51",
+      "duration_seconds": 15.9501,
       "codec": "H.264 / avc1",
-      "provenance": "media/dot-reminders.provenance.json"
+      "provenance": "media/dot-reminders.provenance.json",
+      "ends_on_retained_result": true,
+      "result_hold_seconds": 10
     },
     {
       "id": "reminders-poster",
@@ -29,8 +31,8 @@
       "kind": "image",
       "width": 1600,
       "height": 1200,
-      "bytes": 827137,
-      "sha256": "c1f5d11f492e1f7b664fa4c0ef0a6b3a26f31144c6455de0a9bb452c4bc8ec99",
+      "bytes": 272597,
+      "sha256": "a55265211854c051d0a5fd4a3c106a657df3b1ed9ea498997ad8d6e423243dc6",
       "embedded_provenance": true
     },
     {
@@ -41,8 +43,8 @@
       "width": 1872,
       "height": 1404,
       "physical_device_photo": false,
-      "bytes": 1223614,
-      "sha256": "558e70cec99ee005c12ac54940c06d4de52e07911326141d0ebd42339ce2103b",
+      "bytes": 125603,
+      "sha256": "0537cf8376c79d3d96faed4ac766ba0b9eb3d1a6198d825929a0193cdde822b5",
       "embedded_provenance": true
     },
     {
@@ -54,13 +56,15 @@
       "height": 1200,
       "duration_target_seconds": 16,
       "caption": "posts.md#2-noo",
-      "bytes": 2431940,
-      "sha256": "c2e1715c64f905304b046bb13f64f55b648d8a97fd0ba8eb36b922f49b77ad4d",
-      "duration_seconds": 15.986933,
+      "bytes": 689232,
+      "sha256": "997e5061d4301a127b05b1b3e3b6c01ba4d581043b2508a1bd08a70b9f51fa1b",
+      "duration_seconds": 15.950533,
       "codec": "H.264 / avc1",
       "provenance": "media/dot-noo.provenance.json",
       "draft_status": "Draft ready · Waiting for approval",
-      "outcome": "Cancelled. Nothing sent."
+      "outcome": "Cancelled. Nothing sent.",
+      "ends_on_retained_result": true,
+      "result_hold_seconds": 7
     },
     {
       "id": "noo-poster",
@@ -69,8 +73,8 @@
       "kind": "image",
       "width": 1600,
       "height": 1200,
-      "bytes": 816207,
-      "sha256": "b3d9439fbe5df4f5bdca9e57116921eda0ed75b8de9526140fc3b1fc5c68da7b",
+      "bytes": 274670,
+      "sha256": "8cba378a863026948c452aca162cd48bcf503e07d4db8d1905faa71c888d3beb",
       "embedded_provenance": true
     },
     {
@@ -81,8 +85,8 @@
       "width": 1872,
       "height": 1404,
       "physical_device_photo": false,
-      "bytes": 1199709,
-      "sha256": "7249a3554ffbe181bab1462d9e87d91f405cd56acbf1145bcd383f00760eade2",
+      "bytes": 129765,
+      "sha256": "860398dedee99734dd13f7612d70faa538b832f7e1023bdc99ae73d30c4e61f3",
       "embedded_provenance": true
     },
     {
@@ -120,20 +124,22 @@
       "status": "verified",
       "width": 960,
       "height": 720,
-      "bytes": 444781,
-      "encoded_frames": 179,
-      "distinct_frames": 176,
+      "bytes": 206939,
+      "encoded_frames": 13,
+      "distinct_frames": 10,
       "duration_seconds": 16.0,
-      "loop": 0,
+      "loop": null,
       "embedded_provenance": true,
-      "sha256": "247f6e6aba12269018ec00b78606b0168aacb49395c1cd6a60a1704bd8fc7d6d",
+      "sha256": "51cea56f17ffbb0f3afa0e0f7f2771d5d17b46ace47047129cae1ff8270ba8e8",
       "source_film": {
         "name": "dot-reminders.mp4",
-        "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5"
+        "sha256": "4ad8081496b1d8dccd7901713951a1e16f36ccd24e8cc39cc316cd36afcb8e51"
       },
-      "loop_start_source_seconds": 9,
+      "loop_start_source_seconds": 0,
       "poster": "media/dot-reminders.png",
-      "provenance": "media/dot-reminders.gif.provenance.json"
+      "provenance": "media/dot-reminders.gif.provenance.json",
+      "ends_on_retained_result": true,
+      "result_hold_seconds": 10
     },
     {
       "id": "noo-gif",
@@ -142,20 +148,22 @@
       "status": "verified",
       "width": 960,
       "height": 720,
-      "bytes": 494266,
-      "encoded_frames": 191,
-      "distinct_frames": 191,
+      "bytes": 134811,
+      "encoded_frames": 9,
+      "distinct_frames": 9,
       "duration_seconds": 16.0,
-      "loop": 0,
+      "loop": null,
       "embedded_provenance": true,
-      "sha256": "b42c6946a121e6b19b0d6bc911352e24fe9991546f2d0555c197280fc1b3d6eb",
+      "sha256": "00cd0ae3fb0604e93063400528ec40eca81f057bafa193308e0cb3464c143acf",
       "source_film": {
         "name": "dot-noo.mp4",
-        "sha256": "c2e1715c64f905304b046bb13f64f55b648d8a97fd0ba8eb36b922f49b77ad4d"
+        "sha256": "997e5061d4301a127b05b1b3e3b6c01ba4d581043b2508a1bd08a70b9f51fa1b"
       },
-      "loop_start_source_seconds": 12,
+      "loop_start_source_seconds": 0,
       "poster": "media/dot-noo.png",
-      "provenance": "media/dot-noo.gif.provenance.json"
+      "provenance": "media/dot-noo.gif.provenance.json",
+      "ends_on_retained_result": true,
+      "result_hold_seconds": 7
     }
   ],
   "pending": [
@@ -178,12 +186,37 @@
     "png_dimensions_and_provenance": true,
     "mp4_browser_decode": true,
     "mp4_h264_and_checksum": true,
-    "gif_playback_loop_dimensions_and_provenance": true
+    "mp4_decoded_final_result_and_hold": true,
+    "gif_stops_on_result_dimensions_and_provenance": true
   },
   "source_files": [
     {
       "path": "demo/demo.js",
-      "sha256": "1be09c5bdc3cdb143455a148d7f7fd59917ef3bcaaee148b7a615cc4888f1be9"
+      "sha256": "a63c2827949c49d51da7523d1540229c30dfb2b5a97f373b9911238ca632afc9"
+    },
+    {
+      "path": "demo/assets/beret-dot.png",
+      "sha256": "f892417db4bec59fba61301a9cd418cd190e441ebc2aab0c1fe5379833758334"
+    },
+    {
+      "path": "demo/assets/beret-dot.prompt.md",
+      "sha256": "07b12951912251efbf487d4977396c3e426b04e7875b265cee7dedd61e9c1dd4"
+    },
+    {
+      "path": "demo/assets/curious-dot.png",
+      "sha256": "5025eae02bcc5513a128afbcf6a7e3156b53f0974af7251d5b57ebbb97132c52"
+    },
+    {
+      "path": "demo/assets/curious-dot.prompt.md",
+      "sha256": "bf98402bfcc5f65a8d6335affa1ec61319ab1d31444ded2d231e45cd5d6f43ea"
+    },
+    {
+      "path": "demo/assets/bookish-dot.png",
+      "sha256": "4557bfaf07de7b78ed5259c01326a7843079fd1144d136c71586d31f41357523"
+    },
+    {
+      "path": "demo/assets/bookish-dot.prompt.md",
+      "sha256": "2cc2c4323d1f411cb7ddaba26ed399d573edaf4e2c7966c221e36b291ecd736e"
     },
     {
       "path": "demo/assets/cool-dot.png",
@@ -196,6 +229,18 @@
     {
       "path": "demo/assets/Figtree.ttf",
       "sha256": "26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714"
+    },
+    {
+      "path": "demo/tools/native-film.mjs",
+      "sha256": "9d4aa508b61a1da011b2fbb49277079fcedbc639094c9972dd98892c3d42989c"
+    },
+    {
+      "path": "demo/tools/render-film-frames.py",
+      "sha256": "95059d0605cfd2a4795934fca3991a8f4680b5ac1debf42e7a117d4baffffa55"
+    },
+    {
+      "path": "src/dots_on_paper/render.py",
+      "sha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40"
     }
   ],
   "regeneration": {

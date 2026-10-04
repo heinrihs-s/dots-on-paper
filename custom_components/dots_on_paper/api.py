@@ -109,12 +109,15 @@ class DotsBridge:
     async def set_character(self, character: str) -> dict[str, Any]:
         return await self._json("PATCH", "/api/settings", {"character": character})
 
-    async def image(self, profile: str) -> bytes:
+    async def image(self, profile: str, *, frame: int | None = None) -> bytes:
+        params: dict[str, str | int] = {"profile": profile}
+        if frame is not None:
+            params["frame"] = frame
         try:
             async with asyncio.timeout(20):
                 async with self.session.get(
                     f"{self.base_url}/image.png",
-                    params={"profile": profile},
+                    params=params,
                     headers=self._headers,
                     allow_redirects=False,
                 ) as response:

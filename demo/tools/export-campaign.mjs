@@ -1,7 +1,7 @@
 /**
  * Rebuild the scripted campaign from the actual local demo renderer.
  *
- * Start `node dots-demo/serve.mjs`, then run this script. Playwright may be
+ * Start `node demo/serve.mjs`, then run this script. Playwright may be
  * installed normally or found through DOTS_NODE_MODULES (the desktop bundled
  * runtime is a fallback). DOTS_BROWSER selects an H.264-capable browser;
  * installed Microsoft Edge is preferred on Windows. DOTS_DEMO_URL overrides
@@ -9,7 +9,9 @@
  * --only=reminders, --only=instinct, or --only=cast to select one export group.
  *
  * PNG provenance records the scripted content and exact source-asset prompt.
- * Films are real 16-second 1600×1200 H.264 MP4s recorded at a requested 24 fps.
+ * Films contain native 16-tone bridge snapshots, accelerated to two snapshots
+ * per second while thinking, then hold the settled result until their end.
+ * The 24 fps H.264 container does not imply a hardware refresh rate.
  * No account, messaging API, calendar, or Instinct connector is used.
  */
 import { createRequire } from 'node:module';
@@ -17,27 +19,28 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile, stat } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, stat, copyFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { nativePerformance, nativeFrameAt, nativeProvenance } from './native-film.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const packageRoot = existsSync(resolve(root, '..', 'plugin.json')) ? resolve(root, '..') : resolve(root, '..', 'dots-plugin');
 const mediaDir = join(packageRoot, 'campaign', 'media');
 const exportsDir = join(root, 'exports');
 const baseUrl = process.env.DOTS_DEMO_URL || 'http://127.0.0.1:9024';
-const allowedGroups = ['reminders', 'noo', 'instinct', 'cast'];
+const allowedGroups = ['reminders', 'noo', 'instinct', 'cast', 'characters'];
 const allowedDots = ['artist', 'curious', 'bookish', 'cool'];
 const assetNames = { artist: 'beret-dot', curious: 'curious-dot', bookish: 'bookish-dot', cool: 'cool-dot' };
 const args = process.argv.slice(2);
 const skipVideo = args.includes('--skip-video');
 const onlyArgs = args.filter(arg => arg.startsWith('--only='));
 if (args.includes('--help')) {
-  console.log('node dots-demo/tools/export-campaign.mjs [--skip-video] [--only=reminders|noo|instinct|cast]');
+  console.log('node demo/tools/export-campaign.mjs [--skip-video] [--only=reminders|noo|instinct|cast|characters]');
   console.log('Optional environment: DOTS_DEMO_URL, DOTS_BROWSER, DOTS_NODE_MODULES.');
   process.exit(0);
 }
 if (onlyArgs.length > 1 || args.some(arg => arg !== '--skip-video' && !arg.startsWith('--only='))) {
-  throw new Error('Use --skip-video and at most one --only=reminders|noo|instinct|cast option.');
+  throw new Error('Use --skip-video and at most one --only=reminders|noo|instinct|cast|characters option.');
 }
 const only = onlyArgs[0]?.slice('--only='.length);
 if (only && !allowedGroups.includes(only)) throw new Error(`Unknown export group: ${only}.`);
@@ -110,13 +113,13 @@ async function provenance(dot, label, opts) {
     fictional: true,
     output: 'Scripted demo output; no calendar or message was accessed or sent.',
     connector: opts.reply?.sender === 'Instinct' ? 'Instinct-inspired concept; no Instinct connector.' : 'No live dot connector used for this export.',
-    source: 'dots-demo/demo.js canvas renderer',
+    source: 'demo/demo.js canvas renderer',
     example: opts.example,
     scriptedReply: opts.reply || undefined,
     character: dot,
-    asset: { path: `dots-demo/assets/${stem}.png`, sha256: createHash('sha256').update(asset).digest('hex'), generator: 'OpenAI image generation', prompt },
+    asset: { path: `demo/assets/${stem}.png`, sha256: createHash('sha256').update(asset).digest('hex'), generator: 'OpenAI image generation', prompt },
     font: { name: 'Figtree', license: 'SIL Open Font License 1.1' },
-    reproduction: 'node dots-demo/tools/export-campaign.mjs',
+    reproduction: 'node demo/tools/export-campaign.mjs',
   };
 }
 
@@ -133,30 +136,43 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 
-async function render(seconds, opts) {
+async function render(seconds, opts, native) {
+  const frame = native && nativeFrameAt(native, seconds);
   return page.evaluate(async args => {
-    await window.dotDemo.renderAt(args.seconds, { ...args.opts, mode: 'smooth', export: true });
+    const options = { ...args.opts, mode: 'ink', export: true };
+    if (args.uri) await window.dotDemo.renderNativeAt(args.seconds, options, args.uri);
+    else await window.dotDemo.renderAt(args.seconds, options);
     return { width: window.dotDemo.canvas.width, height: window.dotDemo.canvas.height };
-  }, { seconds, opts });
+  }, { seconds, opts, uri: frame?.uri });
 }
 
-async function savePng(path, seconds, opts, label) {
-  const size = await render(seconds, opts);
+async function savePng(path, seconds, opts, label, native) {
+  const size = await render(seconds, opts, native);
   const expected = opts.format === 'screen' ? { width: 1872, height: 1404 } : { width: 1600, height: 1200 };
   if (size.width !== expected.width || size.height !== expected.height) throw new Error(`Wrong dimensions for ${path}: ${JSON.stringify(size)}`);
   const base64 = await page.evaluate(() => window.dotDemo.canvas.toDataURL('image/png').split(',')[1]);
-  const metadata = { ...await provenance(opts.dot, label, opts), frameSeconds: seconds, ...size };
+  const metadata = {
+    ...await provenance(opts.dot, label, opts), frameSeconds: seconds, ...size,
+    ...(native ? { source: native.source, native: nativeProvenance(native), nativeFrameSha256: nativeFrameAt(native, seconds).sha256 } : {}),
+  };
   await writeFile(path, addPngProvenance(Buffer.from(base64, 'base64'), metadata));
   console.log('PNG:', { path, ...size, bytes: (await stat(path)).size });
 }
 
-async function saveFilm(path, opts, label) {
-  console.log(`Recording ${label}: 16 seconds, 1600×1200, H.264, requested 24 fps.`);
-  const result = await page.evaluate(async options => {
+async function saveFilm(path, opts, label, native) {
+  console.log(`Recording ${label}: native e-paper snapshots, 16 seconds, result held from ${native.resultStartsAt}s.`);
+  const result = await page.evaluate(async ({ options, native }) => {
     const demo = window.dotDemo;
     demo.pause();
-    const renderOptions = { ...options, format: 'scene', mode: 'smooth', export: true };
-    await demo.renderAt(0, renderOptions);
+    const renderOptions = { ...options, format: 'scene', mode: 'ink', export: true };
+    const frameAt = seconds => {
+      const segment = native.segments.find(item => seconds < item.end) || native.segments.at(-1);
+      const id = segment.thinking ? `thinking-${Math.floor(seconds / native.frameSeconds) % 12}` : segment.id;
+      return native.frames.find(frame => frame.id === id);
+    };
+    // Decode every PNG before recording. Rendering and timing remain independent.
+    for (const frame of native.frames) await demo.renderNativeAt(0, renderOptions, frame.uri);
+    await demo.renderNativeAt(0, renderOptions, frameAt(0).uri);
     await new Promise(resolve => setTimeout(resolve, 300));
     const stream = demo.canvas.captureStream(24);
     const codec = 'video/mp4;codecs=avc1';
@@ -180,7 +196,7 @@ async function saveFilm(path, opts, label) {
             const frame = Math.floor(elapsed * 24);
             if (frame !== lastFrame) {
               lastFrame = frame;
-              await demo.renderAt(frame / 24, renderOptions);
+              await demo.renderNativeAt(frame / 24, renderOptions, frameAt(frame / 24).uri);
             }
             requestAnimationFrame(tick);
           } catch (error) { reject(error); }
@@ -205,6 +221,29 @@ async function saveFilm(path, opts, label) {
       video.onerror = () => { clearTimeout(timeout); reject(new Error('The browser could not decode the recorded MP4.')); };
       video.load();
     });
+    const decodedCanvas = document.createElement('canvas');
+    decodedCanvas.width = metadata.width; decodedCanvas.height = metadata.height;
+    const decodedContext = decodedCanvas.getContext('2d');
+    async function decodedFrame(seconds) {
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('MP4 frame seek timed out.')), 15000);
+        video.onseeked = () => { clearTimeout(timeout); resolve(); };
+        video.currentTime = seconds;
+      });
+      decodedContext.drawImage(video, 0, 0);
+      return decodedContext.getImageData(0, 0, metadata.width, metadata.height).data;
+    }
+    const earlyResult = await decodedFrame(native.resultStartsAt + .5);
+    const finalFrame = await decodedFrame(metadata.duration - .1);
+    let difference = 0;
+    for (let index = 0; index < finalFrame.length; index++) difference += Math.abs(finalFrame[index] - earlyResult[index]);
+    const resultMeanPixelDifference = difference / finalFrame.length;
+    await demo.renderNativeAt(native.duration, renderOptions, frameAt(native.duration).uri);
+    const expected = demo.canvas.getContext('2d').getImageData(0, 0, metadata.width, metadata.height).data;
+    let expectedDifference = 0;
+    for (let index = 0; index < finalFrame.length; index++) expectedDifference += Math.abs(finalFrame[index] - expected[index]);
+    const finalResultMeanPixelDifference = expectedDifference / finalFrame.length;
+    if (resultMeanPixelDifference > 1 || finalResultMeanPixelDifference > 3) throw new Error(`MP4 result frame changed or does not match its rendered result: ${resultMeanPixelDifference}, ${finalResultMeanPixelDifference}`);
     URL.revokeObjectURL(url);
     const dataUrl = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -212,8 +251,8 @@ async function saveFilm(path, opts, label) {
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
-    return { base64: dataUrl.split(',')[1], bytes: blob.size, mime: recorder.mimeType, metadata };
-  }, opts);
+    return { base64: dataUrl.split(',')[1], bytes: blob.size, mime: recorder.mimeType, metadata, resultMeanPixelDifference, finalResultMeanPixelDifference };
+  }, { options: opts, native });
   const bytes = Buffer.from(result.base64, 'base64');
   if (!bytes.includes(Buffer.from('avc1'))) throw new Error('MP4 has no H.264 avc1 sample entry.');
   if (result.metadata.width !== 1600 || result.metadata.height !== 1200 || !Number.isFinite(result.metadata.duration) || Math.abs(result.metadata.duration - 16) > .5) {
@@ -223,6 +262,8 @@ async function saveFilm(path, opts, label) {
   const metadata = {
     ...await provenance(opts.dot, label, opts),
     ...result.metadata, codec: 'H.264 / avc1', requestedFramesPerSecond: 24,
+    source: native.source, native: nativeProvenance(native), endsOnRetainedResult: true,
+    resultFrameBrowserDecode: { stableMeanPixelDifference: result.resultMeanPixelDifference, expectedResultMeanPixelDifference: result.finalResultMeanPixelDifference },
     bytes: result.bytes, sha256: createHash('sha256').update(bytes).digest('hex'),
   };
   await writeFile(path.replace(/\.mp4$/, '.provenance.json'), JSON.stringify(metadata, null, 2) + '\n');
@@ -240,14 +281,34 @@ try {
   const calendar = { dot: 'cool', example: 'calendar-chaos', hold: true };
   const noo = { dot: 'cool', example: 'wife-noo' };
   if (includes('reminders')) {
-    await savePng(join(mediaDir, 'dot-reminders.png'), 9, { ...calendar, format: 'scene' }, 'Calendar reminders — scripted reply');
-    await savePng(join(mediaDir, 'dot-reminders-native.png'), 9, { ...calendar, format: 'screen' }, 'Calendar reminders — native scripted reply');
-    if (!skipVideo) await saveFilm(join(mediaDir, 'dot-reminders.mp4'), calendar, 'Calendar reminders — scripted reply');
+    const native = await nativePerformance(page, calendar);
+    await savePng(join(mediaDir, 'dot-reminders.png'), 9, { ...calendar, format: 'scene' }, 'Calendar reminders — staged bridge output', native);
+    await savePng(join(mediaDir, 'dot-reminders-native.png'), 9, { ...calendar, format: 'screen' }, 'Calendar reminders — native staged bridge output', native);
+    if (!skipVideo) {
+      await saveFilm(join(mediaDir, 'dot-reminders.mp4'), calendar, 'Calendar reminders — staged bridge output', native);
+      await copyFile(join(mediaDir, 'dot-reminders.mp4'), join(exportsDir, 'dot-reminders.mp4'));
+      await copyFile(join(mediaDir, 'dot-reminders.provenance.json'), join(exportsDir, 'dot-reminders.provenance.json'));
+    }
   }
   if (includes('noo')) {
-    await savePng(join(mediaDir, 'dot-noo.png'), 12, { ...noo, format: 'scene' }, 'NOO — fictional conversation, nothing sent');
-    await savePng(join(mediaDir, 'dot-noo-native.png'), 12, { ...noo, format: 'screen' }, 'NOO — native fictional conversation, nothing sent');
-    if (!skipVideo) await saveFilm(join(mediaDir, 'dot-noo.mp4'), noo, 'NOO — fictional conversation, nothing sent');
+    const native = await nativePerformance(page, noo);
+    await savePng(join(mediaDir, 'dot-noo.png'), 12, { ...noo, format: 'scene' }, 'NOO — fictional conversation, nothing sent', native);
+    await savePng(join(mediaDir, 'dot-noo-native.png'), 12, { ...noo, format: 'screen' }, 'NOO — native fictional conversation, nothing sent', native);
+    if (!skipVideo) {
+      await saveFilm(join(mediaDir, 'dot-noo.mp4'), noo, 'NOO — fictional conversation, nothing sent', native);
+      await copyFile(join(mediaDir, 'dot-noo.mp4'), join(exportsDir, 'dot-noo.mp4'));
+      await copyFile(join(mediaDir, 'dot-noo.provenance.json'), join(exportsDir, 'dot-noo.provenance.json'));
+    }
+  }
+  if (includes('characters')) {
+    for (const dot of allowedDots) {
+      const options = { dot, example: '', hold: true };
+      const native = await nativePerformance(page, options);
+      const suffix = dot === 'artist' ? '' : `-${dot}`;
+      await savePng(join(exportsDir, `poster${suffix}.png`), 9, { ...options, format: 'scene' }, `${dot} — staged bridge result`, native);
+      await savePng(join(exportsDir, `screen-1872x1404${suffix}.png`), 9, { ...options, format: 'screen' }, `${dot} — native staged bridge result`, native);
+      if (!skipVideo) await saveFilm(join(exportsDir, `dots-on-paper${suffix}.mp4`), options, `${dot} — thinking then retained reply`, native);
+    }
   }
   if (includes('cast')) {
     for (const dot of allowedDots) {

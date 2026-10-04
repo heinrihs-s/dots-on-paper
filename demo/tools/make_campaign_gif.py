@@ -1,4 +1,4 @@
-"""Encode shared-palette README loops and verify the resulting playback.
+"""Encode shared-palette README animations that stop on their result.
 
 Called by export-github.mjs. Requires Pillow only. No source pixels are edited:
 the canvas frames are reduced to the GIF palette, with stationary pixels kept
@@ -34,15 +34,15 @@ for path in paths:
 durations = [80 if index % 3 != 2 else 90 for index in range(len(frames))]
 frames[0].save(
     destination, save_all=True, append_images=frames[1:],
-    duration=durations, loop=0, optimize=True, disposal=1,
+    duration=durations, optimize=True, disposal=1,
     comment=json.dumps(provenance, ensure_ascii=False).encode("utf-8"),
 )
 with Image.open(destination) as encoded:
     total_duration = 0
     frame_hashes = set()
     loop = encoded.info.get("loop")
-    if loop != 0:
-        raise SystemExit("GIF must loop indefinitely")
+    if loop is not None:
+        raise SystemExit("GIF must stop on its last frame, without a loop extension")
     if encoded.size != dimensions:
         raise SystemExit(f"GIF has unexpected dimensions: {encoded.size}")
     comment = json.loads(encoded.info["comment"].decode("utf-8"))
@@ -57,6 +57,10 @@ with Image.open(destination) as encoded:
         raise SystemExit(f"GIF must last 16 seconds, got {total_duration} ms")
     if len(frame_hashes) < 8:
         raise SystemExit(f"GIF has too little motion: {len(frame_hashes)} distinct frames")
+    with Image.open(paths[-1]) as result:
+        expected = result.convert("RGB").quantize(palette=palette, dither=Image.Dither.NONE).convert("RGB")
+        if sha256(encoded.convert("RGB").tobytes()).hexdigest() != sha256(expected.tobytes()).hexdigest():
+            raise SystemExit("GIF does not finish on the retained result frame")
     print(json.dumps({
         "width": encoded.width, "height": encoded.height,
         "encodedFrames": encoded.n_frames, "distinctFrames": len(frame_hashes),

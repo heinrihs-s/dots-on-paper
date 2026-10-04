@@ -1,6 +1,6 @@
 # Publishing and image API
 
-The publishing key authorizes state reads, updates, and MCP requests. The separate image key authorizes PNG/BMP reads. Keep keys in the client environment or private credentials file; no OpenAI API key or separate model call is required for the dot's publish-tool workflow.
+The publishing key authorizes state reads, updates, and MCP requests. The separate image key authorizes PNG/BMP and display-metadata reads. Keep keys in the client environment or private credentials file. The bridge does not call a model API; the optional Secure MCP Tunnel connection requires its own Platform runtime key.
 
 ## Endpoints
 
@@ -13,6 +13,8 @@ The publishing key authorizes state reads, updates, and MCP requests. The separa
 | `PATCH /api/settings` | Publishing bearer key | Change `character`, preserving the reply/event ID. |
 | `POST /mcp` | Publishing bearer key | MCP JSON-RPC tools. |
 | `GET /image.png`, `GET /image.bmp` | Image or publishing bearer key; URL `key` accepts image key only | Rendered screen. |
+| `GET /api/display-state` | Image or publishing bearer key; URL `key` accepts image key only | Status, revision, animation frame and polling hints, without reply text or credentials. |
+| `GET /api/display` | Enrolled TRMNL `ID` and `Access-Token` headers | Pinned frame URL, filename cache key and next sleep interval; JSON `status: 0`. |
 
 ## Publish an answer
 
@@ -52,4 +54,22 @@ The publishing tools also accept optional `character`, `dot_name`, `title`, `run
 
 ## Images
 
-Use a named `profile`, or supply `width` and `height` together. `levels` accepts 2 or 16; `frame` accepts 0–11. Omitting a frame uses the state-relative sequence. [Exact dimensions, authentication, and device refresh](platforms.md)
+Use a named `profile`, or supply `width` and `height` together. `levels` accepts 2 or 16; `frame` accepts 0–11. During thinking, an omitted frame follows `DOTS_FRAME_SECONDS`; a client may choose explicit frames to advance at its own panel cadence. Answers always render the settled frame 11, including requests with an older explicit frame. The answer's PNG/BMP bytes and ETag remain unchanged until another event or character selection.
+
+For a state-aware image client, fetch `/api/display-state` using the read-only image key:
+
+```json
+{
+  "status": "thinking",
+  "revision": 1,
+  "animated": true,
+  "frame": 0,
+  "frame_count": 12,
+  "frame_seconds": 5,
+  "next_poll_seconds": 5
+}
+```
+
+This metadata is illustrative. A client can poll it for new work, advance its own frame counter only after a successful image download, and draw the result once when `animated` becomes false. Image clients can use `If-None-Match` to skip unchanged pixels; 304 responses still require authentication. An answer returns `frame: 11`, `animated: false`, and the normal polling hint. The hint does not select a driver or guarantee the panel can refresh that quickly.
+
+The TRMNL endpoint uses a separate counter for the enrolled device, advancing once per authenticated GET while thinking. Its pinned frame URL and changed filename prevent a long sleep from repeatedly landing on the same loop phase. Completed replies have one stable filename. [Exact dimensions, authentication, and device refresh](platforms.md)

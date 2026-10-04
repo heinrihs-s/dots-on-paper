@@ -15,9 +15,11 @@ from .api import BridgeAuthError, BridgeError, DotsBridge, bridge_identity, norm
 from .const import (
     CONF_API_TOKEN,
     CONF_BASE_URL,
+    CONF_FRAME_INTERVAL,
     CONF_POLL_INTERVAL,
     CONF_PROFILE,
     DEFAULT_POLL_INTERVAL,
+    DEFAULT_FRAME_INTERVAL,
     DEFAULT_PROFILE,
     DOMAIN,
     PROFILES,
@@ -31,6 +33,9 @@ def _profile_schema(defaults: dict[str, Any]) -> dict[Any, Any]:
         ),
         vol.Required(
             CONF_POLL_INTERVAL, default=defaults.get(CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL)
+        ): vol.All(vol.Coerce(int), vol.Range(min=2, max=120)),
+        vol.Required(
+            CONF_FRAME_INTERVAL, default=defaults.get(CONF_FRAME_INTERVAL, DEFAULT_FRAME_INTERVAL)
         ): vol.All(vol.Coerce(int), vol.Range(min=2, max=120)),
     }
 

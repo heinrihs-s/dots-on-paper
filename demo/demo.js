@@ -1,4 +1,4 @@
-/* A deterministic 16-second character performance. No network, accounts, or device connection. */
+/* A deterministic thinking-to-reply performance. No accounts or device connection. */
 (() => {
   'use strict';
   const canvas = document.getElementById('scene');
@@ -173,7 +173,7 @@
   const fc=fibers.getContext('2d');const pixels=fc.createImageData(468,351);let seed=79037;
   for(let i=0;i<pixels.data.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=(seed>>>24)%17;pixels.data[i]=29;pixels.data[i+1]=41;pixels.data[i+2]=37;pixels.data[i+3]=n>12?8:0}fc.putImageData(pixels,0,0);
 
-  function stateAt(t){return t<2.15?'Daydreaming':t<5.65?'Thinking':t<6.8?'An idea!':t<14?'Answering':'Daydreaming'}
+  function stateAt(t){return t<2.15?'Daydreaming':t<5.65?'Thinking':t<6.8?'An idea!':'Reply'}
   function answerLayout(c){
     const value=customAnswer||'Good ideas deserve a little paper.';
     if(!customAnswer||customAnswer==='Good ideas deserve a little paper.')return {lines:['Good ideas deserve','a little paper.'],size:91};
@@ -192,6 +192,7 @@
     return layout;
   }
   function drawScreen(c,t,opts={}){
+    if(opts.screenImage){c.drawImage(opts.screenImage,0,0,1872,1404);return}
     const conversation=activeConversation(opts);
     if(conversation){drawConversationScreen(c,t,conversation,opts);return}
     const reply=activeReply(opts);
@@ -338,22 +339,30 @@
   }
   function renderAt(t,opts={}){
     if(!assetsReady)return;
-    t=((Number(t)||0)%duration+duration)%duration;
+    t=Math.min(Math.max(Number(t)||0,0),duration);
+    // A reply is a retained result, not another trip around the thinking loop.
+    if(!opts.screenImage)t=Math.min(t,activeConversation(opts)?12:9);
     const f=opts.format||format,w=f==='screen'?1872:1600,h=f==='screen'?1404:1200;
     if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}
     if(f==='screen')drawScreen(ctx,t,opts);else drawStudio(ctx,t,opts);
     return t;
+  }
+  const nativeImages=new Map();
+  async function renderNativeAt(t,opts,uri){
+    let image=nativeImages.get(uri);
+    if(!image){image=new Image();image.src=uri;await image.decode();nativeImages.set(uri,image)}
+    return renderAt(t,{...opts,screenImage:image});
   }
   function ui(t){
     q('scrub').value=t;q('time').textContent=`0:${String(Math.floor(t)).padStart(2,'0')} / 0:16`;
     const conversation=activeConversation();
     const visible=conversation?.messages.filter(message=>t>=message.at);
     const state=conversation?(visible.length===0?'Thinking':visible.length===1?'Draft ready':visible.length===2?'Interrupted':'Nothing sent'):stateAt(t);q('state-label').textContent=state;
-    if(state!==lastState){const reply=activeReply();q('spoken-state').textContent=conversation?`${conversation.notice}. ${visible.at(-1)?.text||state}`:`${reply?.sender||companions[selectedDot].name}: `+(state==='Answering'?(reply?.text||'Good ideas deserve a little paper.'):state);lastState=state}
+    if(state!==lastState){const reply=activeReply();q('spoken-state').textContent=conversation?`${conversation.notice}. ${visible.at(-1)?.text||state}`:`${reply?.sender||companions[selectedDot].name}: `+(state==='Reply'?(reply?.text||'Good ideas deserve a little paper.'):state);lastState=state}
   }
   function updatePlay(){q('pause-icon').toggleAttribute('hidden',!playing);q('play-icon').toggleAttribute('hidden',playing);q('play').setAttribute('aria-label',playing?'Pause animation':'Play animation');q('play').title=playing?'Pause animation':'Play animation'}
   function pause(){playing=false;updatePlay()}
-  function play(){playing=true;baseSeconds=seconds;baseTime=performance.now();updatePlay()}
+  function play(){if(seconds>=duration)seconds=0;playing=true;baseSeconds=seconds;baseTime=performance.now();updatePlay()}
   function restart(){seconds=reduced?(example==='wife-noo'?12:9):0;baseSeconds=seconds;baseTime=performance.now();if(!reduced)play();renderAt(seconds);ui(seconds)}
   function select(prefix,value){
     const names=prefix==='format'?['scene-view','screen-view']:['smooth-mode','ink-mode'];
@@ -377,7 +386,7 @@
   let resumeOnVisible=false;
   document.addEventListener('visibilitychange',()=>{if(document.hidden){resumeOnVisible=playing;pause()}else if(resumeOnVisible){play();resumeOnVisible=false}});
   let inView=true;new IntersectionObserver(entries=>{inView=entries[0].isIntersecting},{threshold:.03}).observe(canvas);
-  function loop(now){if(playing&&assetsReady&&inView){seconds=(baseSeconds+(now-baseTime)/1000)%duration;renderAt(seconds);ui(seconds)}requestAnimationFrame(loop)}
+  function loop(now){if(playing&&assetsReady&&inView){seconds=Math.min(baseSeconds+(now-baseTime)/1000,duration);renderAt(seconds);ui(seconds);if(seconds>=duration)pause()}requestAnimationFrame(loop)}
   function loadDot(id){return new Promise((resolve,reject)=>{
     const dot=companions[id];dot.image.onload=()=>{dot.loaded=true;document.querySelector(`[data-dot="${id}"]`).disabled=false;drawAvatar(id);resolve(id)};
     dot.image.onerror=()=>reject(new Error(`The ${dot.name} character asset could not load`));dot.image.src=`assets/${dot.src}`;
@@ -386,6 +395,6 @@
   const allDotsReady=Promise.all(dotLoads);
   const ready=Promise.all([document.fonts.load('650 80px Figtree'),dotLoads[example?3:0]]).then(()=>{assetsReady=true;q('loading').hidden=true;q('stage').setAttribute('aria-busy','false');baseTime=performance.now();setExample(example);renderAt(seconds);ui(seconds);updatePlay()}).catch(error=>{q('loading').hidden=true;q('load-error').hidden=false;q('stage').setAttribute('aria-busy','false');console.error(error);throw error});
   allDotsReady.catch(error=>{console.error(error);q('spoken-state').textContent='A dot could not load. Reload the demo to try again.'});
-  window.dotDemo={ready,allDotsReady,canvas,duration,renderAt,pause,play,restart,setDot,setExample,dots:Object.keys(companions),setAnswer,replyBlocks,replyLayout:(value,width,height)=>replyLayout(ctx,value,width,height),get state(){return {playing,seconds,format,mode,customAnswer,reduced,dot:selectedDot,example,reply:activeReply(),conversation:activeConversation()}}};
+  window.dotDemo={ready,allDotsReady,canvas,duration,renderAt,renderNativeAt,pause,play,restart,setDot,setExample,dots:Object.keys(companions),setAnswer,replyBlocks,replyLayout:(value,width,height)=>replyLayout(ctx,value,width,height),get state(){return {playing,seconds,format,mode,customAnswer,reduced,dot:selectedDot,example,reply:activeReply(),conversation:activeConversation()}}};
   requestAnimationFrame(loop);
 })();

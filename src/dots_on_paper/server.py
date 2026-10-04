@@ -22,9 +22,12 @@ MAX_BODY = 65536
 PROTOCOLS = ("2025-11-25", "2025-06-18", "2025-03-26")
 ASSET_ROOT = Path(__file__).parent / "assets"
 ASSETS = {"beret-dot.png", "curious-dot.png", "bookish-dot.png", "cool-dot.png", "Figtree.ttf"}
+FRAME_COUNT = 12
 
 
 def state_frame(state: dict, seconds: int) -> int:
+    if state["status"] == "answer":
+        return FRAME_COUNT - 1
     try:
         updated = datetime.fromisoformat(state["updated_at"])
         elapsed = max(0, (datetime.now(timezone.utc) - updated).total_seconds())
@@ -32,9 +35,7 @@ def state_frame(state: dict, seconds: int) -> int:
         elapsed = 0
     step = int(elapsed / seconds)
     if state["status"] == "thinking":
-        return step % 12
-    if state["status"] == "answer":
-        return min(step, 11)
+        return step % FRAME_COUNT
     return 0
 
 
@@ -69,7 +70,23 @@ class BridgeServer(ThreadingHTTPServer):
         self.store = store
         self.image_lock = threading.RLock()
         self.image_cache = OrderedDict()
+        self.device_frame_lock = threading.Lock()
+        self.device_frame_revision = None
+        self.device_frame_index = 0
         super().__init__(address, BridgeHandler)
+
+    def device_frame(self, state: dict, advance: bool = True) -> int:
+        """Advance the enrolled device once per poll, independent of sleep phase."""
+        if state["status"] != "thinking":
+            return state_frame(state, self.config.frame_seconds)
+        with self.device_frame_lock:
+            if self.device_frame_revision != state["revision"]:
+                self.device_frame_revision = state["revision"]
+                self.device_frame_index = 0
+            frame = self.device_frame_index
+            if advance:
+                self.device_frame_index = (frame + 1) % FRAME_COUNT
+            return frame
 
     def image(self, state: dict, width: int, height: int, levels: int, fmt: str, frame: int):
         key = (state["revision"], width, height, levels, fmt, frame)
@@ -234,12 +251,24 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 if self.auth():
                     return self.json(200, self.server.store.read() if path.endswith("state") else PROFILES)
                 return
+            if path == "/api/display-state":
+                if set(query) - {"key"}:
+                    raise StateError("Unknown display-state option")
+                if self.auth(image=True, query=query):
+                    state = self.server.store.read()
+                    config = self.server.config
+                    animated = state["status"] == "thinking"
+                    return self.json(200, dict(status=state["status"], revision=state["revision"],
+                        animated=animated, frame=state_frame(state, config.frame_seconds),
+                        frame_count=FRAME_COUNT, frame_seconds=config.frame_seconds,
+                        next_poll_seconds=config.frame_seconds if animated else config.refresh_seconds))
+                return
             if path in ("/image.png", "/image.bmp"):
                 if not self.auth(image=True, query=query):
                     return
                 options = self.image_options(query)
                 state = self.server.store.read()
-                if options["frame"] is None:
+                if options["frame"] is None or state["status"] != "thinking":
                     options["frame"] = state_frame(state, self.server.config.frame_seconds)
                 payload, etag = self.server.image(state, **options, fmt="PNG" if path.endswith("png") else "BMP")
                 if self.headers.get("If-None-Match") == etag:
@@ -250,10 +279,11 @@ class BridgeHandler(BaseHTTPRequestHandler):
                     return
                 config = self.server.config
                 state = self.server.store.read()
-                frame = state_frame(state, config.frame_seconds)
+                frame = self.server.device_frame(state, advance=self.command != "HEAD")
                 image_query = urlencode(dict(profile=config.default_profile, key=config.image_token, frame=frame))
-                return self.json(200, dict(status=200, image_url=f"{config.public_url}/image.png?{image_query}",
-                    filename=f"dots-{state['revision']}-{frame}.png", refresh_rate=config.refresh_seconds,
+                return self.json(200, dict(status=0, image_url=f"{config.public_url}/image.png?{image_query}",
+                    filename=f"dots-{state['revision']}-{frame}.png",
+                    refresh_rate=config.thinking_refresh_seconds if state["status"] == "thinking" else config.refresh_seconds,
                     update_firmware=False, reset_firmware=False))
             if path == "/api/setup":
                 return self.json(403, {"error": "Automatic device enrollment is disabled. Configure your existing BYOS device ID and token."})

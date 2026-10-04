@@ -1,10 +1,10 @@
 {
-  "title": "NOO — fictional conversation, nothing sent",
+  "title": "cool — thinking then retained reply",
   "fictional": true,
   "output": "Scripted demo output; no calendar or message was accessed or sent.",
   "connector": "No live dot connector used for this export.",
   "source": "src/dots_on_paper/render.py",
-  "example": "wife-noo",
+  "example": "",
   "character": "cool",
   "asset": {
     "path": "demo/assets/cool-dot.png",
@@ -16,9 +16,11 @@
     "name": "Figtree",
     "license": "SIL Open Font License 1.1"
   },
-  "reproduction": "node demo/tools/export-github.mjs",
-  "width": 960,
-  "height": 720,
+  "reproduction": "node demo/tools/export-campaign.mjs",
+  "width": 1600,
+  "height": 1200,
+  "duration": 15.9868,
+  "codec": "H.264 / avc1",
   "requestedFramesPerSecond": 24,
   "native": {
     "source": "src/dots_on_paper/render.py",
@@ -31,28 +33,18 @@
     "timeline": [
       {
         "start": 0,
-        "end": 3,
+        "end": 6,
         "thinking": true
       },
       {
-        "start": 3,
-        "end": 7,
-        "id": "draft"
-      },
-      {
-        "start": 7,
-        "end": 9,
-        "id": "interruption"
-      },
-      {
-        "start": 9,
+        "start": 6,
         "end": 16,
         "id": "result"
       }
     ],
-    "resultStartsAt": 9,
-    "resultHoldSeconds": 7,
-    "resultFrameSha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944",
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "c0e5624621106ab19efa1ef961a64ba8bb29ff447755c3730afae4aeeff3bc41",
     "frames": [
       {
         "id": "thinking-0",
@@ -199,115 +191,24 @@
         "sha256": "66b3aedc5da6d910eecbdb5f4d484d4319f8c558a46f7307c41b04cad57e1eac"
       },
       {
-        "id": "draft",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Draft ready",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval"
-        },
-        "sha256": "65fdf8d8d679de990a12c952927b47881dd297ab3bcdc3f5ffcc2e843968f78f"
-      },
-      {
-        "id": "interruption",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Interrupted",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO"
-        },
-        "sha256": "69ce9c671edb9e49e2099cd48afdf5013260ba09eed8814537d45215ac33935e"
-      },
-      {
         "id": "result",
         "frame": 11,
         "state": {
           "character": "cool",
           "dot_name": "heidot",
-          "title": "Conversation",
+          "title": "Reply",
           "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO\n\nCancelled. Nothing sent."
+          "text": "Good ideas deserve a little paper."
         },
-        "sha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944"
+        "sha256": "c0e5624621106ab19efa1ef961a64ba8bb29ff447755c3730afae4aeeff3bc41"
       }
     ]
   },
   "endsOnRetainedResult": true,
   "resultFrameBrowserDecode": {
-    "stableMeanPixelDifference": 0.017873958333333332,
-    "expectedResultMeanPixelDifference": 0.20694713541666668
+    "stableMeanPixelDifference": 0.0131109375,
+    "expectedResultMeanPixelDifference": 0.20444140625
   },
-  "sourceFiles": [
-    {
-      "path": "demo/demo.js",
-      "sha256": "a63c2827949c49d51da7523d1540229c30dfb2b5a97f373b9911238ca632afc9"
-    },
-    {
-      "path": "demo/assets/beret-dot.png",
-      "sha256": "f892417db4bec59fba61301a9cd418cd190e441ebc2aab0c1fe5379833758334"
-    },
-    {
-      "path": "demo/assets/beret-dot.prompt.md",
-      "sha256": "07b12951912251efbf487d4977396c3e426b04e7875b265cee7dedd61e9c1dd4"
-    },
-    {
-      "path": "demo/assets/curious-dot.png",
-      "sha256": "5025eae02bcc5513a128afbcf6a7e3156b53f0974af7251d5b57ebbb97132c52"
-    },
-    {
-      "path": "demo/assets/curious-dot.prompt.md",
-      "sha256": "bf98402bfcc5f65a8d6335affa1ec61319ab1d31444ded2d231e45cd5d6f43ea"
-    },
-    {
-      "path": "demo/assets/bookish-dot.png",
-      "sha256": "4557bfaf07de7b78ed5259c01326a7843079fd1144d136c71586d31f41357523"
-    },
-    {
-      "path": "demo/assets/bookish-dot.prompt.md",
-      "sha256": "2cc2c4323d1f411cb7ddaba26ed399d573edaf4e2c7966c221e36b291ecd736e"
-    },
-    {
-      "path": "demo/assets/cool-dot.png",
-      "sha256": "979d5e01e4b7817a5e4a154779204cd83ba1ef0aa8a13981a0d50c8dce0884cb"
-    },
-    {
-      "path": "demo/assets/cool-dot.prompt.md",
-      "sha256": "c9d85d6b41c8fb7b77ac3db4e74da66791ce17e0ebb7b674863768d0a50b5530"
-    },
-    {
-      "path": "demo/assets/Figtree.ttf",
-      "sha256": "26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714"
-    },
-    {
-      "path": "demo/tools/native-film.mjs",
-      "sha256": "9d4aa508b61a1da011b2fbb49277079fcedbc639094c9972dd98892c3d42989c"
-    },
-    {
-      "path": "demo/tools/render-film-frames.py",
-      "sha256": "95059d0605cfd2a4795934fca3991a8f4680b5ac1debf42e7a117d4baffffa55"
-    },
-    {
-      "path": "src/dots_on_paper/render.py",
-      "sha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40"
-    }
-  ],
-  "format": "GIF",
-  "framesPerSecond": 12,
-  "sourceFrames": 192,
-  "loopStartSourceSeconds": 0,
-  "loop": null,
-  "timeline": "Forward-only native snapshots: thinking, then a settled reply retained after playback ends. No GIF loop extension.",
-  "sourceFilm": {
-    "name": "dot-noo.mp4",
-    "sha256": "997e5061d4301a127b05b1b3e3b6c01ba4d581043b2508a1bd08a70b9f51fa1b"
-  },
-  "encodedFrames": 9,
-  "distinctFrames": 9,
-  "durationSeconds": 16,
-  "bytes": 134811,
-  "sha256": "00cd0ae3fb0604e93063400528ec40eca81f057bafa193308e0cb3464c143acf"
+  "bytes": 896414,
+  "sha256": "5eb9b8d902a3dc98b92c9c9110d98ca7afa0bb98e28af6dcdd32ff9bb7dc9e4e"
 }

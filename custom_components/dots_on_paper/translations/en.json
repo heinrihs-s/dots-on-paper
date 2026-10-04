@@ -14,11 +14,13 @@
           "base_url": "Bridge URL",
           "api_token": "Bridge API token",
           "profile": "Image profile",
-          "poll_interval": "Poll interval (seconds)"
+          "poll_interval": "State poll interval (seconds)",
+          "frame_interval": "Thinking frame interval (seconds)"
         },
         "data_description": {
           "profile": "Use a profile provided by your bridge, such as trmnl_x.",
-          "poll_interval": "At least 2 seconds. This polls state; it does not force hardware refreshes."
+          "poll_interval": "At least 2 seconds. This polls state; it does not force hardware refreshes.",
+          "frame_interval": "Updates the HA image only while thinking, then keeps the completed answer still. Match any connected panel's supported refresh cadence."
         }
       }
     },
@@ -35,10 +37,14 @@
   "options": {
     "step": {
       "init": {
-        "title": "Screen and polling",
+        "title": "Screen and animation",
         "data": {
           "profile": "Image profile",
-          "poll_interval": "Poll interval (seconds)"
+          "poll_interval": "State poll interval (seconds)",
+          "frame_interval": "Thinking frame interval (seconds)"
+        },
+        "data_description": {
+          "frame_interval": "At least 2 seconds. The default is 5 seconds. Hardware drivers still control panel refreshes."
         }
       }
     },

@@ -45,6 +45,7 @@ class Config:
     public_url: str = "http://127.0.0.1:9035"
     default_profile: str = "trmnl_x"
     refresh_seconds: int = 60
+    thinking_refresh_seconds: int = 15
     frame_seconds: int = 5
     trmnl_device_id: str = ""
     trmnl_access_token: str = ""
@@ -55,7 +56,7 @@ class Config:
             raise ValueError("Use different API and image tokens of at least 24 characters")
         if self.default_profile not in PROFILES:
             raise ValueError("Unknown default profile")
-        if not 1 <= self.port <= 65535 or self.refresh_seconds < 5 or not 2 <= self.frame_seconds <= 3600:
+        if not 1 <= self.port <= 65535 or self.refresh_seconds < 5 or not 5 <= self.thinking_refresh_seconds <= 3600 or not 2 <= self.frame_seconds <= 3600:
             raise ValueError("Invalid port or refresh interval")
         parts = urlsplit(self.public_url)
         if parts.scheme not in ("http", "https") or not parts.hostname or parts.username or parts.password or parts.query or parts.fragment or parts.path not in ("", "/"):
@@ -78,6 +79,7 @@ class Config:
             public_url=os.environ.get("DOTS_PUBLIC_URL", f"http://127.0.0.1:{port}"),
             default_profile=os.environ.get("DOTS_PROFILE", "trmnl_x"),
             refresh_seconds=int(os.environ.get("DOTS_REFRESH_SECONDS", "60")),
+            thinking_refresh_seconds=int(os.environ.get("DOTS_THINKING_REFRESH_SECONDS", "15")),
             frame_seconds=int(os.environ.get("DOTS_FRAME_SECONDS", "5")),
             trmnl_device_id=os.environ.get("DOTS_TRMNL_DEVICE_ID", ""),
             trmnl_access_token=os.environ.get("DOTS_TRMNL_ACCESS_TOKEN", ""),

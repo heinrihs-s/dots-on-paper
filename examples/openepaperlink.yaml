@@ -1,11 +1,14 @@
 # MERGE FRAGMENT for automations.yaml; edit your config entry/device IDs.
 # Requires OpenEPaperLink HA integration and a reachable bridge.
 # Use a secrets.yaml entry `dots_oep_image_url` containing:
-# "http://YOUR_BRIDGE_HOST:9035/image.png?profile=oep_296&key=YOUR_SCOPED_DOTS_IMAGE_TOKEN"
+# "http://YOUR_BRIDGE_HOST:9035/image.png?profile=oep_296&frame=11&key=YOUR_SCOPED_DOTS_IMAGE_TOKEN"
 # The image key is read-only; never put the write API key or HA token in this URL.
 # Select oep_400 or explicit width/height for a different tag. Target size below
-# must match that profile. This displays the final answer, not a rapid loop.
+# must match that profile. Each new-reply event sends one final frame, then the
+# tag retains it. A sleeping tag may receive it after its next check-in.
+# This example does not schedule a thinking loop or change tag firmware.
 # Official: https://github.com/OpenEPaperLink/Home_Assistant_Integration
+# TTL/refresh contract: custom_components/open_epaper_link/services.yaml there.
 
 - alias: Dot answer to OpenEPaperLink
   mode: queued

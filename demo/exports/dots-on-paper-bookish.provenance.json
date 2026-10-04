@@ -1,0 +1,214 @@
+{
+  "title": "bookish — thinking then retained reply",
+  "fictional": true,
+  "output": "Scripted demo output; no calendar or message was accessed or sent.",
+  "connector": "No live dot connector used for this export.",
+  "source": "src/dots_on_paper/render.py",
+  "example": "",
+  "character": "bookish",
+  "asset": {
+    "path": "demo/assets/bookish-dot.png",
+    "sha256": "4557bfaf07de7b78ed5259c01326a7843079fd1144d136c71586d31f41357523",
+    "generator": "OpenAI image generation",
+    "prompt": "# Bookish dot\n\nGenerated with the built-in `image_gen` tool and `transparent_background: true`.\n\n## Exact prompt\n\nUse case: stylized-concept\nAsset type: transparent plush character body sprite for a monochrome e-ink animation.\nPrimary request: Create one premium plush dot body with the silhouette of a gently rounded triangular wedge, like the third yellow glasses-wearing character in the visible reference, but completely face-free and entirely grayscale.\nSubject: A soft tall-ish rounded triangle with a smooth domed peak at the center top, symmetric rounded sloping sides, and a wide flat pillowy base. Silhouette is simple, plump, compact and cute. The center and lower face are uniformly light gray, suitable for later animated eyes and glasses to be drawn over it.\nStyle/medium: Photoreal studio product sprite; dense short-pile plush, microfiber fuzz texture, soft fabric fibers, subtle felt-like shading. Match the visible beret-dot body material and front-on camera quality. This is a NEW blank body, no beret or accessory.\nComposition/framing: Square canvas, single centered full figure, front-on orthographic view. Entire body visible with margin around all edges. Body fills about 85% of the canvas width and about 75% of its height. The widest point is the low base. Peak around 15% image height and base around 88% image height. Face placement will be at 38% and 62% canvas width, around 60% canvas height, so keep those regions smooth and unobstructed.\nLighting/mood: Uniform soft studio illumination, gentle dimensional shading, premium tactile look.\nColor palette: STRICTLY GRAYSCALE, light neutral gray plush. No yellow, no tint, no color anywhere.\nScene/backdrop: Actual fully transparent alpha background. No background, no ground, no floor shadow.\nConstraints: No eyes, face, mouth, glasses, eyebrows, hats, limbs, seams, symbols, marks, or other accessories. No text, logos, watermarks, extra characters, scenery, props or checkerboard printed into image. Only one blank rounded triangular gray plush body.\n"
+  },
+  "font": {
+    "name": "Figtree",
+    "license": "SIL Open Font License 1.1"
+  },
+  "reproduction": "node demo/tools/export-campaign.mjs",
+  "width": 1600,
+  "height": 1200,
+  "duration": 15.987233,
+  "codec": "H.264 / avc1",
+  "requestedFramesPerSecond": 24,
+  "native": {
+    "source": "src/dots_on_paper/render.py",
+    "rendererSha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40",
+    "nativeWidth": 1872,
+    "nativeHeight": 1404,
+    "nativeLevels": 16,
+    "snapshotIntervalSeconds": 0.5,
+    "cadence": "Accelerated preview: one native snapshot every 0.5 seconds while thinking. Actual refresh is controlled by the display client and hardware.",
+    "timeline": [
+      {
+        "start": 0,
+        "end": 6,
+        "thinking": true
+      },
+      {
+        "start": 6,
+        "end": 16,
+        "id": "result"
+      }
+    ],
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "aac3b20ff75bcc8a75e864e82dd5a41f8ae751394a0b95c440f0fa867c836920",
+    "frames": [
+      {
+        "id": "thinking-0",
+        "frame": 0,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "3000ea449fb08b27434245304781178621d857190dc682ff1b2ee8d3037920cd"
+      },
+      {
+        "id": "thinking-1",
+        "frame": 1,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "71fcc3218e2008ce1f534931c26f284c54a4e4491414118f64feaeb6d11f31c1"
+      },
+      {
+        "id": "thinking-2",
+        "frame": 2,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "c88ee2fd82e00a2e21685eec92fe6de15c40b232c57197b5a866522bbf8a335e"
+      },
+      {
+        "id": "thinking-3",
+        "frame": 3,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "628cca348d32736df2c0b18107a5bea4d5538fd28f6424f98d589d97bda8c6c9"
+      },
+      {
+        "id": "thinking-4",
+        "frame": 4,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "9d03fa50bfe16215c5260b993eb99f972524ab9e0756a19b9dcd219f1d7990f3"
+      },
+      {
+        "id": "thinking-5",
+        "frame": 5,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "c3838d87a384200c938d5467c0fc3c5a2a701f5ec26da6e118010298e2a287eb"
+      },
+      {
+        "id": "thinking-6",
+        "frame": 6,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "85922f67231c47ec3e777ab1057cb011e22bf00f6c1278b76920001fea460bc2"
+      },
+      {
+        "id": "thinking-7",
+        "frame": 7,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "25dbc89bd55960287bdb37d640c86cc977015462b5f5f69469bbfd2eff940c2a"
+      },
+      {
+        "id": "thinking-8",
+        "frame": 8,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "297ce33c078a791b6aeeb934eb050a6b1266792fa015e48b7a6a1780fc350871"
+      },
+      {
+        "id": "thinking-9",
+        "frame": 9,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "1797fe0039fd1846d201d37b70ec4d71b7d5748a944efc3be38eb83b439f90ca"
+      },
+      {
+        "id": "thinking-10",
+        "frame": 10,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "6fe9cb8668476c54aac4ea6930daeedaa0cc778004574509aee5bc8023ced468"
+      },
+      {
+        "id": "thinking-11",
+        "frame": 11,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "58953a86ef24e2af09c7faf97b871984a5755fd2843e091731a875200726448d"
+      },
+      {
+        "id": "result",
+        "frame": 11,
+        "state": {
+          "character": "bookish",
+          "dot_name": "heidot",
+          "title": "Reply",
+          "status": "answer",
+          "text": "Good ideas deserve a little paper."
+        },
+        "sha256": "aac3b20ff75bcc8a75e864e82dd5a41f8ae751394a0b95c440f0fa867c836920"
+      }
+    ]
+  },
+  "endsOnRetainedResult": true,
+  "resultFrameBrowserDecode": {
+    "stableMeanPixelDifference": 0.013059244791666667,
+    "expectedResultMeanPixelDifference": 0.20440846354166667
+  },
+  "bytes": 932058,
+  "sha256": "d41faec83163e5a653fa1236c268555051b482dab7f1c9335b5054d8d0dfd27e"
+}

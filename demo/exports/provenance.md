@@ -1,14 +1,14 @@
 # Export provenance
 
-These media files are deterministic renders of the standalone `dots-demo` concept, authored for Heinrihs's fun TRMNL X / ChatGPT-inspired dots marketing demo on 3 October 2026.
+These media files are staged renders for the Dots on Paper demo. The character films, posters, and native screen images were rebuilt on 4 October 2026 using the bridge's native Python renderer.
 
-The studio scene, hardware mockup, animated facial expressions, typography, fibers, and timing are composed by `demo.js`. The four plush bodies are generated `assets/beret-dot.png`, `curious-dot.png`, `bookish-dot.png`, and `cool-dot.png`; each exact built-in imagegen prompt is saved beside its sprite as `.prompt.md`. The typeface is self-hosted Figtree, distributed under its included SIL OFL license.
+`src/dots_on_paper/render.py` supplies the actual 1872 × 1404, 16-tone screen snapshots, including character expressions and reply typography. `demo.js` composes the studio/device mockup around those snapshots. The four plush bodies were generated with imagegen; each exact generation prompt is saved beside its sprite as `.prompt.md`. The typeface is self-hosted Figtree under its included SIL OFL license.
 
-- `poster.png`: canvas render at 9 seconds, studio format, 1600×1200.
-- `screen-1872x1404.png`: canvas render at 9 seconds, screen format, 1872×1404.
-- `dots-on-paper.mp4`: recorded by installed Microsoft Edge from the studio canvas, H.264 MP4, requested 24 fps, measured duration 15.990 seconds.
-- `dots-on-paper.gif`: 192 deterministic frames sampled at 12 fps, resized to 800×600, encoded by Pillow with a shared palette and infinite loop, measured duration 16 seconds. Duplicate idle frames combine into 179 stored frames.
+- `poster.png`: settled result in a 1600 × 1200 studio frame.
+- `screen-1872x1404.png`: settled native result at 1872 × 1404.
+- `dots-on-paper.mp4`: H.264 MP4 in a 24 fps container, about 16 seconds. Native thinking snapshots change every half second for six seconds; the reply is retained for the remaining ten seconds.
+- `dots-on-paper.gif`: 960 × 720, 16 seconds, shared-palette GIF. It has no loop extension and leaves its final result visible.
 
-Files with `-curious`, `-bookish`, or `-cool` before the extension are corresponding renders of that character. Their PNGs use the same 9-second studio/native-screen formats, and their MP4s use the same 16-second H.264 studio recording workflow. Artist's original MP4 and GIF are preserved.
+Files with `-curious`, `-bookish`, or `-cool` before the extension use the same timeline with the corresponding character. Each MP4 and GIF has a `.provenance.json` file containing the renderer checksum, staged states, pose numbers, snapshot hashes, and final hold duration. MP4 exports are decoded in the browser to check their last frame against the rendered result.
 
-The displayed reply is illustrative: “Good ideas deserve a little paper.” No external message feed or physical device event is connected.
+The displayed reply is illustrative: “Good ideas deserve a little paper.” The half-second snapshot cadence is an accelerated preview, not a hardware refresh claim. No external message feed or physical device event is connected. `dot-reminders.mp4` and `dot-noo.mp4` are byte-identical copies of their campaign masters.

@@ -24,6 +24,12 @@ Follow-up checks on **4 October 2026**: the rebuilt and reinstalled wheel passed
 
 The connection audit checked the current official dot, plugin, authentication, and Secure MCP Tunnel documentation. Both plugin JSON files passed their published schemas; the new marketplace catalog resolves to the root package. The installed Codex CLI supports the documented marketplace command. The private MCP TOML and PowerShell setup blocks passed syntax checks, and the Windows command uses forward slashes to match the tunnel client's parser. These are setup checks, not a live tunnel or account connection.
 
+The **thinking → held result update on 4 October 2026** passed 50 Python tests and 14 Node tests against the rebuilt, reinstalled package. The installed-package smoke check also passed. New checks exercise successive authenticated TRMNL polls, the required JSON `status: 0`, thinking/idle sleep intervals, the read-only display metadata, and unchanged answer pixels and ETags across later requests. The browser preview selects the settled answer immediately and follows reduced-motion preferences.
+
+Nine of the Python tests exercise the Home Assistant image entity's timer, cache, slow and concurrent downloads, completion during a fetch, unavailable state, and unload lifecycle. These use isolated HA interfaces rather than a running Home Assistant installation. The exact ESPHome fragment passed configuration/schema validation with ESPHome 2026.9.1 in a temporary full board configuration with fake secrets. This checks its actions and configuration; no firmware was compiled or flashed.
+
+All six published MP4s and their six GIF counterparts now use the bridge's native renderer for the screen. The reminder and character films hold their completed result for ten seconds; the NOO film holds its cancellation for seven seconds. The GIFs play once and retain their last frame. Export checks decode the start and end of the result hold, compare them with the renderer output, and record timing and checksums in the adjacent provenance files. The accelerated film cadence does not establish a physical panel's refresh performance.
+
 These checks do not verify a physical TRMNL/e-paper panel, live Home Assistant runtime, private ChatGPT dot connection, Instinct integration, or Docker deployment. Those remain installation checks. No live account, external messaging, or calendar is used in the campaign. The bridge's three MCP tools publish/read display state; they contain no messaging sender.
 
 Reproduce source checks from the repository root:

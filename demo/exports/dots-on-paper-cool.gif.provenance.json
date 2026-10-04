@@ -1,10 +1,10 @@
 {
-  "title": "NOO — fictional conversation, nothing sent",
+  "title": "cool — thinking then retained reply",
   "fictional": true,
   "output": "Scripted demo output; no calendar or message was accessed or sent.",
   "connector": "No live dot connector used for this export.",
   "source": "src/dots_on_paper/render.py",
-  "example": "wife-noo",
+  "example": "",
   "character": "cool",
   "asset": {
     "path": "demo/assets/cool-dot.png",
@@ -31,28 +31,18 @@
     "timeline": [
       {
         "start": 0,
-        "end": 3,
+        "end": 6,
         "thinking": true
       },
       {
-        "start": 3,
-        "end": 7,
-        "id": "draft"
-      },
-      {
-        "start": 7,
-        "end": 9,
-        "id": "interruption"
-      },
-      {
-        "start": 9,
+        "start": 6,
         "end": 16,
         "id": "result"
       }
     ],
-    "resultStartsAt": 9,
-    "resultHoldSeconds": 7,
-    "resultFrameSha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944",
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "c0e5624621106ab19efa1ef961a64ba8bb29ff447755c3730afae4aeeff3bc41",
     "frames": [
       {
         "id": "thinking-0",
@@ -199,47 +189,23 @@
         "sha256": "66b3aedc5da6d910eecbdb5f4d484d4319f8c558a46f7307c41b04cad57e1eac"
       },
       {
-        "id": "draft",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Draft ready",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval"
-        },
-        "sha256": "65fdf8d8d679de990a12c952927b47881dd297ab3bcdc3f5ffcc2e843968f78f"
-      },
-      {
-        "id": "interruption",
-        "frame": 11,
-        "state": {
-          "character": "cool",
-          "dot_name": "heidot",
-          "title": "Interrupted",
-          "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO"
-        },
-        "sha256": "69ce9c671edb9e49e2099cd48afdf5013260ba09eed8814537d45215ac33935e"
-      },
-      {
         "id": "result",
         "frame": 11,
         "state": {
           "character": "cool",
           "dot_name": "heidot",
-          "title": "Conversation",
+          "title": "Reply",
           "status": "answer",
-          "text": "Okay, understood. Texting your wife about your date with Paula tonight.\n\nDraft ready · Waiting for approval\n\nYou: NOO\n\nCancelled. Nothing sent."
+          "text": "Good ideas deserve a little paper."
         },
-        "sha256": "527b0e443c2d9af7e8b13f5ce539dc692c5f5077c44cb3e13ff5995fc3e35944"
+        "sha256": "c0e5624621106ab19efa1ef961a64ba8bb29ff447755c3730afae4aeeff3bc41"
       }
     ]
   },
   "endsOnRetainedResult": true,
   "resultFrameBrowserDecode": {
-    "stableMeanPixelDifference": 0.017873958333333332,
-    "expectedResultMeanPixelDifference": 0.20694713541666668
+    "stableMeanPixelDifference": 0.0131109375,
+    "expectedResultMeanPixelDifference": 0.20444140625
   },
   "sourceFiles": [
     {
@@ -302,12 +268,12 @@
   "loop": null,
   "timeline": "Forward-only native snapshots: thinking, then a settled reply retained after playback ends. No GIF loop extension.",
   "sourceFilm": {
-    "name": "dot-noo.mp4",
-    "sha256": "997e5061d4301a127b05b1b3e3b6c01ba4d581043b2508a1bd08a70b9f51fa1b"
+    "name": "dots-on-paper-cool.mp4",
+    "sha256": "5eb9b8d902a3dc98b92c9c9110d98ca7afa0bb98e28af6dcdd32ff9bb7dc9e4e"
   },
-  "encodedFrames": 9,
-  "distinctFrames": 9,
+  "encodedFrames": 13,
+  "distinctFrames": 10,
   "durationSeconds": 16,
-  "bytes": 134811,
-  "sha256": "00cd0ae3fb0604e93063400528ec40eca81f057bafa193308e0cb3464c143acf"
+  "bytes": 198029,
+  "sha256": "45addd202dd6d487a58ddf60e6afc19e67b2b40c8c84b3501bce72b92e6c0c06"
 }

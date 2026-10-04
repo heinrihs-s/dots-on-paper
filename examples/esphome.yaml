@@ -1,35 +1,170 @@
-# MERGE FRAGMENT: this is not a complete board firmware.
-# Add your ESPHome board, Wi-Fi, API encryption, and the exact display platform,
-# pins, model, dimensions, busy pin, and refresh mode from its vendor docs.
-# Your existing display must have `id: eink_display` and this drawing lambda:
+# MERGE FRAGMENT for ESPHome 2026.9.1+: this is not complete board firmware.
+# Add your board, Wi-Fi, API encryption, and the exact display platform, pins,
+# model, dimensions, busy pin, and refresh mode from its vendor documentation.
+# Your display MUST have `id: eink_display`, `update_interval: never`, and:
 #   lambda: |-
 #     it.image(0, 0, id(dots_screen), COLOR_OFF, COLOR_ON);
-# Validate panel polarity with a test frame; some panels invert those colors.
-# Configure the bridge to render exactly the panel's pixel dimensions.
-# Do not paste a generic display driver/pinout onto different hardware.
-# Official: https://esphome.io/components/image/online_image/
+# Validate polarity with a test frame. Use the panel's actual pixel dimensions.
+# The safe default is one redraw per 30 seconds; shorten it only when the
+# panel and driver support that cadence. This is stepped motion, not video.
+# Official contracts:
+# https://esphome.io/components/image/online_image/
+# https://esphome.io/components/http_request/
+
+substitutions:
+  # secrets.yaml:
+  # dots_image_url: "http://YOUR_BRIDGE_HOST:9035/image.png?width=800&height=480&levels=2"
+  # dots_display_state_url: "http://YOUR_BRIDGE_HOST:9035/api/display-state"
+  # dots_image_authorization: "Bearer YOUR_SCOPED_DOTS_IMAGE_TOKEN"
+  dots_image_url: !secret dots_image_url
+  dots_display_state_url: !secret dots_display_state_url
+  dots_state_poll_interval: 5s
+  dots_frame_interval_seconds: "30"
 
 http_request:
   timeout: 15s
-  # Use HTTPS with trusted certificates for traffic outside a trusted LAN.
+  follow_redirects: false
+  # Use HTTPS with trusted certificates outside a trusted LAN.
+
+json:
+
+globals:
+  - id: dots_revision
+    type: int64_t
+    initial_value: "-1"
+  - id: dots_rendered_revision
+    type: int64_t
+    initial_value: "-1"
+  - id: dots_pending_revision
+    type: int64_t
+    initial_value: "-1"
+  - id: dots_animated
+    type: bool
+    initial_value: "false"
+  - id: dots_pending_animated
+    type: bool
+    initial_value: "false"
+  - id: dots_download_pending
+    type: bool
+    initial_value: "false"
+  - id: dots_has_image
+    type: bool
+    initial_value: "false"
+  - id: dots_force_redraw
+    type: bool
+    initial_value: "true"
+  - id: dots_metadata_valid
+    type: bool
+    initial_value: "false"
+  - id: dots_next_frame
+    type: int
+    initial_value: "0"
+  - id: dots_pending_frame
+    type: int
+    initial_value: "0"
+  - id: dots_last_redraw_ms
+    type: uint32_t
+    initial_value: "0"
 
 image:
   - platform: online_image
     id: dots_screen
-    # In secrets.yaml: dots_image_url: "http://YOUR_BRIDGE_HOST:9035/image.png?width=800&height=480&levels=2"
-    url: !secret dots_image_url
+    url: "${dots_image_url}"
     format: PNG
     type: BINARY
-    # In secrets.yaml: dots_image_authorization: "Bearer YOUR_SCOPED_DOTS_IMAGE_TOKEN"
     request_headers:
       Authorization: !secret dots_image_authorization
-    # Conservative default. Match your panel's permitted refresh cadence.
-    update_interval: 30s
+    update_interval: never
     on_download_finished:
-      - component.update: eink_display
+      - lambda: |-
+          id(dots_download_pending) = false;
+          if (id(dots_pending_revision) != id(dots_revision)) {
+            // A newer state arrived during the fetch. Request it next time.
+            id(dots_rendered_revision) = -1;
+            id(dots_force_redraw) = true;
+            return;
+          }
+          if (!cached || id(dots_force_redraw)) {
+            id(eink_display).update();
+            id(dots_last_redraw_ms) = millis();
+            id(dots_force_redraw) = false;
+          }
+          id(dots_has_image) = true;
+          id(dots_rendered_revision) = id(dots_pending_revision);
+          if (id(dots_pending_animated)) {
+            // Advance by a successful frame, rather than wall-clock modulo.
+            // A 30-second panel cadence must not repeatedly select frame 0.
+            id(dots_next_frame) = (id(dots_pending_frame) + 1) % 12;
+          }
+    on_error:
+      - lambda: |-
+          id(dots_download_pending) = false;
+          id(dots_rendered_revision) = -1;
+          id(dots_force_redraw) = true;
 
-# Optional fast/partial animation requires a panel/driver that supports it.
-# Set its documented refresh mode and slow down to avoid overlapping refreshes.
-# The bridge's frames can be selected with &frame=0 through &frame=11.
-# `online_image.set_url` triggers a new fetch. Screen refresh stays under the
-# display component's control; this fragment does not promise video playback.
+interval:
+  - interval: ${dots_state_poll_interval}
+    then:
+      - script.execute: dots_poll_state
+
+script:
+  - id: dots_poll_state
+    mode: single
+    then:
+      - http_request.get:
+          url: "${dots_display_state_url}"
+          request_headers:
+            Authorization: !secret dots_image_authorization
+          capture_response: true
+          max_response_buffer_size: 1024
+          on_response:
+            - if:
+                condition:
+                  lambda: return response->status_code == 200;
+                then:
+                  - lambda: |-
+                      id(dots_metadata_valid) = json::parse_json(body, [](JsonObject root) -> bool {
+                        if (!root["revision"].is<int64_t>() ||
+                            !root["animated"].is<bool>() ||
+                            root["frame_count"].as<int>() != 12) {
+                          return false;
+                        }
+                        const int64_t revision = root["revision"].as<int64_t>();
+                        if (revision != id(dots_revision)) {
+                          id(dots_next_frame) = 0;
+                        }
+                        id(dots_revision) = revision;
+                        id(dots_animated) = root["animated"].as<bool>();
+                        return true;
+                      });
+                  - if:
+                      condition:
+                        lambda: |-
+                          const uint32_t configured = ${dots_frame_interval_seconds};
+                          const uint32_t safe_interval =
+                            (configured < 5U ? 5U : configured > 120U ? 120U : configured) * 1000U;
+                          const bool ready = !id(dots_has_image) ||
+                            millis() - id(dots_last_redraw_ms) >= safe_interval;
+                          return id(dots_metadata_valid) && id(dots_revision) >= 0 &&
+                            !id(dots_download_pending) && ready &&
+                            (id(dots_animated) ||
+                             id(dots_revision) != id(dots_rendered_revision));
+                      then:
+                        - lambda: |-
+                            id(dots_pending_revision) = id(dots_revision);
+                            id(dots_pending_animated) = id(dots_animated);
+                            id(dots_pending_frame) = id(dots_animated) ? id(dots_next_frame) : 11;
+                            id(dots_download_pending) = true;
+                        - online_image.set_url:
+                            id: dots_screen
+                            url: !lambda |-
+                              return std::string("${dots_image_url}") +
+                                "&frame=" + std::to_string(id(dots_pending_frame));
+                            update: true
+
+# Only metadata is polled after the completed answer has been rendered.
+# A failed image fetch retries on the next state poll. A 304 skips redraw when
+# the panel already shows the cached image; a skipped stale fetch must redraw.
+# Keep the display's own update_interval disabled, or it will redraw regardless
+# of this state machine. Full/partial waveform and busy handling remain driver
+# responsibilities. API/write tokens and HA long-lived tokens stay off the panel.

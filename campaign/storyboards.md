@@ -1,16 +1,13 @@
 # Storyboards
 
-These are editorial timing targets. The exported films and manifest are the final reference for exact durations. Every scene uses the same reusable reply view; the example text changes the content, not the layout rules. The GIFs open on the completed result so GitHub's static preview is readable; the times below describe the normal MP4 sequence.
+The films and GIFs show snapshots from the bridge's native e-paper renderer inside the studio device mockup. Thinking uses explicit frames 0–11, advanced every half second for this accelerated preview. This is a film timing choice; a real panel controls its own refresh interval and may flash or miss intermediate poses. Answers use the settled frame 11. Both formats finish on the result, and the GIFs have no loop extension.
 
 ## Calendar chaos — approximately 16 seconds
 
 | Time | Display | Motion and reading time |
 | --- | --- | --- |
-| 0–2.15 s | Dot gets ready. Compact “heidot” source label. | One restrained glance or stepped bob. The display is the focal point. |
-| 2.15–5.65 s | The dot thinks before the reply arrives. | Keep the answer region fixed for reading. |
-| 5.65–6.75 s | The thinking motion settles. | A short pause before the answer. |
-| 6.75–7.4 s | “Here are your reminders:” and the whole reply arrive: tonight's date with Paula, tomorrow morning's breakfast with Amy, lunch with wife, then “Your calendar needs a lawyer.” | The list and judgment appear together as one useful output. |
-| 7.4–16 s | Complete reply holds. | Enough quiet time to read all reminders and the judgment. End on the same composed display. |
+| 0–6 s | heidot thinks before the reply arrives. | Twelve native grayscale snapshots; the body shifts and the thinking dots advance. |
+| 6–16 s | “Here are your reminders:” and the whole reply appear: tonight's date with Paula, tomorrow morning's breakfast with Amy, lunch with wife, then “Your calendar needs a lawyer.” | The complete result appears immediately and holds unchanged for ten seconds. It remains visible at the end. |
 
 These are invented reminders, with staged-demo context in the caption and source provenance. For a poster, use the complete reply rather than the thinking frame.
 
@@ -32,10 +29,10 @@ The reusable layout must also handle ordinary reminder lists, long names, differ
 
 | Time | Conversation | Display treatment |
 | --- | --- | --- |
-| 0–2.8 s | heidot is thinking. | The user request is implied rather than shown. |
-| 2.8–8 s | Dot: “Okay, understood. Texting your wife about your date with Paula tonight.” | Dot reply arrives with **Draft ready · Waiting for approval**. The statement is fictional draft dialogue, not a delivery notification. |
-| 8–10.6 s | You: “NOO.” | Immediate oversized reaction in the same reply/conversation system. A brief dot blink supplies the pause. |
-| 10.6–16 s | “Cancelled. Nothing sent.” | Complete exchange holds for reading. |
+| 0–3 s | heidot is thinking. | Native stepped poses before the staged draft. |
+| 3–7 s | Dot: “Okay, understood. Texting your wife about your date with Paula tonight.” | The reply arrives with **Draft ready · Waiting for approval**. The statement is fictional draft dialogue, not a delivery notification. |
+| 7–9 s | You: “NOO.” | The user interruption is added to the same native reply layout. |
+| 9–16 s | “Cancelled. Nothing sent.” | The complete exchange holds unchanged for seven seconds and remains visible at the end. |
 
 The joke is a draft misunderstanding. It has no delivered checkmark, SMS provider branding, send-success toast, or recall animation. The bridge only renders the scripted conversation. “NOO” is a user reaction, not evidence of a real message being undone.
 

@@ -24,6 +24,11 @@ async function open(url,reducedMotion){
 const base=process.env.DOTS_DEMO_URL||'http://127.0.0.1:9024';
 try{
   const page=await open(`${base}/?example=calendar-chaos`);
+  const heldReminder=await page.evaluate(()=>{
+    dotDemo.renderAt(9,{format:'screen',export:true});const result=dotDemo.canvas.toDataURL('image/png');
+    dotDemo.renderAt(16,{format:'screen',export:true});return result===dotDemo.canvas.toDataURL('image/png');
+  });
+  assert.equal(heldReminder,true,'The reminder reply must remain unchanged at the end');
   const fixtures=[
     ['paragraph','Your build is ready. I fixed the navigation, checked the mobile layout, and left the details in your conversation.'],
     ['list','Here is the plan:\n\n- Review the draft with the team.\n- Book the train.\n- Buy the groceries before dinner.\n- Reply to the venue about access and their longer setup instructions.\n- Take a break.\n\nEverything else can wait.'],
@@ -56,6 +61,11 @@ try{
   await page.locator('[data-example="wife-noo"]').click();
   assert.equal((await page.evaluate(()=>dotDemo.state)).example,'wife-noo');
   assert.match(await page.locator('#scene').getAttribute('aria-label'),/FICTIONAL DEMO.*NOO.*Nothing sent/);
+  const heldCancellation=await page.evaluate(()=>{
+    dotDemo.renderAt(12,{format:'screen',export:true});const result=dotDemo.canvas.toDataURL('image/png');
+    dotDemo.renderAt(16,{format:'screen',export:true});return result===dotDemo.canvas.toDataURL('image/png');
+  });
+  assert.equal(heldCancellation,true,'The cancellation must remain unchanged at the end');
   for(const t of [0,4,8.4,12]){
     const data=await page.evaluate(t=>{dotDemo.renderAt(t,{format:'screen',export:true});return dotDemo.canvas.toDataURL('image/png').split(',')[1]},t);
     await writeFile(join(out,`noo-${t}.png`),Buffer.from(data,'base64'));
@@ -73,5 +83,5 @@ try{
   await reduced.locator('button[type="submit"]').click();
   const state=await reduced.evaluate(()=>dotDemo.state);assert.equal(state.playing,false);assert.equal(state.seconds,9);
   assert.deepEqual(errors,[]);
-  console.log('Generic reply fixtures, all characters, actual screen download, NOO timeline, mobile editor, and reduced-motion reply verified.');
+  console.log('Generic replies, retained end results, all characters, screen download, NOO timeline, mobile editor, and reduced-motion reply verified.');
 }finally{await browser.close()}

@@ -1,9 +1,9 @@
 {
-  "title": "Calendar reminders — scripted reply",
+  "title": "Calendar reminders — staged bridge output",
   "fictional": true,
   "output": "Scripted demo output; no calendar or message was accessed or sent.",
   "connector": "No live dot connector used for this export.",
-  "source": "demo/demo.js canvas renderer",
+  "source": "src/dots_on_paper/render.py",
   "example": "calendar-chaos",
   "character": "cool",
   "asset": {
@@ -20,10 +20,221 @@
   "width": 960,
   "height": 720,
   "requestedFramesPerSecond": 24,
+  "native": {
+    "source": "src/dots_on_paper/render.py",
+    "rendererSha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40",
+    "nativeWidth": 1872,
+    "nativeHeight": 1404,
+    "nativeLevels": 16,
+    "snapshotIntervalSeconds": 0.5,
+    "cadence": "Accelerated preview: one native snapshot every 0.5 seconds while thinking. Actual refresh is controlled by the display client and hardware.",
+    "timeline": [
+      {
+        "start": 0,
+        "end": 6,
+        "thinking": true
+      },
+      {
+        "start": 6,
+        "end": 16,
+        "id": "result"
+      }
+    ],
+    "resultStartsAt": 6,
+    "resultHoldSeconds": 10,
+    "resultFrameSha256": "cfc3e0613fd4f94d7ea668b1a59a159c9b75dc674c01268543f6bd9534ea79e6",
+    "frames": [
+      {
+        "id": "thinking-0",
+        "frame": 0,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+      },
+      {
+        "id": "thinking-1",
+        "frame": 1,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "5020fa9225ab96918531ff2d9848e5f5d971f4e67eeae08985a2fc3dbf50144a"
+      },
+      {
+        "id": "thinking-2",
+        "frame": 2,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+      },
+      {
+        "id": "thinking-3",
+        "frame": 3,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "dbfc426afb8cfb0f6b7f89850d74dfd0301925209fdcecaed427503c833cab0d"
+      },
+      {
+        "id": "thinking-4",
+        "frame": 4,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+      },
+      {
+        "id": "thinking-5",
+        "frame": 5,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "570bb86095470c8d77fcbb5d233a56c8610c1b42847bcfd598827d48c88680e6"
+      },
+      {
+        "id": "thinking-6",
+        "frame": 6,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "4a526ed984ebfee8ac15cf349919f7d4158e96a11a0b33bb11995b82d1d611d6"
+      },
+      {
+        "id": "thinking-7",
+        "frame": 7,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "8172e5d06f7158e1a62eabf080c6af42a44919421e59e3ccfe2b66fd6fe45623"
+      },
+      {
+        "id": "thinking-8",
+        "frame": 8,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "88b6c9b320facc54bb9cf6aee818c773aeb3ab9bbd2af74d61b4f6e4cc3a11fe"
+      },
+      {
+        "id": "thinking-9",
+        "frame": 9,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "a550c4a143b26729907587bbd0f542fffa1ecfc644d9d11d10f011c8f5d9e114"
+      },
+      {
+        "id": "thinking-10",
+        "frame": 10,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "8b78b8b5cdeb4e9b25bdbe5ba21b975fef1a0c04dded9e31013f8e62d5154e78"
+      },
+      {
+        "id": "thinking-11",
+        "frame": 11,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "",
+          "status": "thinking",
+          "text": ""
+        },
+        "sha256": "66b3aedc5da6d910eecbdb5f4d484d4319f8c558a46f7307c41b04cad57e1eac"
+      },
+      {
+        "id": "result",
+        "frame": 11,
+        "state": {
+          "character": "cool",
+          "dot_name": "heidot",
+          "title": "Reply",
+          "status": "answer",
+          "text": "Here are your reminders:\n\n- Tonight: Date with Paula.\n- Tomorrow morning: Breakfast with Amy.\n- Lunch: With your wife.\n\nYour calendar needs a lawyer."
+        },
+        "sha256": "cfc3e0613fd4f94d7ea668b1a59a159c9b75dc674c01268543f6bd9534ea79e6"
+      }
+    ]
+  },
+  "endsOnRetainedResult": true,
+  "resultFrameBrowserDecode": {
+    "stableMeanPixelDifference": 0.017535026041666665,
+    "expectedResultMeanPixelDifference": 0.20682682291666668
+  },
   "sourceFiles": [
     {
       "path": "demo/demo.js",
-      "sha256": "1be09c5bdc3cdb143455a148d7f7fd59917ef3bcaaee148b7a615cc4888f1be9"
+      "sha256": "a63c2827949c49d51da7523d1540229c30dfb2b5a97f373b9911238ca632afc9"
+    },
+    {
+      "path": "demo/assets/beret-dot.png",
+      "sha256": "f892417db4bec59fba61301a9cd418cd190e441ebc2aab0c1fe5379833758334"
+    },
+    {
+      "path": "demo/assets/beret-dot.prompt.md",
+      "sha256": "07b12951912251efbf487d4977396c3e426b04e7875b265cee7dedd61e9c1dd4"
+    },
+    {
+      "path": "demo/assets/curious-dot.png",
+      "sha256": "5025eae02bcc5513a128afbcf6a7e3156b53f0974af7251d5b57ebbb97132c52"
+    },
+    {
+      "path": "demo/assets/curious-dot.prompt.md",
+      "sha256": "bf98402bfcc5f65a8d6335affa1ec61319ab1d31444ded2d231e45cd5d6f43ea"
+    },
+    {
+      "path": "demo/assets/bookish-dot.png",
+      "sha256": "4557bfaf07de7b78ed5259c01326a7843079fd1144d136c71586d31f41357523"
+    },
+    {
+      "path": "demo/assets/bookish-dot.prompt.md",
+      "sha256": "2cc2c4323d1f411cb7ddaba26ed399d573edaf4e2c7966c221e36b291ecd736e"
     },
     {
       "path": "demo/assets/cool-dot.png",
@@ -36,21 +247,33 @@
     {
       "path": "demo/assets/Figtree.ttf",
       "sha256": "26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714"
+    },
+    {
+      "path": "demo/tools/native-film.mjs",
+      "sha256": "9d4aa508b61a1da011b2fbb49277079fcedbc639094c9972dd98892c3d42989c"
+    },
+    {
+      "path": "demo/tools/render-film-frames.py",
+      "sha256": "95059d0605cfd2a4795934fca3991a8f4680b5ac1debf42e7a117d4baffffa55"
+    },
+    {
+      "path": "src/dots_on_paper/render.py",
+      "sha256": "c4c07721e0c4798aefa09c91b40c4b328bf27a9009d30e675055535592132b40"
     }
   ],
   "format": "GIF",
   "framesPerSecond": 12,
   "sourceFrames": 192,
-  "loopStartSourceSeconds": 9,
-  "timeline": "sourceSeconds = (9 + gifSeconds) % 16; same full scripted performance, rotated to start with its readable result",
+  "loopStartSourceSeconds": 0,
+  "loop": null,
+  "timeline": "Forward-only native snapshots: thinking, then a settled reply retained after playback ends. No GIF loop extension.",
   "sourceFilm": {
     "name": "dot-reminders.mp4",
-    "sha256": "5f2be0a7534300b31ee2612468a768bb708e6783aaf4aece00415343edf58fe5"
+    "sha256": "4ad8081496b1d8dccd7901713951a1e16f36ccd24e8cc39cc316cd36afcb8e51"
   },
-  "encodedFrames": 179,
-  "distinctFrames": 176,
+  "encodedFrames": 13,
+  "distinctFrames": 10,
   "durationSeconds": 16,
-  "loop": 0,
-  "bytes": 444781,
-  "sha256": "247f6e6aba12269018ec00b78606b0168aacb49395c1cd6a60a1704bd8fc7d6d"
+  "bytes": 206939,
+  "sha256": "51cea56f17ffbb0f3afa0e0f7f2771d5d17b46ace47047129cae1ff8270ba8e8"
 }

@@ -125,7 +125,7 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
             self.config.frame_seconds = cadence
             status, _, page = self.request("GET", "/", token=None)
             self.assertEqual(status, 200)
-            for mode, expected in (("thinking", [0, 0, 1, 2, 11, 0]), ("answer", [0, 0, 1, 2, 11, 11])):
+            for mode, expected in (("thinking", [0, 0, 1, 2, 11, 0]), ("answer", [11, 11, 11, 11, 11, 11])):
                 with self.subTest(cadence=cadence, status=mode):
                     _, state = self.event(status=mode, text="Preview interval check")
                     inputs = dict(html=page.decode(), url=self.config.public_url, token=API_KEY,
@@ -255,6 +255,46 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
         self.assertEqual(status, 200)
         self.assertEqual(automatic, self.request("GET", "/image.png?profile=oep_296&frame=0")[2])
 
+    def test_completed_reply_is_immediately_static_with_unchanged_etag_over_time(self):
+        self.event(status="thinking", run_id="held-reply")
+        self.event(status="answer", run_id="held-reply", text="An actual finished answer")
+        status, headers, payload = self.request("GET", "/image.png?profile=oep_296")
+        self.assertEqual(status, 200)
+        for frame in (0, 3, 5, 11):
+            held = self.request("GET", f"/image.png?profile=oep_296&frame={frame}")
+            self.assertEqual(held[2], payload)
+            self.assertEqual(held[1]["ETag"], headers["ETag"])
+        saved = dict(self.store.read())
+        saved["updated_at"] = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+        self.assertEqual(state_frame(saved, 5), 11)
+        with self.store.lock, self.store.db:
+            self.store._write(saved)
+        self.server.image_cache.clear()
+        held = self.request("GET", "/image.png?profile=oep_296")
+        self.assertEqual(held[2], payload)
+        self.assertEqual(self.request("GET", "/image.png?profile=oep_296", headers={"If-None-Match": headers["ETag"]})[0], 304)
+
+    def test_display_metadata_uses_read_only_key_without_reply_or_credentials(self):
+        self.event(status="thinking", text="Private input", dot_name="Private name")
+        for token in (None, "wrong"):
+            self.assertEqual(self.request("GET", "/api/display-state", token=token)[0], 401)
+        status, _, payload = self.request("GET", "/api/display-state", token=IMAGE_KEY)
+        meta = json.loads(payload)
+        self.assertEqual(status, 200)
+        self.assertTrue(meta["animated"])
+        self.assertEqual(meta["frame_count"], 12)
+        self.assertEqual(meta["next_poll_seconds"], self.config.frame_seconds)
+        for private in ("Private input", "Private name", API_KEY, IMAGE_KEY):
+            self.assertNotIn(private.encode(), payload)
+        self.assertEqual(self.request("GET", "/api/display-state?key=" + IMAGE_KEY, token=None)[0], 200)
+        self.assertEqual(self.request("GET", "/api/display-state?key=" + API_KEY, token=None)[0], 401)
+        self.assertEqual(self.request("GET", "/api/display-state?frame=3", token=IMAGE_KEY)[0], 400)
+        self.event(status="answer", text="Final result")
+        meta = json.loads(self.request("GET", "/api/display-state", token=IMAGE_KEY)[2])
+        self.assertFalse(meta["animated"])
+        self.assertEqual(meta["frame"], 11)
+        self.assertEqual(meta["next_poll_seconds"], self.config.refresh_seconds)
+
     def test_mcp_handshake_versions_and_notifications(self):
         for version in ("2025-11-25", "2025-06-18", "2025-03-26"):
             status, value = self.rpc("initialize", {"protocolVersion": version, "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}})
@@ -305,11 +345,42 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
         status, _, payload = self.request("GET", "/api/display", token=None, headers={"ID": self.config.trmnl_device_id, "Access-Token": self.config.trmnl_access_token})
         display = json.loads(payload)
         self.assertEqual(status, 200)
+        self.assertEqual(display["status"], 0)
         self.assertFalse(display["update_firmware"])
         query = parse_qs(urlsplit(display["image_url"]).query)
         self.assertEqual(query["key"], [IMAGE_KEY])
         self.assertEqual(display["refresh_rate"], 60)
         self.assertNotIn(API_KEY, display["image_url"])
+
+    def test_trmnl_thinking_advances_per_poll_then_holds_one_result(self):
+        self.config.trmnl_device_id = "AA:BB:CC:DD:EE:FF"
+        self.config.trmnl_access_token = "device-secret-test"
+        headers = {"ID": self.config.trmnl_device_id, "Access-Token": self.config.trmnl_access_token}
+        self.event(status="thinking", run_id="trmnl-animation")
+        frames, filenames = [], []
+        for _ in range(14):
+            response = json.loads(self.request("GET", "/api/display", token=None, headers=headers)[2])
+            self.assertEqual(response["status"], 0)
+            self.assertEqual(response["refresh_rate"], 15)
+            self.assertFalse(response["update_firmware"])
+            frames.append(int(parse_qs(urlsplit(response["image_url"]).query)["frame"][0]))
+            filenames.append(response["filename"])
+        self.assertEqual(frames, list(range(12)) + [0, 1])
+        self.assertTrue(all(a != b for a, b in zip(filenames, filenames[1:])))
+        self.event(status="answer", run_id="trmnl-animation", text="Your calendar needs a lawyer.")
+        results = [json.loads(self.request("GET", "/api/display", token=None, headers=headers)[2]) for _ in range(3)]
+        self.assertEqual(results[0], results[1])
+        self.assertEqual(results[1], results[2])
+        self.assertEqual(results[0]["refresh_rate"], 60)
+        self.assertEqual(parse_qs(urlsplit(results[0]["image_url"]).query)["frame"], ["11"])
+        final_url = urlsplit(results[0]["image_url"])
+        final_image = self.request("GET", final_url.path + "?" + final_url.query, token=None)
+        self.assertEqual(final_image[0], 200)
+        self.assertEqual(Image.open(BytesIO(final_image[2])).size, (1872, 1404))
+        self.event(status="thinking", run_id="next-trmnl-animation")
+        next_display = json.loads(self.request("GET", "/api/display", token=None, headers=headers)[2])
+        self.assertEqual(parse_qs(urlsplit(next_display["image_url"]).query)["frame"], ["0"])
+        self.assertNotEqual(next_display["filename"], results[0]["filename"])
 
     def test_sqlite_state_survives_reopening(self):
         self.event(status="answer", text="Persisted answer", character="curious")
@@ -325,6 +396,9 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
         for args in ((API_KEY, API_KEY), ("short", IMAGE_KEY), ("é" * 30, IMAGE_KEY), ("a" * 30 + "\n", IMAGE_KEY)):
             with self.assertRaises(ValueError):
                 Config(*args)
+        for interval in (0, 4, 3601):
+            with self.assertRaises(ValueError):
+                Config(API_KEY, IMAGE_KEY, thinking_refresh_seconds=interval)
 
 
 if __name__ == "__main__":
