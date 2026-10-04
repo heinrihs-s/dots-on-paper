@@ -206,6 +206,12 @@ def _conversation_messages(state: dict) -> tuple[ConversationMessage, ...]:
     return tuple(messages)
 
 
+def _conversation_mode(state: dict) -> bool:
+    # Existing offline callers supplied structured turns before the bridge
+    # exposed a preference. Keep those images compatible when mode is absent.
+    return state.get("mode", "full_conversation" if state.get("messages") else "last_reply") == "full_conversation"
+
+
 def _parse_reply(value: str) -> tuple[ReplyBlock, ...]:
     """Keep Markdown paragraphs and lists without requiring a special schema.
 
@@ -403,15 +409,17 @@ def _status_label(status: str) -> str:
 
 def _display_text(state: dict, status: str) -> str:
     actual = _clean(state.get("text"))
-    if actual:
-        return actual
     messages = _conversation_messages(state) if status == "answer" else ()
-    if messages:
+    if messages and _conversation_mode(state):
         name = _clean(state.get("dot_name"), "Dot") or "Dot"
         return "\n\n".join(
             f"{'You' if message.role == 'user' else name}: {message.content}"
-            for message in messages
+            for message in messages[-6:]
         )
+    if actual:
+        return actual
+    if messages:
+        return next((message.content for message in reversed(messages) if message.role == "assistant"), "Your dot replied without text.")
     return {
         "idle": "Waiting for your dot.",
         "thinking": "Your dot is thinking.",
@@ -440,7 +448,27 @@ def _compact(canvas: Image.Image, state: dict, character: str, status: str, fram
         content_y += title_height + margin
     preferred = max(12, min(40, round(height * .16)))
     minimum = max(12, min(24, round(height * .12)))
-    _text_block(canvas, _display_text(state, status), (left, content_y, measure, height - margin - content_y), preferred, minimum)
+    messages = _conversation_messages(state) if status == "answer" and _conversation_mode(state) else ()
+    if messages:
+        # A shelf tag cannot fit a thread. Keep the latest answer readable and
+        # show its preceding user turn in a separate, visibly clipped strip.
+        latest = next((message for message in reversed(messages) if message.role == "assistant"), messages[-1])
+        preceding = messages[-1] if messages[-1].role == "user" else (messages[-2] if len(messages) > 1 and messages[-2].role == "user" else None)
+        if preceding and height - margin - content_y >= minimum * 3:
+            size = max(10, min(14, round(height * .075)))
+            padding = max(3, size // 3)
+            bubble_height = size + padding * 2
+            draw = ImageDraw.Draw(canvas)
+            draw.rounded_rectangle((left, content_y, left + measure, content_y + bubble_height), radius=3, fill=INK)
+            text = "You: " + preceding.content.replace("\n", " ")
+            font = _font(size, 650)
+            if _advance(font, text) > measure - padding * 2:
+                text = _ellipsize(text, font, measure - padding * 2)
+            draw.text((left + padding, content_y + padding), text, font=font, fill=PAPER, anchor="lt")
+            content_y += bubble_height + padding
+        _text_block(canvas, latest.content, (left, content_y, measure, height - margin - content_y), preferred, minimum)
+    else:
+        _text_block(canvas, _display_text(state, status), (left, content_y, measure, height - margin - content_y), preferred, minimum)
 
 
 def _tiny(canvas: Image.Image, state: dict, character: str, status: str, frame: int, monochrome: bool = False) -> None:
@@ -448,7 +476,9 @@ def _tiny(canvas: Image.Image, state: dict, character: str, status: str, frame: 
     margin = 4
     size = min(width - margin * 2, max(20, height // 2))
     _mascot(canvas, character, ((width - size) // 2, 0, size, size), status, frame, monochrome)
-    _text_block(canvas, _display_text(state, status), (margin, size, width - margin * 2, height - size - margin), 12, 10, centered=True)
+    # On the smallest tags the latest assistant reply takes precedence over
+    # history; source state still retains the selected conversation mode.
+    _text_block(canvas, _display_text({**state, "mode": "last_reply"}, status), (margin, size, width - margin * 2, height - size - margin), 12, 10, centered=True)
 
 
 def _reply(canvas: Image.Image, state: dict, character: str, frame: int, monochrome: bool = False) -> None:
@@ -648,9 +678,9 @@ def render_image(state: dict, width: int, height: int, levels: int = 16, format:
         _tiny(canvas, state, character, status, frame, levels == 2)
     elif height <= 180 or width / height >= 1.85:
         _compact(canvas, state, character, status, frame, levels == 2)
-    elif status == "answer" and _conversation_messages(state) and min(width, height) < 300:
+    elif status == "answer" and _conversation_mode(state) and _conversation_messages(state) and min(width, height) < 300:
         _compact(canvas, state, character, status, frame, levels == 2)
-    elif status == "answer" and _conversation_messages(state):
+    elif status == "answer" and _conversation_mode(state) and _conversation_messages(state):
         _conversation(canvas, state, character, frame, levels == 2)
     elif status == "answer":
         _reply(canvas, state, character, frame, levels == 2)

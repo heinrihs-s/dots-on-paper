@@ -92,3 +92,9 @@ class DotsCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # this PATCH, its genuinely new event still deserves one HA event.
             self._accept_state(state)
             self.async_set_updated_data(state)
+
+    async def set_mode(self, mode: str) -> None:
+        async with self._command_lock:
+            state = await self.bridge.set_mode(mode)
+            self._accept_state(state)
+            self.async_set_updated_data(state)

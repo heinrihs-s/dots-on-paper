@@ -9,7 +9,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import aiohttp
 
-from .const import CHARACTERS, STATUSES
+from .const import CHARACTERS, DISPLAY_MODES, STATUSES
 
 
 class BridgeError(Exception):
@@ -60,6 +60,32 @@ def validate_state(value: Any) -> dict[str, Any]:
         "character": value["character"],
         "revision": revision,
     }
+    mode = value.get("mode", "last_reply")
+    if mode not in DISPLAY_MODES:
+        raise BridgeError("Unsupported display mode")
+    result["mode"] = mode
+    messages = value.get("messages", [])
+    if not isinstance(messages, list) or len(messages) > 20:
+        raise BridgeError("Invalid conversation history")
+    clean_messages: list[dict[str, str]] = []
+    total = 0
+    for message in messages:
+        if not isinstance(message, dict) or message.get("role") not in ("user", "assistant"):
+            raise BridgeError("Invalid conversation message")
+        content = message.get("content")
+        if not isinstance(content, str) or not content.strip() or len(content) > 12000:
+            raise BridgeError("Invalid conversation message")
+        total += len(content)
+        clean = {"role": message["role"], "content": content}
+        if "meta" in message:
+            meta = message["meta"]
+            if not isinstance(meta, str) or len(meta) > 120:
+                raise BridgeError("Invalid conversation metadata")
+            clean["meta"] = meta
+        clean_messages.append(clean)
+    if total > 24000:
+        raise BridgeError("Conversation history is too large")
+    result["messages"] = clean_messages
     for key in ("dot_name", "title", "text", "event_id", "run_id", "updated_at"):
         field = value.get(key, "")
         if field is None and key in ("event_id", "run_id"):
@@ -108,6 +134,9 @@ class DotsBridge:
 
     async def set_character(self, character: str) -> dict[str, Any]:
         return await self._json("PATCH", "/api/settings", {"character": character})
+
+    async def set_mode(self, mode: str) -> dict[str, Any]:
+        return await self._json("PATCH", "/api/settings", {"mode": mode})
 
     async def image(self, profile: str, *, frame: int | None = None) -> bytes:
         params: dict[str, str | int] = {"profile": profile}

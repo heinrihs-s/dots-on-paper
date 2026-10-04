@@ -35,7 +35,7 @@ class DotsStatus(DotsEntity, SensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         state = self.coordinator.data
-        return {key: state[key] for key in ("character", "dot_name", "revision", "updated_at")}
+        return {key: state[key] for key in ("character", "mode", "dot_name", "revision", "updated_at")}
 
 
 class DotsReply(DotsEntity, SensorEntity, RestoreEntity):
@@ -50,8 +50,8 @@ class DotsReply(DotsEntity, SensorEntity, RestoreEntity):
         await super().async_added_to_hass()
         if self.coordinator.last_reply is None and (previous := await self.async_get_last_state()):
             self._restored_reply = {
-                key: previous.attributes.get(key, "")
-                for key in ("text", "dot_name", "character", "event_id", "run_id", "revision", "title")
+                key: previous.attributes.get(key, {"mode": "last_reply", "messages": []}.get(key, ""))
+                for key in ("text", "dot_name", "character", "mode", "messages", "event_id", "run_id", "revision", "title")
             }
             self._restored_reply["title"] = previous.attributes.get("title") or previous.state
 
@@ -68,6 +68,6 @@ class DotsReply(DotsEntity, SensorEntity, RestoreEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         state = self._reply
         return {
-            key: state.get(key, "")
-            for key in ("text", "dot_name", "character", "event_id", "run_id", "revision", "title")
+            key: state.get(key, {"mode": "last_reply", "messages": []}.get(key, ""))
+            for key in ("text", "dot_name", "character", "mode", "messages", "event_id", "run_id", "revision", "title")
         }

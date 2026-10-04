@@ -17,8 +17,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="./assets/icon-cool.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/Figtree.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="./styles.css?v=conversation-1">
-  <script src="./site.js?v=conversation-1" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=display-modes-1">
+  <script src="./site.js?v=display-modes-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -57,37 +57,37 @@
             <button data-character="bookish" aria-pressed="false"><span class="portrait yellow"><img src="./assets/bookish.png" width="80" height="80" alt=""></span><span>Bookish</span></button>
             <button data-character="cool" aria-pressed="true"><span class="portrait pink"><img src="./assets/cool.png" width="80" height="80" alt=""></span><span>Cool</span></button>
           </div>
+          <div class="mode-picker" role="group" aria-label="Display mode">
+            <button data-mode="last_reply" aria-pressed="true">Last reply</button>
+            <button data-mode="full_conversation" aria-pressed="false">Full conversation</button>
+          </div>
+          <p class="mode-description" id="mode-description">One answer, kept on paper.</p>
           <div class="example-picker" role="group" aria-label="Choose an example">
             <button data-example="reminders" aria-pressed="true">The reminders</button>
-            <button data-example="conversation" aria-pressed="false">Full conversation</button>
+            <button data-example="interruption" aria-pressed="false">The interruption</button>
           </div>
           <p class="punchline" id="demo-punchline">“Your calendar needs a lawyer.”</p>
         </div>
         <figure class="demo-figure">
-          <div class="device">
-            <img id="screen" src="./assets/frames/cool-reminders.png" width="960" height="720" alt="heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.">
+          <div class="device" id="demo-device">
+            <img id="screen" src="./assets/frames/cool-reminders-last_reply.png" width="960" height="720" alt="heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.">
             <span class="device-mark" aria-hidden="true"></span>
           </div>
           <div class="conversation-controls" id="conversation-controls" role="group" aria-label="Step through the conversation" hidden>
             <span>Follow the exchange</span>
             <div>
-              <button data-turn="1" aria-pressed="false">The draft</button>
-              <button data-turn="2" aria-pressed="false">Your reply</button>
-              <button data-turn="3" aria-pressed="true">Dot’s reply</button>
+              <button data-turn="1" aria-pressed="false">Your question</button>
+              <button data-turn="2" aria-pressed="true">Dot’s reply</button>
+              <button data-turn="3" aria-pressed="false" hidden>Dot’s reply</button>
             </div>
           </div>
           <div class="demo-transport">
             <button class="replay" id="replay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 2 8M4 4v6h6"/></svg><span>Replay thinking</span></button>
+            <button class="skip-preview" id="skip-preview" hidden>Show reply</button>
             <span class="demo-status" id="demo-status" role="status" aria-live="polite">Answer retained</span>
-            <button class="text-link film-link" id="film-link" aria-expanded="false" aria-controls="film-panel">Watch the film <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7Z"/></svg></button>
-          </div>
-          <div class="film-panel" id="film-panel" hidden>
-            <div class="film-heading"><h3 id="film-title">A reply that stays.</h3><button id="close-film" aria-label="Close the film"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-            <video id="film" controls playsinline muted preload="none" tabindex="0" aria-labelledby="film-title" poster="./assets/frames/cool-reminders.png"></video>
-            <p id="film-status" role="status"></p>
           </div>
           <figcaption>Scripted example. Actual renderer frames at an accelerated pace; physical e-ink refresh is slower and varies by panel.</figcaption>
-          <noscript><p>The result is shown above. Enable JavaScript to switch companions and replay thinking, or <a href="./assets/dot-reminders.mp4">watch the film</a>.</p></noscript>
+          <noscript><p>The result is shown above. Enable JavaScript to switch companions and display modes, and replay thinking.</p></noscript>
         </figure>
       </div>
     </section>
@@ -186,7 +186,7 @@ $env:DOTS_ALLOWED_HOSTS = 'YOUR_LAN_IP,localhost,127.0.0.1'</code></pre>
       <div class="faq-list">
         <details><summary>Will it show every ChatGPT reply automatically?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The dot publishes through an enabled MCP tool. There is no automatic feed of every reply. Ask it to set thinking when it starts and publish a short version of the actual answer when it finishes.</p></details>
         <details><summary>Can e-ink really animate?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>Yes, by drawing successive images. The panel and driver set the pace. A sleeping device may miss a short thinking phase, and stock TRMNL X can flash. The website and films run faster for demonstration. OpenEPaperLink’s portable example sends only the final result.</p></details>
-        <details><summary>What has been tested?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>The bridge, renderer, MCP adapter, HA image lifecycle and installed package have passing tests. ESPHome configuration validation passed. A live dot account, physical e-ink panels and a running HA installation still need verification. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/verification.md">Read the verification record.</a></p></details>
+        <details><summary>Can I choose what stays on the screen?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary><p>Yes. Last reply keeps the latest answer. Full conversation keeps the user and dot turns you publish to the bridge. Switch modes in the local preview, through MCP, or in Home Assistant; the display keeps the selected view until the next update.</p></details>
       </div>
     </section>
 
@@ -196,7 +196,7 @@ $env:DOTS_ALLOWED_HOSTS = 'YOUR_LAN_IP,localhost,127.0.0.1'</code></pre>
       <a class="button primary" href="https://github.com/heinrihs-s/dots-on-paper">Build yours on GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
     </section>
   </main>
-  <footer class="footer wrap"><p>Made by <a href="https://heinrihs.org/">Heinrihs</a>. Open source. MIT licensed.</p><div><a href="https://github.com/heinrihs-s/dots-on-paper">Source</a><a href="https://github.com/heinrihs-s/dots-on-paper/issues">Feedback</a><a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/NOTICE.md">Artwork credits</a></div><p class="independent">An independent project. No official affiliation with OpenAI or TRMNL.</p></footer>
+  <footer class="footer wrap"><p>Made by <a href="https://heinrihs.org/">Heinrihs</a>. Open source. MIT licensed.</p><div><a href="https://github.com/heinrihs-s/dots-on-paper">Source</a><a href="https://github.com/heinrihs-s/dots-on-paper/issues">Feedback</a><a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/NOTICE.md">Artwork credits</a></div><p class="independent">An independent project by Heinrihs.</p></footer>
   <span class="sr-only" id="copy-status" role="status" aria-live="polite"></span>
 </body>
 </html>

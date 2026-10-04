@@ -5,7 +5,9 @@
       "reauth_confirm": {
         "title": "Update bridge token",
         "description": "Enter the bridge's current write/API token.",
-        "data": {"api_token": "Bridge API token"}
+        "data": {
+          "api_token": "Bridge API token"
+        }
       },
       "user": {
         "title": "Connect your dot bridge",
@@ -58,27 +60,107 @@
       "name": "Show answer",
       "description": "Display a real answer received from your dot, agent, or automation.",
       "fields": {
-        "entry_id": {"name": "Bridge", "description": "Choose the configured Dots on Paper bridge."},
-        "text": {"name": "Reply", "description": "The actual answer text."},
-        "character": {"name": "Character", "description": "Optional character override."},
-        "dot_name": {"name": "Dot name", "description": "The name of the replying dot or agent."},
-        "title": {"name": "Title", "description": "A short title above the answer."},
-        "event_id": {"name": "Event ID", "description": "An optional unique source event ID for bridge deduplication."},
-        "run_id": {"name": "Run ID", "description": "Reuse the fresh display run ID from thinking to its completion; omit for a standalone answer."}
+        "entry_id": {
+          "name": "Bridge",
+          "description": "Choose the configured Dots on Paper bridge."
+        },
+        "text": {
+          "name": "Reply",
+          "description": "The actual answer text."
+        },
+        "character": {
+          "name": "Character",
+          "description": "Optional character override."
+        },
+        "dot_name": {
+          "name": "Dot name",
+          "description": "The name of the replying dot or agent."
+        },
+        "title": {
+          "name": "Title",
+          "description": "A short title above the answer."
+        },
+        "event_id": {
+          "name": "Event ID",
+          "description": "An optional unique source event ID for bridge deduplication."
+        },
+        "run_id": {
+          "name": "Run ID",
+          "description": "Reuse the fresh display run ID from thinking to its completion; omit for a standalone answer."
+        },
+        "mode": {
+          "name": "Display mode",
+          "description": "Last reply shows the answer alone; Full conversation shows the supplied turns."
+        },
+        "user_text": {
+          "name": "User message",
+          "description": "Optional explicit user turn on thinking or answer. Omit on the answer if it was supplied while thinking."
+        },
+        "messages": {
+          "name": "Conversation",
+          "description": "Optional answer snapshot of role/content objects, up to 20 turns and 24000 characters. End with an assistant message matching Reply. Use this or User message, not both."
+        }
       }
     },
     "set_state": {
       "name": "Set state",
       "description": "Set idle, thinking, answer, or error as the real source changes state.",
       "fields": {
-        "entry_id": {"name": "Bridge", "description": "Choose the configured Dots on Paper bridge."},
-        "status": {"name": "State", "description": "The current state of the source."},
-        "character": {"name": "Character", "description": "Optional character override."},
-        "text": {"name": "Text", "description": "Reply or error text; an answer requires nonempty text."},
-        "dot_name": {"name": "Dot name", "description": "The name of the dot or agent."},
-        "title": {"name": "Title", "description": "A short title for this state."},
-        "event_id": {"name": "Event ID", "description": "An optional unique source event ID for bridge deduplication."},
-        "run_id": {"name": "Run ID", "description": "Start thinking with a fresh display run ID, then reuse it for the answer, idle, or error event."}
+        "entry_id": {
+          "name": "Bridge",
+          "description": "Choose the configured Dots on Paper bridge."
+        },
+        "status": {
+          "name": "State",
+          "description": "The current state of the source."
+        },
+        "character": {
+          "name": "Character",
+          "description": "Optional character override."
+        },
+        "text": {
+          "name": "Text",
+          "description": "Reply or error text; an answer requires nonempty text."
+        },
+        "dot_name": {
+          "name": "Dot name",
+          "description": "The name of the dot or agent."
+        },
+        "title": {
+          "name": "Title",
+          "description": "A short title for this state."
+        },
+        "event_id": {
+          "name": "Event ID",
+          "description": "An optional unique source event ID for bridge deduplication."
+        },
+        "run_id": {
+          "name": "Run ID",
+          "description": "Start thinking with a fresh display run ID, then reuse it for the answer, idle, or error event."
+        },
+        "mode": {
+          "name": "Display mode",
+          "description": "Last reply shows the answer alone; Full conversation shows the supplied turns."
+        },
+        "user_text": {
+          "name": "User message",
+          "description": "Optional explicit user turn on thinking or answer. Omit on the answer if it was supplied while thinking."
+        },
+        "messages": {
+          "name": "Conversation",
+          "description": "Optional answer snapshot of role/content objects, up to 20 turns and 24000 characters. End with an assistant message matching Reply. Use this or User message, not both."
+        }
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "display_mode": {
+        "name": "Display mode",
+        "state": {
+          "last_reply": "Last reply",
+          "full_conversation": "Full conversation"
+        }
       }
     }
   }

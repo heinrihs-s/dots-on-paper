@@ -18,6 +18,7 @@ from .const import (
     CHARACTERS,
     CONF_API_TOKEN,
     CONF_BASE_URL,
+    DISPLAY_MODES,
     DOMAIN,
     PLATFORMS,
     STATUSES,
@@ -31,6 +32,16 @@ _COMMON_FIELDS = {
     vol.Optional("title"): vol.All(cv.string, vol.Length(max=120)),
     vol.Optional("event_id"): vol.All(cv.string, vol.Match(r"^[A-Za-z0-9_.:-]{1,128}$")),
     vol.Optional("run_id"): vol.All(cv.string, vol.Match(r"^[A-Za-z0-9_.:-]{1,128}$")),
+    vol.Optional("mode"): vol.In(DISPLAY_MODES),
+    vol.Optional("user_text"): vol.All(cv.string, vol.Length(min=1, max=12000)),
+    vol.Optional("messages"): vol.All(
+        vol.Length(min=1, max=20),
+        [vol.Schema({
+            vol.Required("role"): vol.In(("user", "assistant")),
+            vol.Required("content"): vol.All(cv.string, vol.Length(min=1, max=12000)),
+            vol.Optional("meta"): vol.All(cv.string, vol.Length(max=120)),
+        })],
+    ),
 }
 _ANSWER_SCHEMA = vol.Schema(
     {**_COMMON_FIELDS, vol.Required("text"): vol.All(cv.string, vol.Length(min=1, max=12000))}
@@ -62,7 +73,21 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         }
         if payload["status"] == "answer" and not payload["text"].strip():
             raise HomeAssistantError("An answer needs reply text")
-        for key in ("event_id", "run_id"):
+        if "user_text" in call.data and "messages" in call.data:
+            raise HomeAssistantError("Use user_text or messages, not both")
+        if "messages" in call.data:
+            messages = call.data["messages"]
+            if payload["status"] != "answer":
+                raise HomeAssistantError("A conversation snapshot requires an answer")
+            if any(not item["content"].strip() for item in messages) or sum(len(item["content"]) for item in messages) > 24000:
+                raise HomeAssistantError("Conversation messages must contain text and fit within 24000 characters")
+            if messages[-1]["role"] != "assistant" or messages[-1]["content"] != payload["text"]:
+                raise HomeAssistantError("The last conversation message must match the reply text")
+        if "user_text" in call.data and (
+            payload["status"] not in ("thinking", "answer") or not call.data["user_text"].strip()
+        ):
+            raise HomeAssistantError("User text requires thinking or an answer")
+        for key in ("event_id", "run_id", "mode", "user_text", "messages"):
             if key in call.data:
                 payload[key] = call.data[key]
         try:

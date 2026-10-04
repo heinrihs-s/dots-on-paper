@@ -26,6 +26,12 @@ Open **http://127.0.0.1:9035**. Select `data/credentials.json` in the browser co
 
 The data directory holds private credentials and SQLite state. It is excluded from Git and distributable archives. The publishing key can read and update state; the separate image key can only fetch rendered images. Use the image key for hardware clients.
 
+## Last reply or Full conversation
+
+Use the bridge preview's display mode control, Home Assistant's Display mode select, or `PATCH /api/settings` with `{"mode":"full_conversation"}`. The default is `last_reply`; switching changes the rendered screen and preserves the stored messages.
+
+Full conversation needs explicit turns from your assistant or automation. Supply `user_text` with a thinking update, then publish the assistant's answer, or send an answer with a `messages` snapshot. The bridge retains at most 20 turns and 24000 characters. It does not connect to a chat account to fetch history. [Request examples and limits](api.md#display-modes)
+
 ## Check the installation
 
 On Windows:

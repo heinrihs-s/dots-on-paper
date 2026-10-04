@@ -4,7 +4,7 @@ Dots on Paper exposes three MCP tools: `set_dot_status`, `publish_dot_reply`, an
 
 The local bridge and stdio MCP adapter have passed the checks listed in [verification.md](verification.md). A real dot account has not yet been connected, and the complete dot-to-device path remains unverified. The commands below describe the connection to test; they are not a record of a completed account setup.
 
-This is a tool integration. It does not subscribe to an undocumented ChatGPT reply webhook, scrape your chats, stream the full conversation, or replace your dot with a separate API model. An accepted tool result confirms the bridge stored the update; the display still refreshes according to its platform and configuration.
+This is a tool integration. It does not subscribe to an undocumented ChatGPT reply webhook, scrape your chats, capture account history, or replace your dot with a separate API model. An accepted tool result confirms the bridge stored the update; the display still refreshes according to its platform and configuration.
 
 ## Local plugin
 
@@ -146,7 +146,9 @@ Connection success does not guarantee tool use on every reply. Test the prompts 
 
 ## Tool inputs
 
-`publish_dot_reply` requires `text`. `set_dot_status` requires `status`, one of `idle`, `thinking`, or `error`. Both accept optional `character`, `dot_name`, `title`, `run_id`, and `event_id`; omitted `character` uses the current bridge selection. `get_dot_state` reads the stored display state. The bridge is the source of the tools' schemas and validation, so the stdio adapter forwards tool discovery rather than maintaining a second copy.
+`publish_dot_reply` requires `text`. `set_dot_status` requires `status`, one of `idle`, `thinking`, or `error`. Both accept optional `character`, `dot_name`, `title`, `run_id`, `event_id`, and `mode`; omitted `character` and `mode` use the current bridge selections. `get_dot_state` reads the stored display state. The bridge is the source of the tools' schemas and validation, so the stdio adapter forwards tool discovery rather than maintaining a second copy.
+
+Select `last_reply` for the answer alone or `full_conversation` for the supplied user and assistant turns. For a conversation, include the user's explicit `user_text` in the thinking call, then send the answer normally using the same run ID. Omit `user_text` on completion if it was already supplied. A standalone answer can include a user turn, or `publish_dot_reply` can replace history using a `messages` snapshot ending with an assistant turn identical to `text`. Use `user_text` or `messages`, not both. Only share turns the user wants on the display. [Examples and bounded history](api.md#display-modes)
 
 Choose a fresh `run_id` for each task and use it for the status and answer to prevent stale completion updates. A completion that supplies `run_id` must match the current active thinking run; mismatches are rejected. A standalone answer without `run_id` is accepted, so one-off publishing does not require a preceding thinking update. Keep a stable `event_id` when retrying the same update. The tools expose deliberate display updates, not a full dot activity log. There is no bundled Codex completion hook pretending to observe direct dot conversations.
 

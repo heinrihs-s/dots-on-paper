@@ -14,5 +14,6 @@ DEFAULT_POLL_INTERVAL = 5
 DEFAULT_FRAME_INTERVAL = 5
 PROFILES = ("trmnl_x", "trmnl", "inkplate", "kindle", "oep_296", "oep_400")
 CHARACTERS = ("artist", "curious", "bookish", "cool")
+DISPLAY_MODES = ("last_reply", "full_conversation")
 STATUSES = ("idle", "thinking", "answer", "error")
 EVENT_DOT_REPLY = "dot_reply"

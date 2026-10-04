@@ -6,7 +6,7 @@
 
 Display your dot's replies on an e-ink screen.
 
-Dots on Paper is a local MCP and Home Assistant bridge. It stores an assistant's answer and renders a PNG or BMP for your display. Choose one of four characters; the face changes while the answer stays put.
+Dots on Paper is a local MCP and Home Assistant bridge. It stores an assistant's answer and renders a PNG or BMP for your display. Choose one of four characters and show either the last reply or the supplied conversation.
 
 [![heidot's staged reminder reply ending with "Your calendar needs a lawyer"](campaign/media/dot-reminders.gif)](campaign/media/dot-reminders.mp4)
 
@@ -18,7 +18,8 @@ Authenticated publishing, rendering, browser preview, and MCP forwarding have pa
 
 - A local bridge with persistent replies and separate keys for publishing and reading images.
 - Three MCP tools: `set_dot_status`, `publish_dot_reply`, and `get_dot_state`.
-- A Home Assistant image entity, reply/status sensors, character picker, actions, and new-reply events.
+- Last reply and Full conversation display modes, with distinct user and assistant messages.
+- A Home Assistant image entity, reply/status sensors, character and mode pickers, actions, and new-reply events.
 - TRMNL BYOS endpoints, ESPHome and OpenEPaperLink examples, and custom PNG/BMP sizes.
 - Artist, Curious, Bookish, and Cool characters.
 - A standalone animation demo and editable campaign assets.
@@ -28,6 +29,12 @@ Your dot or HA assistant → authenticated bridge → PNG / BMP → e-ink displa
 ```
 
 Publishing is an explicit tool call from the dot. During thinking, the bridge serves changing e-ink frames. When the answer arrives, it switches to one fixed result image and holds it until the next update. There is no automatic feed of every ChatGPT reply. The films use the actual e-ink renderer at an accelerated cadence; physical refresh depends on your device.
+
+## Choose a display mode
+
+**Last reply** keeps the latest answer on screen. **Full conversation** shows the user and assistant turns supplied to the bridge, using dark bubbles for your messages. Switch modes in the bridge preview or Home Assistant's Display mode picker; the setting persists after restart.
+
+For Full conversation, pass `mode: "full_conversation"` and the explicit `user_text` when reporting thinking. Publish the answer with the same `run_id`; the bridge adds the assistant turn. An answer can also include a `messages` snapshot ending with that reply. History is limited to 20 turns and 24000 characters, and the renderer fits the most recent turns to each screen. [API examples](docs/api.md#display-modes)
 
 ## Run the bridge
 
@@ -81,7 +88,7 @@ TRMNL uses a 15-second sleep while thinking and returns to the normal 60-second 
 node demo/serve.mjs
 ```
 
-Open http://127.0.0.1:9024/?example=calendar-chaos. Switch between the four characters, try the "NOO" conversation, or write a multiline reply. The same layout handles each example, including paragraphs and lists.
+Open http://127.0.0.1:9024/?example=calendar-chaos. Switch between the four characters, try the interruption conversation, or write a multiline reply. The [website demo](https://heinrihs.org/dotsonpaper/#demo) shows both display modes and starts when you reach it.
 
 The [campaign](campaign/README.md) includes GIFs, MP4s, native screen stills, and four short posts. The wife-texting exchange is a scripted draft that gets cancelled; it sends no message. The Instinct-inspired image is an independent concept. There is no Instinct connector. [Product facts](docs/product-facts.md)
 

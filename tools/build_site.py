@@ -14,15 +14,23 @@ sys.path.insert(0, str(ROOT / "src"))
 from dots_on_paper.render import _mascot, _source_image, render_image
 
 OUTPUT = ROOT / "site" / "dist" / "dotsonpaper"
-REPLIES = {
-    "reminders": "Here are your reminders:\n\n- Tonight: Date with Paula.\n- Tomorrow morning: Breakfast with Amy.\n- Lunch: With your wife.\n\nYour calendar needs a lawyer.",
+REMINDER = "Here are your reminders:\n\n- Tonight: Date with Paula.\n- Tomorrow morning: Breakfast with Amy.\n- Lunch: With your wife.\n\nYour calendar needs a lawyer."
+EXAMPLES = {
+    "reminders": [
+        {"role": "user", "content": "What do I have coming up?"},
+        {"role": "assistant", "content": REMINDER},
+    ],
+    "interruption": [
+        {"role": "assistant", "content": "Okay, understood. Texting your wife about your date with Paula tonight.", "meta": "Draft ready · Waiting for approval"},
+        {"role": "user", "content": "NOO"},
+        {"role": "assistant", "content": "Cancelled. Nothing sent."},
+    ],
 }
-MESSAGES = [
-    {"role": "assistant", "content": "Okay, understood. Texting your wife about your date with Paula tonight.", "meta": "Draft ready · Waiting for approval"},
-    {"role": "user", "content": "NOO"},
-    {"role": "assistant", "content": "Cancelled. Nothing sent."},
-]
 ASSETS = {"artist": "beret-dot.png", "curious": "curious-dot.png", "bookish": "bookish-dot.png", "cool": "cool-dot.png"}
+RETIRED_ASSETS = [
+    *(f"assets/{name}" for name in ("dot-noo.mp4", "dot-reminders.mp4", "dot-conversation.mp4")),
+    *(f"assets/frames/{character}-{suffix}.png" for character in ASSETS for suffix in ("noo", "reminders", "conversation", "conversation-1", "conversation-2", "conversation-3")),
+]
 
 
 def copy_text(source: Path, destination: Path) -> None:
@@ -36,8 +44,8 @@ def main() -> None:
     frames = assets / "frames"
     frames.mkdir(parents=True, exist_ok=True)
     # Remove only known, retired showcase assets from a previous build.
-    for path in [assets / "dot-noo.mp4", *(frames / f"{character}-noo.png" for character in ASSETS)]:
-        path.unlink(missing_ok=True)
+    for relative in RETIRED_ASSETS:
+        (OUTPUT / relative).unlink(missing_ok=True)
     for name in ("index.html", "styles.css", "site.js"):
         copy_text(ROOT / "site" / name, OUTPUT / name)
     for name in ("logo-cool.svg", "icon-cool.svg"):
@@ -57,17 +65,12 @@ def main() -> None:
         state = {"character": character, "dot_name": "heidot", "title": "", "status": "thinking", "text": ""}
         for frame in range(12):
             (frames / f"{character}-thinking-{frame}.png").write_bytes(render_image(state, 960, 720, levels=16, frame=frame))
-        for example, text in REPLIES.items():
-            result = {**state, "status": "answer", "title": "Reply", "text": text}
-            (frames / f"{character}-{example}.png").write_bytes(render_image(result, 960, 720, levels=16, frame=11))
-        for turn in range(1, 4):
-            result = {**state, "status": "answer", "title": "Conversation", "messages": MESSAGES[:turn], "text": ""}
-            content = render_image(result, 960, 720, levels=16, frame=11)
-            (frames / f"{character}-conversation-{turn}.png").write_bytes(content)
-            if turn == 3:
-                (frames / f"{character}-conversation.png").write_bytes(content)
-    for name in ("dot-reminders.mp4", "dot-conversation.mp4"):
-        shutil.copy2(ROOT / "campaign" / "media" / name, assets / name)
+        for example, messages in EXAMPLES.items():
+            result = {**state, "status": "answer", "mode": "last_reply", "title": "Reply", "text": messages[-1]["content"], "messages": messages}
+            (frames / f"{character}-{example}-last_reply.png").write_bytes(render_image(result, 960, 720, levels=16, frame=11))
+            for turn in range(1, len(messages) + 1):
+                result = {**state, "status": "answer", "mode": "full_conversation", "title": "Conversation", "messages": messages[:turn], "text": messages[turn-1]["content"]}
+                (frames / f"{character}-{example}-full_conversation-{turn}.png").write_bytes(render_image(result, 960, 720, levels=16, frame=11))
     metadata = {
         "source": "https://github.com/heinrihs-s/dots-on-paper",
         "canonical": "https://heinrihs.org/dotsonpaper/",

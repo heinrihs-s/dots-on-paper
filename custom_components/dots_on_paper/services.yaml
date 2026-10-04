@@ -14,6 +14,17 @@ show_answer:
       selector:
         select:
           options: [artist, curious, bookish, cool]
+    mode:
+      selector:
+        select:
+          options: [last_reply, full_conversation]
+    user_text:
+      selector:
+        text:
+          multiline: true
+    messages:
+      selector:
+        object:
     dot_name:
       selector:
         text:
@@ -42,6 +53,17 @@ set_state:
       selector:
         select:
           options: [artist, curious, bookish, cool]
+    mode:
+      selector:
+        select:
+          options: [last_reply, full_conversation]
+    user_text:
+      selector:
+        text:
+          multiline: true
+    messages:
+      selector:
+        object:
     text:
       selector:
         text:

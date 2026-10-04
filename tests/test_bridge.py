@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sqlite3
 import tempfile
 import threading
 import unittest
@@ -172,6 +173,108 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
         _, duplicate = self.event(**data)
         self.assertEqual(first, duplicate)
         self.assertEqual(self.event(**{**data, "text": "Changed"})[0], 409)
+
+    def test_display_mode_switch_retains_answer_and_history_and_invalidates_image(self):
+        _, answer = self.event(status="answer", text="The draft is ready.", user_text="Write a draft.")
+        self.assertEqual(answer["mode"], "last_reply")
+        last_image = self.request("GET", "/image.png?width=800&height=600")
+        status, _, raw = self.request("PATCH", "/api/settings", {"mode": "full_conversation"})
+        selected = json.loads(raw)
+        self.assertEqual(status, 200)
+        self.assertEqual(selected["messages"], answer["messages"])
+        self.assertEqual(selected["text"], answer["text"])
+        self.assertEqual(selected["run_id"], answer["run_id"])
+        self.assertEqual(selected["revision"], answer["revision"] + 1)
+        conversation = self.request("GET", "/image.png?width=800&height=600")
+        self.assertNotEqual(last_image[1]["ETag"], conversation[1]["ETag"])
+        # A completed display remains fixed even if a caller requests a
+        # different animation frame. Re-selecting its mode is also a no-op.
+        held = self.request("GET", "/image.png?width=800&height=600&frame=2")
+        self.assertEqual(conversation[2], held[2])
+        self.assertEqual(json.loads(self.request("PATCH", "/api/settings", {"mode": "full_conversation"})[2]), selected)
+        self.request("PATCH", "/api/settings", {"mode": "last_reply", "character": "artist"})
+        self.assertEqual(self.request("GET", "/image.png?width=800&height=600")[2], last_image[2])
+        self.assertEqual(self.store.read()["messages"], answer["messages"])
+
+    def test_thinking_prompt_and_completion_do_not_repeat_the_same_user_turn(self):
+        prompt = dict(status="thinking", mode="full_conversation", run_id="conversation-run", user_text="Can you check this?")
+        self.event(**prompt, event_id="thinking-first")
+        self.event(**prompt, event_id="thinking-again")
+        self.event(status="answer", run_id="conversation-run", user_text=prompt["user_text"], text="Checked.", event_id="conversation-answer")
+        expected = [{"role": "user", "content": "Can you check this?"}, {"role": "assistant", "content": "Checked."}]
+        self.assertEqual(self.store.read()["messages"], expected)
+        self.event(status="answer", run_id="conversation-run", user_text=prompt["user_text"], text="Checked.", event_id="conversation-answer")
+        self.assertEqual(self.store.read()["messages"], expected)
+        self.event(status="thinking", run_id="next-conversation", user_text="And this one?")
+        self.event(status="error", run_id="next-conversation", text="Please try again.")
+        self.assertEqual(self.store.read()["mode"], "full_conversation")
+        self.assertEqual(self.store.read()["messages"][-1], {"role": "user", "content": "And this one?"})
+
+    def test_explicit_conversation_snapshot_replaces_only_authorized_history(self):
+        self.event(status="answer", text="Old reply.")
+        messages = [{"role": "user", "content": "Stop."}, {"role": "assistant", "content": "Cancelled.", "meta": "Nothing sent"}]
+        status, state = self.event(status="answer", text="Cancelled.", mode="full_conversation", messages=messages)
+        self.assertEqual(status, 200)
+        self.assertEqual(state["messages"], messages)
+        self.assertEqual(state["text"], "Cancelled.")
+        self.assertEqual(state["mode"], "full_conversation")
+        self.event(status="answer", text="A later reply.")
+        self.assertEqual(self.store.read()["messages"], messages + [{"role": "assistant", "content": "A later reply."}])
+
+    def test_conversation_history_is_bounded_and_survives_reopening(self):
+        for index in range(15):
+            self.store.apply(dict(status="answer", mode="full_conversation", user_text=f"Prompt {index}", text=f"Reply {index}"))
+        state = self.store.read()
+        self.assertEqual(len(state["messages"]), 20)
+        self.assertEqual(state["messages"][0]["content"], "Prompt 5")
+        for index in range(4):
+            self.store.apply(dict(status="answer", user_text=str(index) * 12000, text="x" * 12000))
+        state = self.store.read()
+        self.assertEqual(len(state["messages"]), 2)
+        self.assertEqual(sum(len(message["content"]) for message in state["messages"]), 24000)
+        reopened = StateStore(Path(self.temp.name) / "state.sqlite3")
+        try:
+            self.assertEqual(reopened.read(), state)
+        finally:
+            reopened.close()
+
+    def test_existing_state_is_upgraded_without_losing_the_retained_reply(self):
+        path = Path(self.temp.name) / "old-state.sqlite3"
+        legacy = dict(status="answer", character="cool", dot_name="heidot", title="", text="Retained.", revision=7, event_id="old", run_id="old-run", updated_at="2026-10-03T10:00:00Z")
+        db = sqlite3.connect(path)
+        try:
+            db.execute("CREATE TABLE state (id INTEGER PRIMARY KEY, value TEXT NOT NULL)")
+            db.execute("INSERT INTO state VALUES (1, ?)", (json.dumps(legacy),))
+            db.commit()
+        finally:
+            db.close()
+        migrated = StateStore(path)
+        try:
+            self.assertEqual(migrated.read(), {**legacy, "mode": "last_reply", "messages": [{"role": "assistant", "content": "Retained."}]})
+        finally:
+            migrated.close()
+
+    def test_invalid_modes_and_conversation_payloads_are_rejected_atomically(self):
+        bad = [
+            dict(mode="thread"), dict(user_text=""), dict(user_text="private\x00"),
+            dict(messages=[]), dict(messages="thread"), dict(messages=[{"role": "tool", "content": "Hidden"}]),
+            dict(messages=[{"role": "assistant", "content": "Different"}]),
+            dict(messages=[{"role": "user", "content": "Reply"}]),
+            dict(messages=[{"role": "assistant", "content": "Reply", "meta": "x" * 121}]),
+            dict(messages=[{"role": "assistant", "content": "Reply", "meta": "\ud800"}]),
+            dict(messages=[{"role": "assistant", "content": "Reply", "secret": "hidden"}]),
+            dict(messages=[{"role": "assistant", "content": "Reply"}], user_text="Prompt"),
+            dict(messages=[{"role": "user", "content": "x" * 12000}, {"role": "user", "content": "x" * 12000}, {"role": "assistant", "content": "Reply"}]),
+            dict(messages=[{"role": "assistant", "content": "Reply"}] * 21),
+        ]
+        for extra in bad:
+            with self.subTest(extra=extra):
+                self.assertEqual(self.event(status="answer", text="Reply", **extra)[0], 400)
+        for value in ({}, {"mode": "thread"}, {"mode": []}, {"mode": "last_reply", "messages": []}):
+            self.assertEqual(self.request("PATCH", "/api/settings", value)[0], 400)
+        self.assertEqual(self.event(status="idle", user_text="Prompt")[0], 400)
+        self.assertEqual(self.event(status="thinking", messages=[{"role": "assistant", "content": "Reply"}])[0], 400)
+        self.assertEqual(self.store.read()["revision"], 0)
 
     def test_concurrent_retries_write_once(self):
         payload = dict(status="answer", text="One reply", event_id="concurrent-id")

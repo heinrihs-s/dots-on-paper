@@ -243,6 +243,34 @@ class RendererTests(unittest.TestCase):
         self.assertEqual(self.decode(render_image(state, 600, 800)).size, (600, 800))
         self.assertEqual(state["messages"], original)
 
+    def test_last_reply_mode_ignores_retained_history_without_erasing_it(self):
+        messages = [{"role": "user", "content": "A private prompt supplied for display."},
+                    {"role": "assistant", "content": "The latest answer."}]
+        state = self.state(mode="last_reply", text="The latest answer.", messages=messages)
+        for dimensions in ((296, 128), (800, 600), (600, 800)):
+            with self.subTest(dimensions=dimensions):
+                self.assertEqual(render_image(state, *dimensions), render_image({**state, "messages": []}, *dimensions))
+                self.assertNotEqual(render_image(state, *dimensions), render_image({**state, "mode": "full_conversation"}, *dimensions))
+        self.assertEqual(state["messages"], messages)
+
+    def test_full_conversation_uses_turns_even_when_latest_text_is_present(self):
+        messages = [{"role": "assistant", "content": "First answer."},
+                    {"role": "user", "content": "Stop."},
+                    {"role": "assistant", "content": "Cancelled."}]
+        state = self.state(mode="full_conversation", text="Cancelled.", messages=messages)
+        self.assertEqual(render_image(state, 960, 720), render_image({**state, "text": ""}, 960, 720))
+        # Small tags show a high contrast prompt strip and the latest reply;
+        # earlier long turns must not hide the answer at the end of the thread.
+        small = render_image(state, 296, 128)
+        changed = {**state, "messages": [*messages[:-1], {"role": "assistant", "content": "A different result."}]}
+        self.assertNotEqual(small, render_image(changed, 296, 128))
+
+    def test_last_reply_with_no_text_uses_latest_assistant_turn(self):
+        state = self.state(mode="last_reply", text="", messages=[
+            {"role": "assistant", "content": "Earlier."}, {"role": "user", "content": "Question."},
+            {"role": "assistant", "content": "Latest."}])
+        self.assertEqual(render_image(state, 800, 600), render_image({**state, "text": "Latest.", "messages": []}, 800, 600))
+
 
 if __name__ == "__main__":
     unittest.main()

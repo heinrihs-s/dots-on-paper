@@ -2,40 +2,65 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const characters = ['artist', 'curious', 'bookish', 'cool'];
+  const modes = ['last_reply', 'full_conversation'];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const replies = {
-    reminders: 'heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.',
-    conversation: 'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO. heidot: Cancelled. Nothing sent.',
+  const examples = {
+    reminders: {
+      text: 'Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.',
+      punchline: '“Your calendar needs a lawyer.”',
+      labels: ['Your question', 'Dot’s reply'],
+      turns: ['You: What do I have coming up?', 'You: What do I have coming up? heidot: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.'],
+    },
+    interruption: {
+      text: 'Cancelled. Nothing sent.',
+      punchline: '“Cancelled. Nothing sent.”',
+      labels: ['The draft', 'Your reply', 'Dot’s reply'],
+      turns: [
+        'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval.',
+        'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO.',
+        'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO. heidot: Cancelled. Nothing sent.',
+      ],
+    },
   };
-  const turns = [
-    'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval.',
-    'heidot: Okay, understood. Texting your wife about your date with Paula tonight. Draft ready, waiting for approval. You: NOO.',
-    replies.conversation,
-  ];
-  let character = 'cool', example = 'reminders', frame = 11, turn = 3;
-  let timer = null, generation = 0, playing = false;
+  let character = 'cool', example = 'reminders', mode = 'last_reply';
+  let timer = null, generation = 0, playing = false, inView = false;
   const loaded = new Map();
   const frameUrl = (id, index) => `./assets/frames/${id}-thinking-${index}.png`;
+  const resultUrl = (index = examples[example].turns.length) => mode === 'full_conversation'
+    ? `./assets/frames/${character}-${example}-full_conversation-${index}.png`
+    : `./assets/frames/${character}-${example}-last_reply.png`;
   function stop() { clearTimeout(timer); timer = null; playing = false; generation++; }
   function setScreen(url, alt) { $('screen').src = url; $('screen').alt = alt; }
-  function setTurn(index) {
-    turn = index;
-    setScreen(`./assets/frames/${character}-conversation-${turn}.png`, turns[turn - 1]);
-    document.querySelectorAll('[data-turn]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.turn) === turn)));
-    $('demo-status').textContent = ['Draft ready', 'Your reply', 'Conversation retained'][turn - 1];
-  }
   function resetReplay() {
     $('replay').disabled = false;
-    $('replay').querySelector('span').textContent = example === 'conversation' ? 'Replay conversation' : 'Replay thinking';
+    $('skip-preview').hidden = true;
+    $('replay').querySelector('span').textContent = mode === 'full_conversation' ? 'Replay conversation' : 'Replay thinking';
+  }
+  function setTurn(index) {
+    const data = examples[example];
+    if (index < 1 || index > data.turns.length) return;
+    setScreen(resultUrl(index), data.turns[index - 1]);
+    document.querySelectorAll('[data-turn]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.turn) === index)));
+    $('demo-status').textContent = index === data.turns.length ? 'Conversation retained' : data.labels[index - 1];
   }
   function showResult() {
-    playing = false;
-    if (example === 'conversation') setTurn(3);
+    playing = false; timer = null;
+    if (mode === 'full_conversation') setTurn(examples[example].turns.length);
     else {
-      setScreen(`./assets/frames/${character}-${example}.png`, replies[example]);
+      setScreen(resultUrl(), `heidot’s reply: ${examples[example].text}`);
       $('demo-status').textContent = 'Answer retained';
     }
     resetReplay();
+  }
+  function updateControls() {
+    $('conversation-controls').hidden = mode !== 'full_conversation';
+    $('mode-description').textContent = mode === 'full_conversation' ? 'Both sides, kept in view.' : 'One answer, kept on paper.';
+    $('demo-punchline').textContent = examples[example].punchline;
+    document.querySelectorAll('[data-turn]').forEach(button => {
+      const label = examples[example].labels[Number(button.dataset.turn) - 1];
+      button.hidden = !label;
+      if (label) button.textContent = label;
+    });
   }
   function loadFrames(id) {
     if (!loaded.has(id)) {
@@ -50,15 +75,11 @@
     return loaded.get(id);
   }
   async function replay() {
-    closeFilm(false);
     stop();
-    if (reducedMotion.matches) {
-      showResult();
-      $('demo-status').textContent = 'Answer retained · reduced motion';
-      return;
-    }
+    if (reducedMotion.matches) { showResult(); return; }
     const token = generation;
     $('replay').disabled = true;
+    $('skip-preview').hidden = false;
     $('replay').querySelector('span').textContent = 'Loading frames…';
     $('demo-status').textContent = 'Preparing the preview';
     try { await loadFrames(character); }
@@ -69,26 +90,23 @@
       return;
     }
     if (token !== generation) return;
-    if (reducedMotion.matches) {
-      showResult();
-      $('demo-status').textContent = 'Answer retained · reduced motion';
-      return;
-    }
-    playing = true; frame = 0;
+    if (reducedMotion.matches || document.hidden) { showResult(); return; }
+    playing = true;
     $('replay').querySelector('span').textContent = 'Thinking…';
     $('demo-status').textContent = 'Thinking · accelerated preview';
+    let frame = 0;
+    const advance = index => {
+      if (token !== generation) return;
+      setTurn(index);
+      if (index === examples[example].turns.length) { playing = false; timer = null; resetReplay(); return; }
+      $('replay').querySelector('span').textContent = 'Conversation…';
+      timer = setTimeout(() => advance(index + 1), example === 'interruption' && index === 1 ? 2200 : 1400);
+    };
     const tick = () => {
       if (token !== generation) return;
       if (frame >= 12) {
-        if (example !== 'conversation') { showResult(); return; }
-        const advance = index => {
-          if (token !== generation) return;
-          setTurn(index);
-          if (index === 3) { playing = false; resetReplay(); return; }
-          $('replay').querySelector('span').textContent = 'Conversation…';
-          timer = setTimeout(() => advance(index + 1), index === 1 ? 2200 : 1400);
-        };
-        advance(1);
+        if (mode === 'full_conversation') advance(1);
+        else showResult();
         return;
       }
       setScreen(frameUrl(character, frame++), `${character} companion thinking. Accelerated demonstration.`);
@@ -96,58 +114,46 @@
     };
     tick();
   }
+  function changed() {
+    stop(); updateControls(); showResult();
+    if (inView && !reducedMotion.matches && !document.hidden) replay();
+  }
   $('replay').addEventListener('click', replay);
+  $('skip-preview').addEventListener('click', () => { stop(); showResult(); });
   document.querySelectorAll('[data-turn]').forEach(button => button.addEventListener('click', () => {
-    if (example !== 'conversation') return;
+    if (mode !== 'full_conversation') return;
     stop(); setTurn(Number(button.dataset.turn)); resetReplay();
   }));
-  document.querySelectorAll('[data-character]').forEach(button => button.addEventListener('click', () => {
-    if (!characters.includes(button.dataset.character)) return;
-    stop(); character = button.dataset.character;
-    document.querySelectorAll('[data-character]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
-    showResult();
-  }));
-  document.querySelectorAll('[data-example]').forEach(button => button.addEventListener('click', () => {
-    if (!Object.hasOwn(replies, button.dataset.example)) return;
-    stop(); example = button.dataset.example;
-    document.querySelectorAll('[data-example]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
-    $('demo-punchline').textContent = example === 'reminders' ? '“Your calendar needs a lawyer.”' : '“Cancelled. Nothing sent.”';
-    $('conversation-controls').hidden = example !== 'conversation';
-    closeFilm(false);
-    showResult();
-  }));
-  const film = $('film');
-  function closeFilm(restoreFocus = true) {
-    film.pause();
-    $('film-panel').hidden = true;
-    $('film-link').setAttribute('aria-expanded', 'false');
-    if (restoreFocus) $('film-link').focus({ preventScroll: true });
+  for (const [attribute, valid, set] of [
+    ['character', characters, value => { character = value; }],
+    ['mode', modes, value => { mode = value; }],
+    ['example', Object.keys(examples), value => { example = value; }],
+  ]) {
+    document.querySelectorAll(`[data-${attribute}]`).forEach(button => button.addEventListener('click', () => {
+      const value = button.dataset[attribute];
+      if (!valid.includes(value) || button.getAttribute('aria-pressed') === 'true') return;
+      set(value);
+      document.querySelectorAll(`[data-${attribute}]`).forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
+      changed();
+    }));
   }
-  $('film-link').addEventListener('click', () => {
-    if (!$('film-panel').hidden) { closeFilm(); return; }
-    stop(); showResult();
-    const source = `./assets/dot-${example}.mp4`;
-    $('film-title').textContent = example === 'conversation' ? 'The whole conversation.' : 'A reply that stays.';
-    $('film-status').textContent = '';
-    film.poster = `./assets/frames/cool-${example}.png`;
-    if (film.getAttribute('src') !== source) { film.src = source; film.load(); }
-    else film.currentTime = 0;
-    $('film-panel').hidden = false;
-    $('film-link').setAttribute('aria-expanded', 'true');
-    $('film-panel').scrollIntoView({ block: 'nearest', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
-    film.focus({ preventScroll: true });
-    film.play().catch(() => { if (!$('film-panel').hidden) $('film-status').textContent = 'Press play to start the film.'; });
-  });
-  $('close-film').addEventListener('click', () => closeFilm());
-  $('film-panel').addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); closeFilm(); } });
-  film.addEventListener('error', () => { $('film-status').textContent = 'The film couldn’t load. Close it and try again.'; });
-  film.addEventListener('ended', () => { $('film-status').textContent = 'The result stays on the screen.'; });
   reducedMotion.addEventListener('change', () => { if (playing || timer || $('replay').disabled) { stop(); showResult(); } });
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) return;
-    film.pause();
-    if (playing || $('replay').disabled) { stop(); showResult(); }
+    if (document.hidden && (playing || $('replay').disabled)) { stop(); showResult(); }
   });
+  // Observe the screen, so mobile visitors can actually see the sequence.
+  // Each entry plays once and settles; there is no background animation loop.
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries[0].isIntersecting && entries[0].intersectionRatio >= .2;
+      if (visible === inView) return;
+      inView = visible;
+      if (visible && !document.hidden && !reducedMotion.matches) replay();
+      else if (playing || $('replay').disabled) { stop(); showResult(); }
+    }, { threshold: [0, .2], rootMargin: '0px 0px -5% 0px' });
+    observer.observe($('demo-device'));
+  }
+  updateControls();
 
   document.querySelectorAll('[data-os]').forEach(button => button.addEventListener('click', () => {
     document.querySelectorAll('[data-os]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));

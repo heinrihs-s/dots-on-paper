@@ -13,6 +13,15 @@ const adapter = fileURLToPath(new URL('../src/mcp-stdio.mjs', import.meta.url));
 const fakeToken = 'fixture-token-not-a-live-credential';
 const supportedVersions = ['2025-11-25', '2025-06-18', '2025-03-26'];
 const toolNames = ['publish_dot_reply', 'set_dot_status', 'get_dot_state'];
+const displayModeSchema = { type: 'string', enum: ['last_reply', 'full_conversation'] };
+const conversationSchema = {
+  type: 'array', minItems: 1, maxItems: 20,
+  items: { type: 'object', required: ['role', 'content'], properties: {
+    role: { type: 'string', enum: ['user', 'assistant'] },
+    content: { type: 'string', minLength: 1, maxLength: 12000 },
+    meta: { type: 'string', maxLength: 120 },
+  }, additionalProperties: false },
+};
 
 function launch(environment, cwd) {
   const child = spawn(process.execPath, [adapter], {
@@ -95,7 +104,11 @@ test('MCP stdio proxy with a local fake bridge', async (t) => {
       };
       if (failure === 'unknown-protocol') result.protocolVersion = 'unknown';
     } else if (rpc.method === 'tools/list') {
-      result = { tools: toolNames.map((name) => ({ name, inputSchema: { type: 'object', properties: {} } })) };
+      result = { tools: toolNames.map((name) => ({ name, inputSchema: { type: 'object', properties: name === 'get_dot_state' ? {} : {
+        mode: displayModeSchema,
+        user_text: { type: 'string', minLength: 1, maxLength: 12000 },
+        ...(name === 'publish_dot_reply' ? { messages: conversationSchema } : {}),
+      } } })) };
     } else if (rpc.method === 'tools/call') {
       result = failure === 'tool-error'
         ? { isError: true, content: [{ type: 'text', text: `Unexpected secret: ${fakeToken}` }] }
@@ -139,6 +152,30 @@ test('MCP stdio proxy with a local fake bridge', async (t) => {
         assert(supportedVersions.includes(request.headers['mcp-protocol-version']));
       }
       assert.equal(requests.at(-1).headers['mcp-protocol-version'], '2025-03-26');
+    });
+
+    await t.test('display modes and explicit conversation pass through without losing their schema or turns', async () => {
+      const client = launch(normalEnvironment, directory);
+      const listed = await client.rpc({ jsonrpc: '2.0', id: 14, method: 'tools/list' });
+      assert.equal(listed.result.tools.length, 3);
+      const publishSchema = listed.result.tools.find((tool) => tool.name === 'publish_dot_reply').inputSchema;
+      assert.deepEqual(publishSchema.properties.mode, displayModeSchema);
+      assert.deepEqual(publishSchema.properties.messages, conversationSchema);
+      assert.equal(Object.hasOwn(listed.result.tools.find((tool) => tool.name === 'set_dot_status').inputSchema.properties, 'messages'), false);
+      const thinkingArguments = { status: 'thinking', mode: 'full_conversation', user_text: 'Should I cancel?', run_id: 'conversation-1' };
+      const thinking = await client.rpc({ jsonrpc: '2.0', id: 15, method: 'tools/call', params: { name: 'set_dot_status', arguments: thinkingArguments } });
+      assert.deepEqual(thinking.result.structuredContent.arguments, thinkingArguments);
+      const messages = [
+        { role: 'user', content: 'Should I cancel?' },
+        { role: 'assistant', content: 'Cancelled. Nothing sent.', meta: 'Reply' },
+      ];
+      const arguments_ = { mode: 'full_conversation', messages, text: messages.at(-1).content, run_id: 'conversation-1' };
+      const published = await client.rpc({ jsonrpc: '2.0', id: 16, method: 'tools/call', params: { name: 'publish_dot_reply', arguments: arguments_ } });
+      assert.deepEqual(published.result.structuredContent.arguments, arguments_);
+      const lastReply = { mode: 'last_reply', text: 'One answer only.' };
+      assert.deepEqual((await client.rpc({ jsonrpc: '2.0', id: 17, method: 'tools/call', params: { name: 'publish_dot_reply', arguments: lastReply } })).result.structuredContent.arguments, lastReply);
+      assert.equal(await client.finish(), 0);
+      assert.equal(client.stderr, '');
     });
 
     await t.test('invalid inputs and unknown methods stay local', async () => {

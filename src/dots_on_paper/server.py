@@ -15,7 +15,7 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 from . import __version__
 from .config import Config, PROFILES
 from .render import render_image
-from .state import CHARACTERS, StateError, StateStore
+from .state import CHARACTERS, DISPLAY_MODES, MAX_MESSAGES, StateError, StateStore
 
 LOGGER = logging.getLogger(__name__)
 MAX_BODY = 65536
@@ -44,17 +44,25 @@ def tool_schema() -> list[dict]:
         "character": {"type": "string", "enum": list(CHARACTERS), "description": "Optional; otherwise keep the selected character."},
         "dot_name": {"type": "string", "maxLength": 80},
         "title": {"type": "string", "maxLength": 120},
+        "mode": {"type": "string", "enum": list(DISPLAY_MODES), "description": "Optional retained display mode: show only the latest answer or the explicitly published conversation."},
         "run_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]{1,128}$", "description": "Use the same unique ID for thinking and completion to reject stale replies."},
         "event_id": {"type": "string", "pattern": "^[A-Za-z0-9_.:-]{1,128}$", "description": "Optional stable ID for safe retries of identical events."},
     }
+    user_text = {"type": "string", "minLength": 1, "maxLength": 12000,
+                 "description": "Optional user message explicitly authorized for display. The bridge does not capture chat automatically."}
+    messages = dict(type="array", minItems=1, maxItems=MAX_MESSAGES,
+                    description="Optional replacement conversation, at most 24,000 content characters. The last turn must be assistant content matching text. Cannot be combined with user_text.",
+                    items=dict(type="object", properties=dict(role=dict(type="string", enum=["user", "assistant"]),
+                               content=dict(type="string", minLength=1, maxLength=12000), meta=dict(type="string", maxLength=120)),
+                               required=["role", "content"], additionalProperties=False))
     return [
-        dict(name="publish_dot_reply", description="Put your actual completed answer on the user's connected e-ink display. This writes externally visible text. Publish only the answer authorized by the user; never private reasoning, credentials or an invented response.",
-             inputSchema=dict(type="object", properties={**common, "text": dict(type="string", minLength=1, maxLength=12000)}, required=["text"], additionalProperties=False),
+        dict(name="publish_dot_reply", description="Put your actual completed answer on the user's connected e-ink display. Optional user_text or messages supplies authorized conversation turns. This writes externally visible text. Publish only content authorized by the user; never private reasoning, credentials or an invented response.",
+             inputSchema=dict(type="object", properties={**common, "text": dict(type="string", minLength=1, maxLength=12000), "user_text": user_text, "messages": messages}, required=["text"], additionalProperties=False),
              annotations=dict(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)),
         dict(name="set_dot_status", description="Set the connected dot display to thinking, idle or error. Use a fresh run_id for thinking and the same ID when publishing its answer. Displayed error text must not include secrets.",
-             inputSchema=dict(type="object", properties={**common, "status": dict(type="string", enum=["idle", "thinking", "error"]), "text": dict(type="string", maxLength=12000)}, required=["status"], additionalProperties=False),
+             inputSchema=dict(type="object", properties={**common, "status": dict(type="string", enum=["idle", "thinking", "error"]), "text": dict(type="string", maxLength=12000), "user_text": {**user_text, "description": "Optional authorized user message for a thinking run only."}}, required=["status"], additionalProperties=False),
              annotations=dict(readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False)),
-        dict(name="get_dot_state", description="Read the latest selected character, display status and published reply. No account or device credentials are returned.",
+        dict(name="get_dot_state", description="Read the selected character, display mode, status, latest reply and explicitly published conversation. No account or device credentials are returned.",
              inputSchema=dict(type="object", properties={}, additionalProperties=False),
              annotations=dict(readOnlyHint=True, idempotentHint=True, openWorldHint=False)),
     ]
@@ -258,7 +266,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
                     state = self.server.store.read()
                     config = self.server.config
                     animated = state["status"] == "thinking"
-                    return self.json(200, dict(status=state["status"], revision=state["revision"],
+                    return self.json(200, dict(status=state["status"], mode=state["mode"], revision=state["revision"],
                         animated=animated, frame=state_frame(state, config.frame_seconds),
                         frame_count=FRAME_COUNT, frame_seconds=config.frame_seconds,
                         next_poll_seconds=config.frame_seconds if animated else config.refresh_seconds))
