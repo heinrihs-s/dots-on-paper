@@ -110,7 +110,7 @@
         return;
       }
       setScreen(frameUrl(character, frame++), `${character} companion thinking. Accelerated demonstration.`);
-      timer = setTimeout(tick, 500);
+      timer = setTimeout(tick, 250);
     };
     tick();
   }
@@ -126,8 +126,10 @@
   }));
   for (const [attribute, valid, set] of [
     ['character', characters, value => { character = value; }],
-    ['mode', modes, value => { mode = value; }],
-    ['example', Object.keys(examples), value => { example = value; }],
+    ['mode', modes, value => {
+      mode = value;
+      example = mode === 'full_conversation' ? 'interruption' : 'reminders';
+    }],
   ]) {
     document.querySelectorAll(`[data-${attribute}]`).forEach(button => button.addEventListener('click', () => {
       const value = button.dataset[attribute];

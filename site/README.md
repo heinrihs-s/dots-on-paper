@@ -20,8 +20,8 @@ Production is served by the existing `heinrihs-s/heinrihs.org` static-site appli
 
 All links to full connection guides point to the public source repository. The animation is an accelerated preview and the physical/account verification limits are visible in the setup guides and questions.
 
-The screen starts its thinking sequence when it enters the viewport, then retains the result. It stops offscreen and respects reduced motion. Replay thinking / Replay conversation starts it again; Show reply skips to the retained screen.
+The screen starts a three-second thinking sequence when it enters the viewport, then retains the result. It stops offscreen and respects reduced motion. Replay thinking / Replay conversation starts it again; Show reply skips to the retained screen.
 
-Last reply and Full conversation are separate display modes, available for both reminders and interruption examples. The same mode values are supported by the live bridge, local preview, MCP tools, and Home Assistant. Only turns explicitly published to the bridge are available; this website uses synthetic inputs.
+The website’s Last reply mode shows the reminders. Full conversation shows the NOO exchange, with no separate example choice. The same mode values are supported by the live bridge, local preview, MCP tools, and Home Assistant. Only turns explicitly published to the bridge are available; this website uses synthetic inputs.
 
 Shareable films remain in the repository's campaign folder. They are not shipped in the website or linked from its demo. The retired `/dotsonpaper/assets/dot-noo.mp4` route still returns HTTP 410. See [deployment](DEPLOYMENT.md) and [plugin distribution](../docs/publishing.md).

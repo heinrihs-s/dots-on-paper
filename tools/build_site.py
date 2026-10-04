@@ -75,7 +75,7 @@ def main() -> None:
         "source": "https://github.com/heinrihs-s/dots-on-paper",
         "canonical": "https://heinrihs.org/dotsonpaper/",
         "renderer_sha256": hashlib.sha256((ROOT / "src/dots_on_paper/render.py").read_bytes()).hexdigest(),
-        "demonstration": "Fictional replies; offline native renderer; 0.5-second thinking snapshots; no account, bridge data, calendar or device accessed.",
+        "demonstration": "Fictional replies; offline native renderer; 0.25-second thinking snapshots; no account, bridge data, calendar or device accessed.",
         "files": {path.relative_to(OUTPUT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(OUTPUT.rglob("*")) if path.is_file() and path.name != "build.json"},
     }
     (OUTPUT / "build.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
