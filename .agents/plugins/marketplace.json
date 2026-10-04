@@ -1,0 +1,20 @@
+{
+  "name": "dots-on-paper",
+  "interface": {
+    "displayName": "Dots on Paper"
+  },
+  "plugins": [
+    {
+      "name": "dots-on-paper",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

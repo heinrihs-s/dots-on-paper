@@ -218,7 +218,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
             if path == "/api/health":
                 return self.json(200, dict(status="ok", version=__version__))
             if path == "/":
-                return self.respond(200, (Path(__file__).parent / "web.html").read_bytes(), "text/html; charset=utf-8")
+                page = (Path(__file__).parent / "web.html").read_bytes()
+                page = page.replace(b"__DOTS_FRAME_SECONDS__", str(int(self.server.config.frame_seconds)).encode("ascii"))
+                return self.respond(200, page, "text/html; charset=utf-8")
             if path.startswith("/assets/") and path[8:] in ASSETS:
                 name = path[8:]
                 return self.respond(200, (ASSET_ROOT / name).read_bytes(), "font/ttf" if name.endswith(".ttf") else "image/png")

@@ -20,6 +20,10 @@ Local checks on **3 October 2026** for version 0.1.0:
 
 The [GitHub-hosted source checks](https://github.com/heinrihs-s/dots-on-paper/actions/runs/37153148253) passed for commit `cc8cadeb3281788930732b044d41a57c29d773cf` on 3 October 2026. That run uses the Linux/Windows × Python 3.11/3.12 matrix, with Node 22, and includes the installed-package smoke test.
 
+Follow-up checks on **4 October 2026**: the rebuilt and reinstalled wheel passed 38 Python tests, 14 Node tests, and the installed-package smoke check. The added regression executes the served preview's refresh script against a temporary real HTTP/SQLite/renderer bridge at both 5- and 37-second intervals. It checks timing boundaries, thinking loops, answer settling, and image reuse, confirming the preview now follows `DOTS_FRAME_SECONDS`.
+
+The connection audit checked the current official dot, plugin, authentication, and Secure MCP Tunnel documentation. Both plugin JSON files passed their published schemas; the new marketplace catalog resolves to the root package. The installed Codex CLI supports the documented marketplace command. The private MCP TOML and PowerShell setup blocks passed syntax checks, and the Windows command uses forward slashes to match the tunnel client's parser. These are setup checks, not a live tunnel or account connection.
+
 These checks do not verify a physical TRMNL/e-paper panel, live Home Assistant runtime, private ChatGPT dot connection, Instinct integration, or Docker deployment. Those remain installation checks. No live account, external messaging, or calendar is used in the campaign. The bridge's three MCP tools publish/read display state; they contain no messaging sender.
 
 Reproduce source checks from the repository root:

@@ -75,6 +75,73 @@ class BridgeTests(unittest.TestCase):
         self.assertNotIn(b"Private reply", payload)
         self.assertNotIn(API_KEY.encode(), payload)
 
+    def test_preview_uses_configured_frame_cadence(self):
+        # Execute the served page's refresh code against the real test bridge.
+        # Only DOM/image decoding and the clock are stubbed; image requests and
+        # authenticated state reads still use HTTP, SQLite and the renderer.
+        script = r"""
+const {html, url, token, updatedAt, offsets} = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+const vm = require('node:vm');
+const seconds = html.match(/data-frame-seconds="([0-9]+)"/)?.[1];
+if (!seconds) throw new Error('The page did not expose a numeric frame interval');
+const elements = new Map();
+function element(id) {
+  if (!elements.has(id)) elements.set(id, {
+    value: id === 'profile' ? 'oep_296' : '', style: {}, dataset: {},
+    classList: {add() {}, remove() {}}, decode: async () => {},
+  });
+  return elements.get(id);
+}
+let moment = Date.parse(updatedAt);
+const requests = [];
+const context = vm.createContext({
+  document: {
+    documentElement: {dataset: {frameSeconds: seconds}},
+    getElementById: element, querySelectorAll: () => [],
+  },
+  Date: class extends Date { static now() { return moment; } },
+  URL: {createObjectURL: () => 'blob:test', revokeObjectURL() {}},
+  setInterval() {},
+  fetch: async (path, options) => {
+    const target = new URL(path, url);
+    if (target.pathname === '/image.png') requests.push(Number(target.searchParams.get('frame')));
+    return fetch(target, options);
+  },
+});
+vm.runInContext(html.match(/<script>([\s\S]*?)<\/script>/)[1], context);
+vm.runInContext(`token=${JSON.stringify(token)}`, context);
+(async () => {
+  const frames = [];
+  for (const offset of offsets) {
+    moment = Date.parse(updatedAt) + offset;
+    await vm.runInContext('refresh()', context);
+    if (element('message').textContent) throw new Error(element('message').textContent);
+    frames.push(requests.at(-1));
+  }
+  process.stdout.write(JSON.stringify({seconds: Number(seconds), frames, requests}));
+})().catch(error => { console.error(error); process.exitCode = 1; });
+"""
+        for cadence in (5, 37):
+            self.config.frame_seconds = cadence
+            status, _, page = self.request("GET", "/", token=None)
+            self.assertEqual(status, 200)
+            for mode, expected in (("thinking", [0, 0, 1, 2, 11, 0]), ("answer", [0, 0, 1, 2, 11, 11])):
+                with self.subTest(cadence=cadence, status=mode):
+                    _, state = self.event(status=mode, text="Preview interval check")
+                    inputs = dict(html=page.decode(), url=self.config.public_url, token=API_KEY,
+                                  updatedAt=state["updated_at"],
+                                  offsets=[0, cadence * 1000 - 1, cadence * 1000,
+                                           cadence * 2000, cadence * 11000, cadence * 12000])
+                    proc = subprocess.run(["node", "-e", script], input=json.dumps(inputs),
+                                          text=True, capture_output=True, timeout=20)
+                    self.assertEqual(proc.returncode, 0, proc.stderr)
+                    result = json.loads(proc.stdout)
+                    self.assertEqual(result["seconds"], cadence)
+                    self.assertEqual(result["frames"], expected)
+                    # Adjacent identical frames should use the existing preview.
+                    self.assertEqual(result["requests"], [value for index, value in enumerate(expected)
+                                                          if index == 0 or value != expected[index - 1]])
+
     def test_state_requires_publishing_key(self):
         for token in (None, "wrong", IMAGE_KEY, "é"):
             self.assertEqual(self.request("GET", "/api/state", token=token)[0], 401)

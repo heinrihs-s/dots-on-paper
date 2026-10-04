@@ -10,7 +10,7 @@ Include the package version, affected endpoint or adapter, a minimal reproductio
 
 The publishing key can read the current reply and publish display updates. The separate image key can read rendered images. An image may contain the same private information as the reply. Query-string image keys are intended for hardware that cannot send a bearer header; request logs and shared screenshots can expose them.
 
-The bridge defaults to loopback. Keep it on a trusted network or use an authenticated connection described in [the real-dot guide](docs/real-dot.md). A remote installation needs HTTPS. The bridge does not implement multiuser OAuth, provision hosting, or connect an account automatically.
+The bridge defaults to loopback. Keep it on a trusted network or connect ChatGPT through Secure MCP Tunnel to the local stdio adapter, as described in [the real-dot guide](docs/real-dot.md). Other remote clients need HTTPS and compatible authentication. The bridge uses a static bearer key and does not implement the OAuth discovery needed for a direct authenticated ChatGPT HTTPS connection. It does not provision hosting or connect an account automatically.
 
 The latest state and retry history are stored locally in SQLite. Changing the character does not erase the answer. Treat the data directory, backups, and credentials file as private. Do not put live data in a GitHub release or campaign asset.
 

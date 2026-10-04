@@ -91,7 +91,8 @@ Point `DOTS_CONFIG_FILE` at the copied file. HA uses its publishing key; devices
 | Doctor cannot reach the bridge | Start the bridge first; confirm its URL and port. Use `--offline` for a file-only check. |
 | 401 from API or MCP | Use credentials belonging to the running bridge, not a separately initialized copy. |
 | Device can reach HA but not this image | Use a LAN-reachable bridge URL, allowed host, firewall rule, and read-only image key. |
-| Dot cannot see localhost | Connect the cloud dot using the supported tunnel/HTTPS path in the real-dot guide. |
+| Dot cannot see localhost | Use Secure MCP Tunnel to the local stdio adapter, or a connected-computer task, as described in the real-dot guide. The bridge's static bearer key is not a direct ChatGPT HTTPS connection. |
+| Display stays on thinking after work stops | Ask the connected assistant to call `set_dot_status` with `status: "idle"`. Thinking is reported by the caller and has no automatic expiry; starting the next request with a fresh `run_id` also replaces it. |
 | Bridge has an answer; screen has not changed | Check the device's next fetch and refresh. A stored reply alone does not confirm physical delivery. |
 
 For key rotation and private-data handling, see [SECURITY.md](../SECURITY.md).
