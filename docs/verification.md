@@ -12,6 +12,10 @@ The exact wheel and runtime archive are exercised by `tools/release_check.py`, i
 
 The compatibility matrix, first-result guide, three recipes, hardware issue form, five contributor tasks and study form are in the beta. GitHub About points to the public website; Discussions has Show your desk, Setup help and Recipes. The [roadmap](roadmap.md) keeps interactive assistant reproduction, a physical model/firmware run, stock account access, live HA/HACS, ten observed users, seven-day retention and promotion open. These gates are not established by the software tests.
 
+[Hosted CI](https://github.com/heinrihs-s/dots-on-paper/actions/runs/37284294538) passed all eight jobs for `979d2372325d40161dcc6e5fa74c822d9f91c1b4`: four source matrix jobs, two exact-download jobs and both native container runners. The final local release-artifact check also passed the previous-wheel upgrade. The runtime ZIP is about 9.3 MB and the wheel about 6.9 MB; campaign media is excluded.
+
+The [public trial](https://heinrihs.org/dotsonpaper/try/) was deployed from portfolio commit `f97f188c86942dd3c60e409d044a039a753752bf`. All 109 referenced public files matched the build; canonical/trial routes returned 200, missing assets 404 and the retired film 410. A live browser check rendered a safe note and its transcript. Content-hash URLs handle changed scripts/styles because the saved cache-purge token expired. [Deployment details](../site/DEPLOYMENT.md)
+
 ## Historical checks
 
 Local checks on **3 October 2026** for version 0.1.0:

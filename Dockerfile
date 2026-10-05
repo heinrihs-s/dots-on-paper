@@ -1,4 +1,5 @@
 FROM python:3.12-slim
+LABEL org.opencontainers.image.source="https://github.com/heinrihs-s/dots-on-paper"
 WORKDIR /app
 COPY pyproject.toml ./
 COPY src ./src

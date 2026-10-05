@@ -52,15 +52,21 @@ def main() -> None:
         (OUTPUT / relative).unlink(missing_ok=True)
     for name in ("index.html", "styles.css", "site.js"):
         copy_text(ROOT / "site" / name, OUTPUT / name)
+    index = (OUTPUT / "index.html").read_text(encoding="utf-8")
+    for filename, marker in (("styles.css", "__DOTS_STYLE_VERSION__"), ("site.js", "__DOTS_SCRIPT_VERSION__")):
+        index = index.replace(marker, hashlib.sha256((OUTPUT / filename).read_bytes()).hexdigest()[:12])
+    (OUTPUT / "index.html").write_text(index, encoding="utf-8", newline="\n")
     trial = OUTPUT / "try"
     (trial / "assets").mkdir(parents=True, exist_ok=True)
     page = (ROOT / "demo/index.html").read_text(encoding="utf-8").replace('<html lang="en">', '<html lang="en" data-trial="true">')
     page = page.replace('A TRMNL X daydream', 'Browser simulation · text stays in this browser').replace('<h1 class="sr-only">', '<h1>')
-    (trial / "index.html").write_text(page, encoding="utf-8", newline="\n")
     copy_text(ROOT / "demo/demo.js", trial / "demo.js")
     style = (ROOT / "demo/style.css").read_text(encoding="utf-8")
     style += '\nhtml[data-trial=true] .controls,html[data-trial=true] .studio-tools,html[data-trial=true] .example-switch{display:none}html[data-trial=true] h1{font-size:clamp(30px,5vw,48px);letter-spacing:-.03em;margin:18px 0}html[data-trial=true] .masthead{flex-wrap:wrap;gap:12px}html[data-trial=true] .masthead-note{display:block;font-size:13px}html[data-trial=true] .answer-editor{margin-block:25px}html[data-trial=true] .answer-editor[hidden]{display:none}.trial-text{max-width:70ch;margin:25px auto;padding:20px 0}.trial-text h2{font-size:18px}.trial-text p{font-size:17px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.trial-text a{display:inline-block;margin-top:18px;color:#24382c}.trial-text button{margin-top:20px;min-height:44px}html[data-trial=true] footer{font-size:14px}@media(max-width:520px){html[data-trial=true] .masthead-note{order:3;flex-basis:100%}html[data-trial=true] .answer-row{display:block}html[data-trial=true] .answer-row textarea{width:100%}html[data-trial=true] .answer-row button{margin-top:14px}}\n'
     (trial / "style.css").write_text(style, encoding="utf-8", newline="\n")
+    for filename in ("style.css", "demo.js"):
+        page = page.replace(f'"{filename}"', f'"{filename}?v={hashlib.sha256((trial / filename).read_bytes()).hexdigest()[:12]}"')
+    (trial / "index.html").write_text(page, encoding="utf-8", newline="\n")
     for name in (*ASSETS.values(), "Figtree.ttf", "Figtree-LICENSE.txt"):
         shutil.copy2(ROOT / "demo/assets" / name, trial / "assets" / name)
     for name in ("logo-cool.svg", "icon-cool.svg"):
