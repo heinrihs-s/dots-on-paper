@@ -85,6 +85,8 @@ docker compose up -d --build
 
 Keys and state live in the `dots-data` volume. Fresh startup initializes private keys automatically. Compose keeps its loopback bind. Use a LAN-reachable origin/bind only for devices that need it. Native AMD64/ARM64 startup and replacement checks run in CI; they do not establish Raspberry Pi or panel compatibility.
 
+For the prebuilt engineering beta, put `DOTS_IMAGE=ghcr.io/heinrihs-s/dots-on-paper:0.2.0-beta.1` in the Compose directory's `.env`, then run `docker compose pull` and `docker compose up -d --no-build`. This selects the matching AMD64/ARM64 image while preserving the same `dots-data` volume. The [beta release](https://github.com/heinrihs-s/dots-on-paper/releases/tag/v0.2.0-beta.1) records its verification. Follow the same pull/recreate sequence with a later version; keep the Compose project name and volume.
+
 If a local MCP client needs the Docker bridge's credentials, copy that same file into a private local path:
 
 ```sh

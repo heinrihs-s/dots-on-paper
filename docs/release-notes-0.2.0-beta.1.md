@@ -8,4 +8,6 @@ The public trial lets visitors write their own note, choose a companion and expl
 
 Upgrade: stop the bridge, preserve its data directory, run `python tools/setup.py`, then restart using that same directory. `run.ps1 -Doctor -Mcp` or `tools/doctor.py --mcp` detects stale installed/running builds. Existing keys and retained SQLite state are migrated in place.
 
+Prebuilt Docker: set `DOTS_IMAGE=ghcr.io/heinrihs-s/dots-on-paper:0.2.0-beta.1` in the Compose directory's `.env`, then run `docker compose pull` and `docker compose up -d --no-build`. Keep the same Compose project and `dots-data` volume for upgrades. The versioned manifest provides native AMD64 and ARM64 images.
+
 This is an engineering beta. No stock account, physical panel, live HA runtime or ten-user study is claimed verified. Upload/fetch receipts do not prove panel output. See compatibility.md and roadmap.md for exact scope and the remaining launch gates. The beta retains one superseding active run; a bounded inbox is deferred.
