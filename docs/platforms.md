@@ -11,7 +11,7 @@ The bridge serves an authenticated image URL. A supported client fetches that im
 | ESPHome e-paper | [State-aware image fragment](../examples/esphome.yaml) | Exact panel dimensions, monochrome | Board/display driver and pins required |
 | Inkplate / generic PNG or BMP clients | Direct image fetch | `inkplate`, 800 × 600, or custom size | Renderer checked; device client required |
 | Portrait viewers / Kindle | Direct image fetch using your viewer or firmware | `kindle`, 1072 × 1448 | Renderer checked; no Kindle firmware integration |
-| TRMNL cloud private plugins | No cloud adapter in this release | Separate cloud rendering schedule | Use BYOS for this bridge |
+| Stock TRMNL Webhook Image | Finished PNG uploads with persistent retries | `trmnl` or `trmnl_x` | Adapter tested; authenticated account/panel experimental |
 
 ## Image authentication
 
@@ -27,6 +27,8 @@ For hardware that cannot send a header, use `/image.png?profile=oep_296&key=<ima
 Set `width` and `height` together for custom dimensions, with `levels=2` or `levels=16`. Each side must be 64–2400 pixels and the image must fit within eight million pixels. Long answers visibly truncate on the panel; full text stays in bridge state.
 
 ## Animation and physical panels
+
+The settled-image preset is the default: `DOTS_ANIMATE_THINKING=false`. Automatic frames and shorter BYOS thinking intervals require explicit opt-in. Direct `frame` requests remain available to clients that deliberately choose a pose. Test refresh behavior on the exact panel before enabling motion.
 
 Thinking uses twelve successive PNG/BMP poses. An image client can select `frame=0` through `frame=11`, or omit it to use the state-relative five-second sequence configured by `DOTS_FRAME_SECONDS`. Once an answer arrives, every image request returns the settled result immediately. Its pixels and ETag stay fixed until another event or character change. This is successive-image animation; panels do not play the campaign's MP4 or GIF files.
 
@@ -44,6 +46,7 @@ With the bridge stopped, set these variables before launching it on Windows:
 
 ```powershell
 $env:DOTS_THINKING_REFRESH_SECONDS = '15'
+$env:DOTS_ANIMATE_THINKING = 'true'
 $env:DOTS_REFRESH_SECONDS = '60'
 .\run.ps1
 ```
@@ -57,6 +60,14 @@ For a generic image client, use the read-only [`/api/display-state`](api.md#imag
 Configure `DOTS_TRMNL_DEVICE_ID` and `DOTS_TRMNL_ACCESS_TOKEN` with your existing enrolled identity. `/api/display` validates both headers and returns HTTP 200 with JSON `status: 0`, the scoped image URL, filename, and refresh interval. `/api/setup` refuses automatic enrollment; firmware updates and resets are not requested.
 
 Changing the device's BYOS server is a separate firmware/configuration step. Pointing it at a new bridge should be verified with that device's documented procedure. This source package does not modify an existing dashboard deployment. Cloud TRMNL private-plugin webhooks follow their own render schedule and do not provide this bridge's device-pull animation path.
+
+## Stock TRMNL Webhook Image (experimental)
+
+Add the official **Webhook Image** plugin to an existing stock account. Keep its private URL in `DOTS_TRMNL_WEBHOOK_URL`; do not put it in browser/share links. Select `DOTS_TRMNL_WEBHOOK_PROFILE=trmnl` for 800×480 monochrome, or `trmnl_x` for 1872×1404/16-gray after compatibility verification. Restart the bridge to load settings. The launcher reads environment variables; Compose uses the private `.env` mappings.
+
+The adapter uploads completed raw PNGs and deliberate clear cards, coalescing pending results. Thinking is not uploaded. Requests are paced at least five minutes apart with at most twelve attempts in a rolling hour. Network/429/5xx failures retry; Retry-After is respected. Permanent failures require repair and **Retry upload**. Pending cards, quotas and accepted receipts survive restart. Clear/history operations discard pending personal content and queue a clear under the same limits.
+
+The adapter enforces 1 MB. The plugin stores images without panel conversion, so acceptance requires a separate compatibility and observed-panel test. The private URL is absent from the database, diagnostics and logs. This cloud-dependent route remains experimental until authenticated account and physical output checks pass. [TRMNL upload contract](https://help.trmnl.com/en/articles/13213669-webhook-image)
 
 ## Home Assistant
 

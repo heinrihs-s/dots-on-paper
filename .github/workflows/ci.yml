@@ -41,4 +41,54 @@ jobs:
       - name: Initialize isolated test credentials
         run: python -m dots_on_paper --init --data-dir ./data
       - name: Offline installation diagnostics
-        run: python tools/doctor.py --offline
+        run: python tools/doctor.py --offline --mcp
+
+  artifacts:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Build wheel and runtime archives
+        run: |
+          python -m pip wheel . --no-deps --wheel-dir dist
+          python tools/package.py
+      - name: Verify exact download artifacts
+        run: python tools/release_check.py --wheel release/dots_on_paper-0.2.0b1-py3-none-any.whl --runtime release/dots-on-paper-0.2.0b1.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: beta-downloads-${{ matrix.os }}
+          path: release/
+
+  containers:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Validate configuration and build exact image
+        run: |
+          docker compose config -q
+          docker build -t dots-on-paper:beta .
+      - name: Verify persistent startup and replacement
+        run: python tools/docker_smoke.py --image dots-on-paper:beta

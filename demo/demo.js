@@ -7,6 +7,7 @@
   const duration = 16;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const q = id => document.getElementById(id);
+  const trial = document.documentElement.dataset.trial === 'true';
   const calendarExample={sender:'heidot',text:'Here are your reminders:\n\n- Tonight: Date with Paula.\n- Tomorrow morning: Breakfast with Amy.\n- Lunch: With your wife.\n\nYour calendar needs a lawyer.'};
   const nooExample={sender:'heidot',notice:'FICTIONAL DEMO · DRAFT ONLY',messages:[
     {role:'assistant',at:2.8,text:'Okay, understood. Texting your wife about your date with Paula tonight.',status:'Draft ready · Waiting for approval'},
@@ -27,6 +28,7 @@
   let playing = !reduced&&!example, format = 'scene', mode = 'smooth', seconds = reduced||example ? (example==='wife-noo'?12:9) : 0;
   let baseTime = performance.now(), baseSeconds = seconds, lastState = '', customAnswer = '';
   let assetsReady = false;
+  if(trial){playing=false;seconds=9;}
   const clamp = (v,a=0,b=1) => Math.min(b,Math.max(a,v));
   const ease = t => 1 - Math.pow(1-clamp(t),4);
   const smooth = t => {t=clamp(t);return t*t*(3-2*t)};
@@ -163,6 +165,7 @@
     customAnswer=String(value).trim().slice(0,4000);example='';q('answer').value=customAnswer;
     document.querySelectorAll('[data-example]').forEach(button=>{button.classList.toggle('active',false);button.setAttribute('aria-pressed',false)});
     document.querySelector('h1').textContent='A little dot. A lot to say.';document.title='dots on paper — a TRMNL X daydream';setDot(selectedDot);
+    if(trial){document.querySelector('h1').textContent='Try a note on paper.';q('trial-transcript').textContent=customAnswer;document.title='Dots on Paper — try your own note';}
   }
   document.querySelectorAll('.dot-choice').forEach(button=>button.onclick=()=>setDot(button.dataset.dot));
   document.querySelectorAll('[data-example]').forEach(button=>button.onclick=()=>{pause();seconds=button.dataset.example==='wife-noo'?12:9;setExample(button.dataset.example)});
@@ -373,7 +376,7 @@
   ['scene','screen'].forEach(f=>q(f+'-view').onclick=()=>{format=f;select('format',f);q('stage').classList.toggle('screen-mode',f==='screen');renderAt(seconds)});
   ['smooth','ink'].forEach(m=>q(m+'-mode').onclick=()=>{mode=m;select('mode',m);renderAt(seconds)});
   q('edit-toggle').onclick=()=>{const open=q('answer-editor').hidden;q('answer-editor').hidden=!open;q('edit-toggle').setAttribute('aria-expanded',open);if(open)q('answer').focus()};
-  q('answer-editor').onsubmit=e=>{e.preventDefault();const v=q('answer').value.trim();if(!v){q('answer').setCustomValidity('Give your dot a reply to show.');q('answer').reportValidity();return}setAnswer(v);q('answer').setCustomValidity('');restart()};
+  q('answer-editor').onsubmit=e=>{e.preventDefault();const v=q('answer').value.trim();if(!v){q('answer').setCustomValidity('Give your dot a reply to show.');q('answer').reportValidity();return}setAnswer(v);q('answer').setCustomValidity('');if(trial){pause();seconds=9;renderAt(9,{hold:true});ui(9);}else restart()};
   q('answer').oninput=()=>q('answer').setCustomValidity('');q('reload').onclick=()=>location.reload();
   function saveCurrent(event,format){
     if(!customAnswer)return;
@@ -397,4 +400,9 @@
   allDotsReady.catch(error=>{console.error(error);q('spoken-state').textContent='A dot could not load. Reload the demo to try again.'});
   window.dotDemo={ready,allDotsReady,canvas,duration,renderAt,renderNativeAt,pause,play,restart,setDot,setExample,dots:Object.keys(companions),setAnswer,replyBlocks,replyLayout:(value,width,height)=>replyLayout(ctx,value,width,height),get state(){return {playing,seconds,format,mode,customAnswer,reduced,dot:selectedDot,example,reply:activeReply(),conversation:activeConversation()}}};
   requestAnimationFrame(loop);
+  if(trial){
+    q('answer-editor').hidden=false;q('trial-text').hidden=false;
+    ready.then(()=>{setAnswer('Site review finished. Two broken links found. Report ready.');pause();seconds=9;renderAt(9,{hold:true});ui(9);});
+    q('share-sample').onclick=()=>{setAnswer('Daily brief: check the report, take a screen break, and bring the parcel.');pause();seconds=9;renderAt(9,{hold:true});ui(9);q('sample-status').textContent='Safe example loaded. Review it, then use Save screen. Your personal note has been replaced.';};
+  }
 })();

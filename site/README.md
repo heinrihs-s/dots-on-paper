@@ -22,6 +22,8 @@ All links to full connection guides point to the public source repository. The a
 
 The screen starts a three-second thinking sequence when it enters the viewport, then retains the result. It stops offscreen and respects reduced motion. Replay thinking / Replay conversation starts it again; Show reply skips to the retained screen.
 
-The website’s Last reply mode shows the reminders. Full conversation shows the NOO exchange, with no separate example choice. The same mode values are supported by the live bridge, local preview, MCP tools, and Home Assistant. Only turns explicitly published to the bridge are available; this website uses synthetic inputs.
+The website’s Last reply mode shows a completed site review. Full conversation shows the NOO exchange, with no separate example choice. The same mode values are supported by the live bridge, local preview, MCP tools, and Home Assistant. Only turns explicitly published to the bridge are available; this website uses synthetic inputs. Both modes have a readable transcript on phones.
+
+`/dotsonpaper/try/` is the editable browser simulation. Visitors can enter a note, select a character and save a PNG. Text stays in browser memory, without requests, analytics, local storage or share URLs. Share a sample replaces personal text with a safe example before a deliberate download. It does not connect an assistant or display.
 
 Shareable films remain in the repository's campaign folder. They are not shipped in the website or linked from its demo. The retired `/dotsonpaper/assets/dot-noo.mp4` route still returns HTTP 410. See [deployment](DEPLOYMENT.md) and [plugin distribution](../docs/publishing.md).

@@ -5,6 +5,12 @@
   const modes = ['last_reply', 'full_conversation'];
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const examples = {
+    completed: {
+      text: 'Site review finished. Two broken links found. Report ready.',
+      punchline: '“Site review finished. Report ready.”',
+      labels: ['Your task', 'Completed result'],
+      turns: ['You: Review the site and summarize what needs attention.', 'Assistant: Site review finished. Two broken links found. Report ready.'],
+    },
     reminders: {
       text: 'Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.',
       punchline: '“Your calendar needs a lawyer.”',
@@ -22,7 +28,7 @@
       ],
     },
   };
-  let character = 'cool', example = 'reminders', mode = 'last_reply';
+  let character = 'cool', example = 'completed', mode = 'last_reply';
   let timer = null, generation = 0, playing = false, inView = false;
   const loaded = new Map();
   const frameUrl = (id, index) => `./assets/frames/${id}-thinking-${index}.png`;
@@ -40,6 +46,7 @@
     const data = examples[example];
     if (index < 1 || index > data.turns.length) return;
     setScreen(resultUrl(index), data.turns[index - 1]);
+    $('screen-transcript').textContent=data.turns[index - 1];
     document.querySelectorAll('[data-turn]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.turn) === index)));
     $('demo-status').textContent = index === data.turns.length ? 'Conversation retained' : data.labels[index - 1];
   }
@@ -48,6 +55,7 @@
     if (mode === 'full_conversation') setTurn(examples[example].turns.length);
     else {
       setScreen(resultUrl(), `heidot’s reply: ${examples[example].text}`);
+      $('screen-transcript').textContent=examples[example].text;
       $('demo-status').textContent = 'Answer retained';
     }
     resetReplay();
@@ -128,7 +136,7 @@
     ['character', characters, value => { character = value; }],
     ['mode', modes, value => {
       mode = value;
-      example = mode === 'full_conversation' ? 'interruption' : 'reminders';
+      example = mode === 'full_conversation' ? 'interruption' : 'completed';
     }],
   ]) {
     document.querySelectorAll(`[data-${attribute}]`).forEach(button => button.addEventListener('click', () => {
@@ -159,7 +167,7 @@
 
   document.querySelectorAll('[data-os]').forEach(button => button.addEventListener('click', () => {
     document.querySelectorAll('[data-os]').forEach(choice => choice.setAttribute('aria-pressed', String(choice === button)));
-    $('launch-code').textContent = button.dataset.os === 'windows' ? '.\\run.ps1' : '.venv/bin/python -m dots_on_paper --data-dir ./data';
+    $('launch-code').textContent = button.dataset.os === 'windows' ? '.\\run.ps1' : '.venv/bin/python -m dots_on_paper --data-dir ./data --open';
   }));
   const tabs = [...document.querySelectorAll('[role="tab"]')];
   function activateTab(tab, focus = false) {

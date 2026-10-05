@@ -15,7 +15,7 @@ STATUSES = ("idle", "thinking", "answer", "error")
 DISPLAY_MODES = ("last_reply", "full_conversation")
 MAX_MESSAGES = 20
 MAX_CONVERSATION_CHARS = 24000
-FIELDS = {"status", "character", "dot_name", "title", "text", "event_id", "run_id", "mode", "user_text", "messages"}
+FIELDS = {"status", "character", "dot_name", "title", "text", "event_id", "run_id", "mode", "user_text", "messages", "source"}
 ID_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
@@ -77,7 +77,7 @@ def validate_event(event: object) -> dict:
     if "mode" in event and event["mode"] not in DISPLAY_MODES:
         raise StateError("mode must be last_reply or full_conversation")
     result = dict(event)
-    for key, maximum in (("dot_name", 80), ("title", 120), ("text", 12000)):
+    for key, maximum in (("dot_name", 80), ("title", 120), ("text", 12000), ("source", 80)):
         if key in result:
             validate_text(result[key], key, maximum)
     if result["status"] == "answer" and not result.get("text", "").strip():
@@ -100,33 +100,64 @@ def validate_event(event: object) -> dict:
 
 
 class StateStore:
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, thinking_timeout_seconds: int = 600):
         self.lock = threading.RLock()
+        self.thinking_timeout_seconds = thinking_timeout_seconds
         self.db = sqlite3.connect(str(path), check_same_thread=False)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.executescript("""
             CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK (id = 1), value TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS events (event_id TEXT PRIMARY KEY, digest TEXT NOT NULL, revision INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS runs (run_id TEXT PRIMARY KEY, status TEXT NOT NULL, revision INTEGER NOT NULL);
+            CREATE TABLE IF NOT EXISTS retained (id INTEGER PRIMARY KEY CHECK (id = 1), value TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS metadata (name TEXT PRIMARY KEY, value TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS delivery (id INTEGER PRIMARY KEY CHECK (id = 1), value TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS delivery_attempts (timestamp REAL NOT NULL);
         """)
         initial = dict(status="idle", character="artist", dot_name="Your dot", title="DOTS ON PAPER",
                        text="", mode="last_reply", messages=[], revision=0, event_id="", run_id="", updated_at=now())
         self.db.execute("INSERT OR IGNORE INTO state VALUES (1, ?)", (json.dumps(initial),))
         # Upgrade an existing bridge without discarding its retained answer.
         current = json.loads(self.db.execute("SELECT value FROM state WHERE id = 1").fetchone()[0])
-        if "mode" not in current or "messages" not in current:
-            current.setdefault("mode", "last_reply")
-            current.setdefault("messages", [dict(role="assistant", content=current["text"])]
-                               if current.get("status") == "answer" and current.get("text", "").strip() else [])
-            self._write(current)
+        current.setdefault("mode", "last_reply")
+        current.setdefault("messages", [dict(role="assistant", content=current["text"])]
+                           if current.get("status") == "answer" and current.get("text", "").strip() else [])
+        current.setdefault("source", "")
+        current.setdefault("thinking_since", current["updated_at"] if current["status"] == "thinking" else "")
+        current.setdefault("recovery_reason", "")
+        self._write(current)
+        if current["status"] == "answer":
+            self.db.execute("INSERT OR IGNORE INTO retained VALUES (1, ?)", (json.dumps(current),))
         self.db.commit()
 
     def read(self) -> dict:
         with self.lock:
-            return json.loads(self.db.execute("SELECT value FROM state WHERE id = 1").fetchone()[0])
+            state = json.loads(self.db.execute("SELECT value FROM state WHERE id = 1").fetchone()[0])
+            if state["status"] == "thinking":
+                try:
+                    age = (datetime.now(timezone.utc) - datetime.fromisoformat(state["thinking_since"])).total_seconds()
+                except (ValueError, TypeError):
+                    age = self.thinking_timeout_seconds
+                if age >= self.thinking_timeout_seconds:
+                    with self.db:
+                        self.db.execute("UPDATE runs SET status = 'expired' WHERE run_id = ?", (state["run_id"],))
+                        state.update(status="error", title="No recent update", text="Reconnect your assistant, or restore the last result.",
+                                     recovery_reason="timeout", thinking_since="", revision=state["revision"] + 1, updated_at=now())
+                        self._write(state)
+            row = self.db.execute("SELECT value FROM retained WHERE id = 1").fetchone()
+            state["last_result"] = json.loads(row[0]) if row else None
+            return state
 
     def _write(self, state: dict):
-        self.db.execute("UPDATE state SET value = ? WHERE id = 1", (json.dumps(state, ensure_ascii=False),))
+        self.db.execute("UPDATE state SET value = ? WHERE id = 1", (json.dumps({key: value for key, value in state.items() if key != "last_result"}, ensure_ascii=False),))
+
+    def mark(self, name: str, value: str | None = None):
+        with self.lock, self.db:
+            self.db.execute("INSERT OR REPLACE INTO metadata VALUES (?, ?)", (name, value if value is not None else now()))
+
+    def metadata(self) -> dict:
+        with self.lock:
+            return dict(self.db.execute("SELECT name, value FROM metadata"))
 
     def apply(self, value: object) -> dict:
         event = validate_event(value)
@@ -158,17 +189,23 @@ class StateStore:
                     messages.append(user)
             if status == "answer" and "messages" not in event:
                 messages.append(dict(role="assistant", content=event["text"]))
+            same_thinking = current["status"] == "thinking" and current["run_id"] == run_id
             current.update({key: event[key] for key in ("character", "dot_name", "title", "mode") if key in event})
             current.update(status=status, text=event.get("text", ""), event_id=event_id, run_id=run_id,
-                           messages=bound_messages(messages), revision=current["revision"] + 1, updated_at=now())
+                           messages=bound_messages(messages), revision=current["revision"] + 1, updated_at=now(),
+                           source=event.get("source", ""), recovery_reason="",
+                           thinking_since=current["thinking_since"] if status == "thinking" and same_thinking else now() if status == "thinking" else "")
             self._write(current)
+            if status == "answer":
+                retained = {key: item for key, item in current.items() if key != "last_result"}
+                self.db.execute("INSERT OR REPLACE INTO retained VALUES (1, ?)", (json.dumps(retained, ensure_ascii=False),))
             self.db.execute("INSERT INTO events VALUES (?, ?, ?)", (event_id, digest, current["revision"]))
             self.db.execute("INSERT OR REPLACE INTO runs VALUES (?, ?, ?)", (run_id, status, current["revision"]))
             # Keep bounded retry/run history; display state survives independently.
             cutoff = current["revision"] - 1000
             self.db.execute("DELETE FROM events WHERE revision < ?", (cutoff,))
             self.db.execute("DELETE FROM runs WHERE revision < ? AND status != 'thinking'", (cutoff,))
-            return current
+            return self.read()
 
     def select(self, value: object) -> dict:
         if not isinstance(value, dict) or not value or set(value) - {"character", "mode"}:
@@ -180,9 +217,40 @@ class StateStore:
         with self.lock, self.db:
             current = self.read()
             if any(current[key] != setting for key, setting in value.items()):
-                current.update(value, revision=current["revision"] + 1, updated_at=now())
+                current.update(value, revision=current["revision"] + 1)
                 self._write(current)
             return current
+
+    def clear(self, history: bool = False) -> dict:
+        with self.lock, self.db:
+            current = self.read()
+            if current["status"] == "thinking":
+                self.db.execute("UPDATE runs SET status = 'superseded' WHERE run_id = ?", (current["run_id"],))
+            current.update(status="idle", text="", title="DOTS ON PAPER", source="", run_id="", event_id="",
+                           thinking_since="", recovery_reason="", revision=current["revision"] + 1, updated_at=now())
+            if history:
+                current["messages"] = []
+                self.db.execute("DELETE FROM retained")
+            self.db.execute("DELETE FROM delivery")
+            self.db.execute("INSERT OR REPLACE INTO metadata VALUES ('delivery_clear_revision', ?)", (str(current["revision"]),))
+            pending = dict(state={key: value for key, value in current.items() if key != "last_result"}, attempts=0, next_at=0, blocked=False)
+            self.db.execute("INSERT INTO delivery VALUES (1, ?)", (json.dumps(pending),))
+            self.db.execute("INSERT OR REPLACE INTO metadata VALUES ('delivery_seen_revision', ?)", (str(current["revision"]),))
+            self._write(current)
+            return self.read()
+
+    def restore(self) -> dict:
+        with self.lock, self.db:
+            current = self.read()
+            if not current["last_result"]:
+                raise StateError("There is no completed result to restore", 409)
+            if current["status"] == "thinking":
+                self.db.execute("UPDATE runs SET status = 'superseded' WHERE run_id = ?", (current["run_id"],))
+            result = dict(current["last_result"])
+            result.update(character=current["character"], mode=current["mode"], revision=current["revision"] + 1,
+                          thinking_since="", recovery_reason="")
+            self._write(result)
+            return self.read()
 
     def close(self):
         with self.lock:

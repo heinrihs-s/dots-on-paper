@@ -28,7 +28,7 @@ class BridgeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.store = StateStore(Path(self.temp.name) / "state.sqlite3")
-        self.config = Config(API_KEY, IMAGE_KEY)
+        self.config = Config(API_KEY, IMAGE_KEY, animate_thinking=True)
         self.server = BridgeServer(("127.0.0.1", 0), self.config, self.store)
         self.port = self.server.server_address[1]
         self.config.public_url = f"http://127.0.0.1:{self.port}"
@@ -89,7 +89,7 @@ const elements = new Map();
 function element(id) {
   if (!elements.has(id)) elements.set(id, {
     value: id === 'profile' ? 'oep_296' : '', style: {}, dataset: {},
-    classList: {add() {}, remove() {}}, decode: async () => {},
+    classList: {add() {}, remove() {}, toggle() {}}, decode: async () => {}, querySelector() {return element(id + '-span');},
   });
   return elements.get(id);
 }
@@ -97,7 +97,7 @@ let moment = Date.parse(updatedAt);
 const requests = [];
 const context = vm.createContext({
   document: {
-    documentElement: {dataset: {frameSeconds: seconds}},
+    documentElement: {dataset: {frameSeconds: seconds, animate: 'true'}},
     getElementById: element, querySelectorAll: () => [],
   },
   Date: class extends Date { static now() { return moment; } },
@@ -250,7 +250,10 @@ vm.runInContext(`token=${JSON.stringify(token)}`, context);
             db.close()
         migrated = StateStore(path)
         try:
-            self.assertEqual(migrated.read(), {**legacy, "mode": "last_reply", "messages": [{"role": "assistant", "content": "Retained."}]})
+            state = migrated.read()
+            expected = {**legacy, "mode": "last_reply", "messages": [{"role": "assistant", "content": "Retained."}]}
+            self.assertEqual({key: state[key] for key in expected}, expected)
+            self.assertEqual(state["last_result"]["text"], "Retained.")
         finally:
             migrated.close()
 

@@ -50,12 +50,28 @@ class Config:
     trmnl_device_id: str = ""
     trmnl_access_token: str = ""
     allowed_hosts: tuple = ("127.0.0.1", "localhost")
+    thinking_timeout_seconds: int = 600
+    animate_thinking: bool = False
+    webhook_url: str = ""
+    webhook_profile: str = "trmnl"
 
     def __post_init__(self):
         if not all(isinstance(key, str) and len(key) >= 24 and key.isascii() and all(33 <= ord(char) <= 126 for char in key) for key in (self.api_token, self.image_token)) or self.api_token == self.image_token:
             raise ValueError("Use different API and image tokens of at least 24 characters")
         if self.default_profile not in PROFILES:
             raise ValueError("Unknown default profile")
+        if not 1 <= self.thinking_timeout_seconds <= 86400:
+            raise ValueError("Thinking timeout must be 1–86400 seconds")
+        if self.webhook_profile not in ("trmnl", "trmnl_x"):
+            raise ValueError("Webhook profile must be trmnl or trmnl_x")
+        if self.webhook_url:
+            try:
+                webhook = urlsplit(self.webhook_url)
+                valid = webhook.scheme == "https" and webhook.hostname and not webhook.username and not webhook.password and not webhook.fragment and webhook.port in (None, 443)
+            except ValueError:
+                valid = False
+            if not valid or any(ord(char) < 33 for char in self.webhook_url):
+                raise ValueError("Webhook URL must use HTTPS without embedded credentials or a fragment")
         if not 1 <= self.port <= 65535 or self.refresh_seconds < 5 or not 5 <= self.thinking_refresh_seconds <= 3600 or not 2 <= self.frame_seconds <= 3600:
             raise ValueError("Invalid port or refresh interval")
         parts = urlsplit(self.public_url)
@@ -84,4 +100,8 @@ class Config:
             trmnl_device_id=os.environ.get("DOTS_TRMNL_DEVICE_ID", ""),
             trmnl_access_token=os.environ.get("DOTS_TRMNL_ACCESS_TOKEN", ""),
             allowed_hosts=tuple(filter(None, os.environ.get("DOTS_ALLOWED_HOSTS", "127.0.0.1,localhost").split(","))),
+            thinking_timeout_seconds=int(os.environ.get("DOTS_THINKING_TIMEOUT_SECONDS", "600")),
+            animate_thinking=os.environ.get("DOTS_ANIMATE_THINKING", "false").lower() in ("true", "1"),
+            webhook_url=os.environ.get("DOTS_TRMNL_WEBHOOK_URL", ""),
+            webhook_profile=os.environ.get("DOTS_TRMNL_WEBHOOK_PROFILE", "trmnl"),
         )

@@ -29,13 +29,13 @@ def main() -> int:
             print("Creating a local Python environment...", flush=True)
             run([sys.executable, "-m", "venv", str(virtual_environment)], environment)
         print("Installing Dots on Paper and its renderer dependency...", flush=True)
-        run([str(python), "-m", "pip", "install", "--disable-pip-version-check", str(ROOT)], environment)
+        run([str(python), "-m", "pip", "install", "--upgrade", "--disable-pip-version-check", str(ROOT)], environment)
         print("Initializing private bridge keys...", flush=True)
         run([str(python), "-m", "dots_on_paper", "--init", "--data-dir", str(ROOT / "data")], environment)
     except (RuntimeError, OSError):
         print("Setup could not finish. No credentials were printed or replaced. Run the installation steps in docs/setup.md to inspect the failing command.", file=sys.stderr)
         return 1
-    print("Setup complete. Start with .\\run.ps1 on Windows or .venv/bin/python -m dots_on_paper --data-dir ./data on macOS/Linux.")
+    print("Setup complete. Start with .\\run.ps1 on Windows or .venv/bin/python -m dots_on_paper --data-dir ./data --open on macOS/Linux.")
     print("Before starting, check installation with the environment's Python: tools/doctor.py --offline.")
     return 0
 

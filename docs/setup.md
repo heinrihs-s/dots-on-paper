@@ -19,10 +19,10 @@ Start the bridge on Windows:
 Start it on macOS/Linux:
 
 ```sh
-.venv/bin/python -m dots_on_paper --data-dir ./data
+.venv/bin/python -m dots_on_paper --data-dir ./data --open
 ```
 
-Open **http://127.0.0.1:9035**. Select `data/credentials.json` in the browser connection panel to preview bridge state. The file is read in your browser; the publishing key stays in page memory. The initial state is **Waiting for your dot**. A staged animation is available separately using `node demo/serve.mjs` on port 9024.
+The launcher opens **http://127.0.0.1:9035** and pairs that browser with a single-use, ten-minute nonce. The publishing key remains in page memory and never enters a URL. The fragment is removed before requests, and pairing requires the local same-origin browser. A manually opened tab can use **Manual connection** and the private credentials file. Start with **Send test card**, then follow the [four-step checklist](first-result.md). Omit `--open` for unattended operation; Windows accepts `-NoBrowser`.
 
 The data directory holds private credentials and SQLite state. It is excluded from Git and distributable archives. The publishing key can read and update state; the separate image key can only fetch rendered images. Use the image key for hardware clients.
 
@@ -46,11 +46,15 @@ On macOS/Linux:
 .venv/bin/python tools/doctor.py
 ```
 
-The doctor checks the runtime, assets, bridge authentication, MCP tools, and rendered image. It reads state without publishing an answer. Before starting the bridge, use `--offline` to check installation files and private configuration. On Windows, the equivalent is `.\run.ps1 -Doctor -Offline`. Use `--url` for another bridge address and `--config` for that bridge's credentials file. The results distinguish a locally functioning bridge from a connected dot or refreshed hardware; those last two still need separate verification.
+The doctor checks the effective installed path and content fingerprint, running build, assets, authentication, source/delivery receipts and rendered image. Add `--mcp` or Windows `-Mcp` to require Node and exercise the stdio source. Before startup, use `--offline` or Windows `-Offline`. Use `--url` and `--config` for another bridge. These read-only checks distinguish storage and transport from observation of the actual panel.
 
 For an isolated installed-package check after setup, run `.\.venv\Scripts\python.exe tools\smoke.py` on Windows or `.venv/bin/python tools/smoke.py` on macOS/Linux. It starts the installed CLI outside the source checkout with temporary data, exercises real MCP publishing and image authentication, then verifies persistence after restart. It does not use production keys or replace your display's state.
 
 ## Installed package and credentials
+
+Stop the bridge before upgrading. Preserve its data directory and keys, run `python tools/setup.py` (or Windows `.\run.ps1 -Update`), then restart with the same data directory. The doctor compares content fingerprints even when version labels match. For Docker, pull the versioned image and recreate the service using the same Compose project and volume; do not remove the volume.
+
+Thinking expires after `DOTS_THINKING_TIMEOUT_SECONDS=600`. `DOTS_ANIMATE_THINKING=false` selects still images for battery devices. Full text remains local when the display budget clips it.
 
 To inspect a setup failure, create the environment manually with `python -m venv .venv`. On Windows, run `.\.venv\Scripts\python.exe -m pip install .`; on macOS/Linux use `.venv/bin/python -m pip install .`. Then use that same interpreter with `-m dots_on_paper --init --data-dir ./data` to initialize keys and `-m dots_on_paper --data-dir ./data` to start. Retain private index URLs or keys outside shared logs when asking for help.
 
@@ -79,7 +83,7 @@ docker compose run --rm bridge python -m dots_on_paper --init
 docker compose up -d --build
 ```
 
-Keys and state live in the `dots-data` volume. Compose defaults to a loopback host port. LAN clients require a reachable host port bind and matching `DOTS_PUBLIC_URL`/`DOTS_ALLOWED_HOSTS` values. Docker deployment still needs verification on your host.
+Keys and state live in the `dots-data` volume. Fresh startup initializes private keys automatically. Compose keeps its loopback bind. Use a LAN-reachable origin/bind only for devices that need it. Native AMD64/ARM64 startup and replacement checks run in CI; they do not establish Raspberry Pi or panel compatibility.
 
 If a local MCP client needs the Docker bridge's credentials, copy that same file into a private local path:
 
@@ -98,7 +102,7 @@ Point `DOTS_CONFIG_FILE` at the copied file. HA uses its publishing key; devices
 | 401 from API or MCP | Use credentials belonging to the running bridge, not a separately initialized copy. |
 | Device can reach HA but not this image | Use a LAN-reachable bridge URL, allowed host, firewall rule, and read-only image key. |
 | Dot cannot see localhost | Use Secure MCP Tunnel to the local stdio adapter, or a connected-computer task, as described in the real-dot guide. The bridge's static bearer key is not a direct ChatGPT HTTPS connection. |
-| Display stays on thinking after work stops | Ask the connected assistant to call `set_dot_status` with `status: "idle"`. Thinking is reported by the caller and has no automatic expiry; starting the next request with a fresh `run_id` also replaces it. |
+| Display stays on thinking after work stops | Wait for the configured timeout (600 seconds by default), reconnect the source, or select Restore last result. A new task needs a fresh run ID; late completion of an expired run is rejected. |
 | Bridge has an answer; screen has not changed | Check the device's next fetch and refresh. A stored reply alone does not confirm physical delivery. |
 
 For key rotation and private-data handling, see [SECURITY.md](../SECURITY.md).

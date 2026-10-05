@@ -1,0 +1,56 @@
+name: Hardware verification
+description: Record an observed assistant result on one exact panel and firmware.
+title: "Hardware verification: "
+labels: ["hardware"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Bridge release, OS, Python and source client version
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: Exact display model and firmware
+    validations:
+      required: true
+  - type: dropdown
+    id: route
+    attributes:
+      label: Delivery route
+      options:
+        - TRMNL BYOS
+        - Stock TRMNL Webhook Image
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Source, prerequisites and reproduction steps
+      description: Use safe demonstration text. Keep keys, private webhook URLs and account/device identifiers out of this report.
+    validations:
+      required: true
+  - type: textarea
+    id: observations
+    attributes:
+      label: Panel observation, refresh settings and measured latency
+      description: Separate publication, image receipt and observed panel output. State any time compression.
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Bridge restart, disconnect/reconnect and temporary upload failure
+      description: Record failures as well as successful recovery.
+    validations:
+      required: true
+  - type: checkboxes
+    id: evidence
+    attributes:
+      label: Evidence and permission
+      options:
+        - label: I observed this result on the named physical panel.
+          required: true
+        - label: Any attached photo uses deliberately selected content and I permit its publication in the project gallery.

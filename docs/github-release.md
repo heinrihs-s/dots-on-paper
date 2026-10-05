@@ -1,66 +1,39 @@
-# Publish Dots on Paper on GitHub
+# Publish an engineering beta
 
-The source repository is [**heinrihs-s/dots-on-paper**](https://github.com/heinrihs-s/dots-on-paper), owned by `heinrihs-s`. Use this directory as the repository root. This guide covers subsequent tagged releases and HACS preparation.
+The source repository is [heinrihs-s/dots-on-paper](https://github.com/heinrihs-s/dots-on-paper), with the [public browser trial](https://heinrihs.org/dotsonpaper/try/). The About description is “A tiny e-ink companion for useful AI replies. Local bridge, MCP, and Home Assistant.” Discussions provide Show your desk, Setup help and Recipes. Hardware-led promotion waits for the [roadmap evidence gates](roadmap.md).
 
-## Repository identity
+## Build and verify downloads
 
-| Field | Prepared value |
-| --- | --- |
-| Name | `dots-on-paper` |
-| Display name | Dots on Paper |
-| Description | Your dot on e-ink. An MCP + Home Assistant bridge with four switchable companions and readable replies. |
-| Personal dot | `heidot`; readers can use their own dot name. |
-| Topics | `e-ink`, `e-paper`, `mcp`, `home-assistant`, `trmnl`, `esphome`, `openepaperlink`, `chatgpt`, `python`, `automation` |
-| Social preview | `brand/social-preview.png`, 1280 × 640 |
-| Source URL | `https://github.com/heinrihs-s/dots-on-paper` |
-
-The current coloured paper-dot header is `brand/header-paper-v2.png`; its exact generation brief is adjacent. The monochrome Cool logo is `brand/logo-cool.svg`, with a dark variant and icon. The editable calendar social preview source is `brand/social-preview.html`. The README's GIF starts on a readable result; the MP4 links provide the full films.
-
-After creating the repository, set its About description/topics and upload the preview through **Settings → Social preview → Edit → Upload an image**. The supplied PNG is under 1 MB and uses GitHub's recommended 1280 × 640 size. [GitHub social-preview guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview)
-
-## Publication steps
-
-1. Push the release source to `main`. Retain `LICENSE`, `NOTICE.md`, the font license, and asset provenance. Exclude `data/`, credentials, databases, `.env`, caches, and local Python environments.
-2. Confirm the README, GIFs, logo, documentation, and source resolve from that repository. The HA manifest already targets this owner/name; its documentation and issue URLs become usable after publication.
-3. Let the configured GitHub CI run, and inspect its results. It is prepared for Python 3.11/3.12 on Linux/Windows, with Node 22. A local pass does not establish a GitHub-hosted CI pass.
-4. Rebuild the release archives using `python tools/package.py`, inspect the included files, and attach the archives plus `release/SHA256SUMS.txt` to a `v0.1.0` release. List actual test results for the released commit.
-5. Use the verified repository URL in the [release caption](../campaign/posts.md#3-integration-release). Publish that post only when its source/download links work.
-6. Enable private vulnerability reporting if you want the private report route described in [SECURITY.md](../SECURITY.md) available.
-
-Tagged release publication and X posting are separate account actions. The source push does not publish either one.
-
-## Checks before release
+Use the maintained Python environment from [setup.md](setup.md). Build after the final source changes:
 
 ```sh
-python -m pip install .
-python tools/smoke.py
+python -m pip install --upgrade .
 python -m unittest discover -s tests -p 'test_*.py' -v
 node --test tests/test_mcp.mjs
-python -m compileall -q custom_components/dots_on_paper
+python tools/smoke.py
+python tools/doctor.py --offline --mcp
+python -m pip wheel . --no-deps --wheel-dir dist
+python tools/package.py
+python tools/release_check.py --wheel release/dots_on_paper-0.2.0b1-py3-none-any.whl --runtime release/dots-on-paper-0.2.0b1.zip
 ```
 
-Use the installation doctor described in [setup.md](setup.md) to check runtime, assets, credentials, authenticated image output, and MCP connectivity. The doctor does not publish a reply. [Verification evidence](verification.md) records the local checks and remaining hardware/account limits.
+When a previous wheel is available, add `--upgrade-from dist/dots_on_paper-0.1.0-py3-none-any.whl` to check migration with retained state and unchanged keys. Checks run outside the source directory, with temporary credentials and databases. Never package `data/`, `.env`, private keys, caches or local environments.
 
-`tools/package.py` builds the full source archive, manual HA archive, and separate X media archive, with checksums for those and the available wheel. The HA-only archive contains `custom_components/dots_on_paper`; it still needs a running bridge.
+The runtime ZIP contains the Python bridge, packaged stdio adapter, launch/setup/doctor tools, docs, examples, licenses and one header image. Large films and development dependencies stay in the source repository; `python tools/package.py --campaign` creates an optional separate media archive. The wheel is the installable Python package. The manual HA ZIP contains the integration and still requires a running bridge; its own manifest remains 0.1.0 and has not been verified in a live HA runtime.
 
-## Suggested release text
+## Publish the matching source and images
 
-> Dots on Paper gives assistant replies a small face and a place on an e-ink screen. This first release includes an authenticated local bridge, three MCP publishing tools, four switchable characters, a Home Assistant integration, TRMNL BYOS endpoints, and ESPHome/OpenEPaperLink examples.
->
-> Bridge, rendering, and MCP checks pass locally. Your private dot account, HA instance, and physical display need connection and verification after installation. The campaign clips are staged; the wife-texting scene ends with a cancelled draft and no message sent. Hardware refresh depends on the display and firmware.
->
-> Start with README.md and docs/setup.md, then docs/real-dot.md for the dot connection. The manual HA archive installs the custom component; the full source archive contains the bridge and examples.
+1. Push the reviewed source and inspect Source checks. It exercises Python 3.11/3.12 on Linux/Windows, exact wheel/runtime installation, and native amd64/arm64 container startup, restart and replacement with a disposable persistent volume.
+2. Create the `v0.2.0-beta.1` tag at that verified commit. Publish a GitHub prerelease with the wheel, runtime ZIP, HA ZIP and `SHA256SUMS.txt`, using [the release notes](release-notes-0.2.0-beta.1.md). A prerelease uses its direct tag URL; GitHub’s `/releases/latest` excludes prereleases.
+3. The tag starts Beta release. Each native runner builds and tests its image before publishing an architecture tag. Only after both pass does the workflow publish `ghcr.io/heinrihs-s/dots-on-paper:0.2.0-beta.1`. Check anonymous pulls before advertising it as a public download.
+4. Compare the deployed browser trial with the generated site manifest. Record actual CI links, deployment and release results in [verification.md](verification.md) and [the deployment record](../site/DEPLOYMENT.md).
 
-Use actual results for the released commit instead of copying an old test count.
+Docker’s native runner checks establish the listed architecture behavior; they do not establish support for every Raspberry Pi model, a panel or firmware. Release artifacts and compatibility claims must describe the same source revision.
 
-## HACS and live integrations
+## Account, hardware and promotion gates
 
-The source has the HACS directory layout, owner/URL fields, and brand assets. HACS registration and installation validation are still pending. Verify current [HACS requirements](https://www.hacs.xyz/docs/publish/integration/) and its checks before advertising a HACS installation.
+The [compatibility matrix](compatibility.md) distinguishes software verification, experimental routes and example configurations. A webhook acceptance or image fetch is a receipt; an observed physical panel is separate evidence. Record exact model, firmware, refresh settings, latency, restart and failure recovery using the hardware issue form.
 
-A GitHub release does not connect a private ChatGPT dot or provision a display. The actual dot needs the supported MCP connection and enabled tools; the display needs a reachable image URL and tested refresh configuration. Instinct remains an independent visual concept, with no implemented connector.
+HACS registration and live installation validation remain pending. Verify [current HACS requirements](https://www.hacs.xyz/docs/publish/integration/) before advertising that route. HACS installs the integration, not the bridge. A private ChatGPT dot needs a supported MCP connection and account permissions. Instinct remains a visual concept without an implemented connector.
 
-## Campaign handoff
-
-Use the [campaign](../campaign/README.md) for the tiny dot's calm calendar judgment, the user's NOO reaction, and the code reveal. The captions and embedded source metadata identify the staged output. Preserve the Instinct still's own concept labels. A future live demonstration should name its actual answer source and tested hardware.
-
-The source is published. A tagged release still needs its hosted CI results, verified download links, and release assets. The remaining live-integration steps are account access and physical HA/display verification.
+Use the [beta study](beta-study.md) to observe first use and seven-day usefulness. Publish real-device footage and community launch posts after the gates pass, with permission for user photos. Existing campaign films are staged. Outreach, messaging and posting remain separate future actions.

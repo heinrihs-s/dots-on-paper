@@ -1,72 +1,67 @@
-"""Create install archives containing source and assets, never local keys or replies."""
-from pathlib import Path
+"""Build versioned runtime/HA archives with an explicit file allowlist."""
+from __future__ import annotations
+
+import argparse
 import hashlib
+from pathlib import Path
 import shutil
+import tomllib
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = ROOT / "release"
 EXCLUDE = {"data", ".env", ".venv", "__pycache__", "build", "dist", "release", ".impeccable", ".git", "node_modules"}
+RUNTIME_FILES = ("README.md", "CONTRIBUTING.md", "LICENSE", "NOTICE.md", "SECURITY.md", "pyproject.toml", "requirements.txt", "run.ps1", "Dockerfile", ".dockerignore", "compose.yaml", ".env.example", "plugin.json", "mcp.json", ".agents/plugins/marketplace.json", "tools/setup.py", "tools/doctor.py", "tools/smoke.py", "tools/package.py", "tools/release_check.py", "tools/docker_smoke.py", "brand/header-paper-v2.png", "brand/header-paper-v2.provenance.json")
 
 
-def included(path):
-    relative = path.relative_to(ROOT)
-    if any(part in EXCLUDE or part.endswith(".egg-info") for part in relative.parts):
+def included(path: Path) -> bool:
+    if any(part in EXCLUDE or part.endswith(".egg-info") for part in path.relative_to(ROOT).parts):
         return False
     name = path.name.lower()
-    if name.startswith(".env") and name != ".env.example":
-        return False
-    if name == "credentials.json" or name.endswith("-credentials.json"):
+    if name.startswith(".env") and name != ".env.example" or name == "credentials.json" or name.endswith("-credentials.json"):
         return False
     return path.suffix.lower() not in {".pyc", ".key", ".pem", ".db", ".sqlite", ".sqlite3"} and ".sqlite3-" not in name
 
 
-def main():
+def archive(path: Path, files: list[Path]) -> None:
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as output:
+        for file in sorted(set(files)):
+            if not file.is_file() or not included(file):
+                continue
+            info = zipfile.ZipInfo(file.relative_to(ROOT).as_posix(), date_time=(2026, 10, 5, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            output.writestr(info, file.read_bytes())
+    with zipfile.ZipFile(path) as result:
+        assert result.testzip() is None
+        assert not any(name.startswith("data/") or name.endswith("credentials.json") for name in result.namelist())
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--campaign", action="store_true", help="Separately package large scripted media")
+    args = parser.parse_args()
+    version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     RELEASE.mkdir(exist_ok=True)
-    plugin_path = RELEASE / "dots-on-paper-0.1.0.zip"
-    with zipfile.ZipFile(plugin_path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(ROOT.rglob("*")):
-            if path.is_file() and included(path):
-                archive.write(path, path.relative_to(ROOT))
-        names = archive.namelist()
-        assert "plugin.json" in names and "mcp.json" in names
-        assert not any(name.startswith("data/") or name.endswith("credentials.json") for name in names)
-    ha_path = RELEASE / "dots-on-paper-home-assistant-0.1.0.zip"
-    with zipfile.ZipFile(ha_path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted((ROOT / "custom_components").rglob("*")):
-            if path.is_file() and included(path):
-                archive.write(path, path.relative_to(ROOT))
-        for path in sorted((ROOT / "examples/home-assistant").iterdir()):
-            if path.is_file() and included(path):
-                archive.write(path, path.name)
-        archive.write(ROOT / "LICENSE", "LICENSE")
-        archive.write(ROOT / "demo/assets/Figtree-LICENSE.txt", "Figtree-LICENSE.txt")
-    campaign_path = RELEASE / "dots-on-paper-x-package-0.1.0.zip"
-    with zipfile.ZipFile(campaign_path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted((ROOT / "campaign").rglob("*")):
-            if path.is_file() and included(path):
-                archive.write(path, path.relative_to(ROOT))
-        for name in ("LICENSE", "NOTICE.md", "docs/product-facts.md", "docs/real-dot.md", "docs/verification.md"):
-            archive.write(ROOT / name, name)
-        for path in sorted((ROOT / "brand").rglob("*")):
-            if path.is_file() and included(path):
-                archive.write(path, path.relative_to(ROOT))
-        for name in ("Figtree.ttf", "Figtree-LICENSE.txt"):
-            archive.write(ROOT / "demo/assets" / name, "demo/assets/" + name)
-        archive.writestr("README.txt", "Open campaign/README.md for the four-post package and campaign/posts.md for captions.\nMedia is in campaign/media/. All scenes are scripted concepts; nothing was sent.\nThe separate source archive contains the actual MCP, Home Assistant and e-ink integrations.\n")
-    for path in (plugin_path, ha_path, campaign_path):
-        with zipfile.ZipFile(path) as archive:
-            assert archive.testzip() is None
-        print(f"Created {path.name}: {path.stat().st_size:,} bytes")
-    wheels = []
-    for wheel in sorted((ROOT / "dist").glob("*.whl")):
+    runtime = RELEASE / f"dots-on-paper-{version}.zip"
+    files = [ROOT / name for name in RUNTIME_FILES]
+    for directory in ("src", "docs", "examples", "skills"):
+        files.extend((ROOT / directory).rglob("*"))
+    archive(runtime, files)
+    ha = RELEASE / f"dots-on-paper-home-assistant-{version}.zip"
+    archive(ha, [*(ROOT / "custom_components").rglob("*"), *(ROOT / "examples/home-assistant").rglob("*"), ROOT / "LICENSE", ROOT / "src/dots_on_paper/assets/Figtree-LICENSE.txt"])
+    downloads = [runtime, ha]
+    for wheel in sorted((ROOT / "dist").glob(f"dots_on_paper-{version}-*.whl")):
         destination = RELEASE / wheel.name
         shutil.copy2(wheel, destination)
-        wheels.append(destination)
-    downloads = [plugin_path, ha_path, campaign_path, *wheels]
-    sums = "".join(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n" for path in downloads)
-    (RELEASE / "SHA256SUMS.txt").write_text(sums, encoding="utf-8")
-    print("Created SHA256SUMS.txt for the source, HA, and available wheel downloads")
+        downloads.append(destination)
+    if args.campaign:
+        campaign = RELEASE / f"dots-on-paper-media-{version}.zip"
+        archive(campaign, [*(ROOT / "campaign").rglob("*"), *(ROOT / "brand").rglob("*"), ROOT / "LICENSE", ROOT / "NOTICE.md"])
+        downloads.append(campaign)
+    (RELEASE / "SHA256SUMS.txt").write_text("".join(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n" for path in downloads), encoding="utf-8", newline="\n")
+    print("\n".join(f"Created {path.name}: {path.stat().st_size:,} bytes" for path in downloads))
+    print("Created SHA256SUMS.txt. Runtime downloads exclude campaign films and local state.")
 
 
 if __name__ == "__main__":

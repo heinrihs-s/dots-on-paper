@@ -9,6 +9,7 @@ from __future__ import annotations
 from functools import lru_cache
 from dataclasses import dataclass
 from io import BytesIO
+from datetime import datetime, timezone
 import math
 import os
 from pathlib import Path
@@ -503,6 +504,11 @@ def _reply(canvas: Image.Image, state: dict, character: str, frame: int, monochr
         _text_block(canvas, title, (column_left, title_y, column_width, round(title_size * 1.3)), title_size, title_size, 500, color=SECONDARY)
     body_y = name_y + max(name_height + 12, round(short_side * .098))
     body_height = height - margin - body_y
+    stamp = _card_stamp(state)
+    if stamp:
+        stamp_size = max(11, min(24, round(short_side * .021)))
+        body_height -= stamp_size * 2
+        _text_block(canvas, stamp, (column_left, height - margin - stamp_size, column_width, stamp_size * 2), stamp_size, stamp_size, 500, color=SECONDARY)
     preferred = max(16, min(64, round(short_side * .0456)))
     minimum = max(14, min(42, round(short_side * .030)))
     _reply_text(canvas, _display_text(state, "answer"), (column_left, body_y, column_width, body_height), preferred, minimum)
@@ -532,6 +538,12 @@ def _conversation(canvas: Image.Image, state: dict, character: str, frame: int, 
     _text_block(canvas, _clean(state.get("title")) or "Conversation", (column_left, title_y, column_width, round(label_size * 1.3)), label_size, label_size, 500, color=SECONDARY)
     body_y = name_y + max(name_height + 12, round(short_side * .098))
     body_height = height - margin - body_y
+    stamp = _card_stamp(state)
+    stamp_height = 0
+    if stamp:
+        stamp_height = label_size * 2
+        body_height -= stamp_height
+        _text_block(canvas, stamp, (column_left, height - margin - label_size, column_width, label_size * 2), label_size, label_size, 500, color=SECONDARY)
     messages = _conversation_messages(state)
     omitted = len(messages) > 6
     messages = messages[-6:]
@@ -574,7 +586,7 @@ def _conversation(canvas: Image.Image, state: dict, character: str, frame: int, 
             lines[-1] = _ellipsize(lines[-1], _font(size, 650 if message.role == "user" else 500), measure)
         user = message.role == "user"
         row_height = len(lines) * leading + overhead
-        if y + row_height > height - margin:
+        if y + row_height > height - margin - stamp_height:
             break
         left = column_left
         color = INK
@@ -646,6 +658,17 @@ def _hero(canvas: Image.Image, state: dict, character: str, status: str, frame: 
         _circle(draw, width - margin - (2 - index) * footer_size, footer_y + footer_size * .45, radius, fill)
 
 
+def _card_stamp(state: dict) -> str:
+    source = _clean(state.get("source"))
+    if not source:
+        return ""
+    try:
+        updated = datetime.fromisoformat(state["updated_at"]).astimezone(timezone.utc)
+        return f"{source} · {updated:%d %b %H:%M} UTC"
+    except (KeyError, TypeError, ValueError):
+        return source
+
+
 def render_image(state: dict, width: int, height: int, levels: int = 16, format: str = "PNG", frame: int = 0) -> bytes:
     """Render an actual dot event as PNG or BMP at the device's native size.
 
@@ -667,6 +690,24 @@ def render_image(state: dict, width: int, height: int, levels: int = 16, format:
         raise ValueError("format must be PNG or BMP")
     if isinstance(frame, bool) or not isinstance(frame, int) or frame < 0:
         raise ValueError("frame must be a nonnegative integer")
+    state = dict(state)
+    if state.get("recovery_reason") == "timeout" and isinstance(state.get("last_result"), dict):
+        state = {**state["last_result"], "character": state.get("character", "artist"), "title": "No recent update · retained result", "display_budget": state.get("display_budget", 1200)}
+        frame = 11
+    budget = state.get("display_budget")
+    if isinstance(budget, int) and budget > 0 and len(state.get("text", "")) > budget:
+        state["text"] = state["text"][:budget - 1].rstrip() + "…"
+    if isinstance(budget, int) and budget > 0 and isinstance(state.get("messages"), list):
+        messages, remaining = [], budget
+        for message in reversed(state["messages"]):
+            if remaining < 1:
+                break
+            content = message["content"]
+            if len(content) > remaining:
+                content = content[:remaining - 1].rstrip() + "…"
+            messages.insert(0, {**message, "content": content})
+            remaining -= len(content)
+        state["messages"] = messages
     character = state.get("character", "artist")
     if not isinstance(character, str) or character not in CHARACTERS:
         character = "artist"

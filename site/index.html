@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f6f2">
-  <title>Dots on Paper — Your dot’s replies, on e-ink</title>
-  <meta name="description" content="Give your dot a little desk space. An open-source MCP and Home Assistant bridge for e-ink, with thinking animation, four companions, and answers that stay put.">
+  <title>Dots on Paper — Your AI's useful updates, on your desk</title>
+  <meta name="description" content="Keep your assistant's finished work visible. Try your own note in the browser, then install the local MCP bridge for readable e-ink result cards.">
   <link rel="canonical" href="https://heinrihs.org/dotsonpaper/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Dots on Paper — A little dot. A lot to say.">
@@ -17,8 +17,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="./assets/icon-cool.svg" type="image/svg+xml">
   <link rel="preload" href="./assets/Figtree.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="stylesheet" href="./styles.css?v=mode-examples-1">
-  <script src="./site.js?v=mode-examples-1" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=beta-2">
+  <script src="./site.js?v=beta-2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -33,12 +33,12 @@
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <h1 id="hero-title">Give your dot<br>a little desk space.</h1>
+        <h1 id="hero-title">Your AI’s useful updates,<br>on your desk.</h1>
         <div class="hero-aside">
-          <p>An open-source bridge that puts your dot’s answers on e-ink. A little thinking animation. A reply that stays put.</p>
+          <p>For people who work with an assistant and want its finished work to stay visible. A short result, kept on paper.</p>
           <div class="actions">
-            <a class="button primary" href="https://github.com/heinrihs-s/dots-on-paper">Get it on GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-            <a class="text-link" href="#demo">See it think <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></a>
+            <a class="button primary" href="./try/">Try in your browser <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            <a class="text-link" href="#setup">Install <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></a>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
     <section class="demo-section" id="demo" aria-labelledby="demo-title">
       <div class="wrap demo-layout">
         <div class="demo-intro">
-          <h2 id="demo-title">Watch a<br>thought land.</h2>
+          <h2 id="demo-title">Watch a <br>thought land.</h2>
           <p>A dot thinks. The answer arrives.<br>Then the paper keeps it.</p>
           <div class="character-picker" role="group" aria-label="Choose a companion">
             <button data-character="artist" aria-pressed="false"><span class="portrait blue"><img src="./assets/artist.png" width="80" height="80" alt=""></span><span>Artist</span></button>
@@ -62,11 +62,12 @@
             <button data-mode="full_conversation" aria-pressed="false">Full conversation</button>
           </div>
           <p class="mode-description" id="mode-description">One answer, kept on paper.</p>
-          <p class="punchline" id="demo-punchline">“Your calendar needs a lawyer.”</p>
+          <p class="punchline" id="demo-punchline">“Site review finished. Report ready.”</p>
+          <a class="text-link" href="./try/">Write your own note</a>
         </div>
         <figure class="demo-figure">
           <div class="device" id="demo-device">
-            <img id="screen" src="./assets/frames/cool-reminders-last_reply.png" width="960" height="720" alt="heidot’s reply: Here are your reminders. Tonight: Date with Paula. Tomorrow morning: Breakfast with Amy. Lunch: With your wife. Your calendar needs a lawyer.">
+            <img id="screen" src="./assets/frames/cool-completed-last_reply.png" width="960" height="720" alt="Simulated assistant result: Site review finished. Two broken links found. Report ready.">
             <span class="device-mark" aria-hidden="true"></span>
           </div>
           <div class="conversation-controls" id="conversation-controls" role="group" aria-label="Step through the conversation" hidden>
@@ -83,6 +84,7 @@
             <span class="demo-status" id="demo-status" role="status" aria-live="polite">Answer retained</span>
           </div>
           <figcaption>Scripted example. Actual renderer frames at an accelerated pace; physical e-ink refresh is slower and varies by panel.</figcaption>
+          <details class="demo-transcript" open><summary>Readable screen text</summary><p id="screen-transcript">Site review finished. Two broken links found. Report ready.</p></details>
           <noscript><p>The result is shown above. Enable JavaScript to switch companions and display modes, and replay thinking.</p></noscript>
         </figure>
       </div>
@@ -95,15 +97,16 @@
         <a class="text-link" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/api.md">Explore the three MCP tools <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
       </div>
       <ol class="how-steps">
-        <li><span class="step-index" aria-hidden="true">1</span><div><h3>Your dot starts thinking.</h3><p>A tool call sets the state. The selected companion cycles through twelve e-ink poses.</p></div></li>
+        <li><span class="step-index" aria-hidden="true">1</span><div><h3>Your assistant finishes a task.</h3><p>Its explicit MCP tool call publishes the short result. The local test proves rendering before you connect a source.</p></div></li>
         <li><span class="step-index" aria-hidden="true">2</span><div><h3>The answer gets a little paper.</h3><p>The bridge renders the reply as grayscale PNG or BMP, sized for your screen.</p></div></li>
-        <li><span class="step-index" aria-hidden="true">3</span><div><h3>It stays until there’s more to say.</h3><p>One stable result image replaces the thinking frames. No endless redraw after the answer.</p></div></li>
+        <li><span class="step-index" aria-hidden="true">3</span><div><h3>It stays until there’s more to say.</h3><p>Interrupted work expires and keeps the last useful result. Battery devices use settled images; thinking animation is optional.</p></div></li>
       </ol>
     </section>
 
+    <section class="jobs wrap" aria-labelledby="jobs-title"><h2 id="jobs-title">Three reasons to glance over.</h2><dl><div><dt>A completed task</dt><dd>“Site review finished. Report ready.” A local MCP assistant deliberately publishes the summary. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/first-result.md">First-result recipe</a></dd></div><div><dt>A daily brief</dt><dd>“Call at 11. Check the invoice. Bring the parcel.” Your assistant supplies its connected sources and schedule. The bridge retains the result. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/recipes.md">Daily brief recipe</a></dd></div><div><dt>A decision or exception</dt><dd>“Backup failed. Check the storage connection.” Your own monitor or assistant publishes the exception. Open the original app to act. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/recipes.md">Exception recipe</a></dd></div></dl></section>
     <section class="setup-section" id="setup" aria-labelledby="setup-title">
       <div class="wrap">
-        <div class="section-heading"><h2 id="setup-title">Make room for your dot.</h2><p>Run the bridge on your computer, then choose your connection.<br>Python 3.11+ and Node.js 22+ required.</p></div>
+        <div class="section-heading"><h2 id="setup-title">Make room for your dot.</h2><p>Start with the browser and one local source.<br>Python 3.11+ for the bridge; Node.js 22+ for MCP.</p></div>
         <div class="install-layout">
           <div class="install-guide">
             <h3>Start with the bridge.</h3>
@@ -117,9 +120,9 @@ python tools/setup.py</code></pre>
             <div class="os-switch" role="group" aria-label="Choose your operating system"><button data-os="unix" aria-pressed="true">macOS / Linux</button><button data-os="windows" aria-pressed="false">Windows</button></div>
             <div class="terminal launch-terminal">
               <div class="terminal-bar"><span>Start the bridge</span><button class="copy" data-copy="launch-code" aria-label="Copy start command">Copy <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg></button></div>
-              <pre><code id="launch-code">.venv/bin/python -m dots_on_paper --data-dir ./data</code></pre>
+              <pre><code id="launch-code">.venv/bin/python -m dots_on_paper --data-dir ./data --open</code></pre>
             </div>
-            <p class="install-note">Use <code>python3</code> if your system needs it. Open <a href="http://127.0.0.1:9035" target="_blank" rel="noopener">127.0.0.1:9035 on your computer</a> and select <code>data/credentials.json</code> in the local preview. Keep that file private.</p>
+            <p class="install-note">Use <code>python3</code> if your system needs it. The launcher opens a paired local browser. Send a test card, then generate your source configuration. <a href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/compatibility.md">Tested compatibility and remaining hardware gates</a>.</p>
             <a class="text-link" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/setup.md">Full setup &amp; troubleshooting <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
           </div>
           <div class="platform-guide">
@@ -153,7 +156,7 @@ python tools/setup.py</code></pre>
 $env:DOTS_PUBLIC_URL = 'http://YOUR_LAN_IP:9035'
 $env:DOTS_ALLOWED_HOSTS = 'YOUR_LAN_IP,localhost,127.0.0.1'</code></pre>
               </div>
-              <p class="platform-note">Thinking uses a 15-second sleep; the answer returns to 60 seconds. Boot, Wi-Fi and drawing add time. Stock TRMNL X can flash between frames. The cloud private-plugin route is separate.</p>
+              <p class="platform-note">Settled images are the battery preset. Enable thinking animation only on a tested panel. The optional Webhook Image adapter sends finished PNG cards to stock accounts, with persistent retries and quotas. Cloud acceptance and panel observation are separate; physical compatibility is experimental.</p>
               <a class="button secondary" href="https://github.com/heinrihs-s/dots-on-paper/blob/main/docs/platforms.md#existing-trmnl-byos-device">TRMNL configuration <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
             </section>
             <section id="panel-ha" class="platform-panel" role="tabpanel" aria-labelledby="tab-ha" tabindex="0" hidden>

@@ -1,5 +1,19 @@
 # Release verification
 
+## Engineering beta, 5 October 2026
+
+Version `0.2.0b1` was installed in the existing Windows environment: Python 3.12.14, Pillow 12.3.0 and Node 24.11.0. The final source passed **86 Python tests and 15 Node MCP tests**. The installed runtime fingerprint is `35e4fa914fc9` (prefix). The doctor also correctly rejected a stale installed build during development even though its version matched.
+
+New reliability checks cover absolute thinking deadlines, restart/timeout recovery, late and superseded runs, duplicate/reconnected events, retained timestamps, restore, deliberate display/history clearing, and single-use same-origin pairing. Delivery checks exercise persisted pending uploads, coalescing, failure/restart recovery, hourly quotas, Retry-After, permanent failures, raw PNG HTTP transport, refused redirects and the 1 MB limit. Requests use disposable local services, not a stock account or panel.
+
+The final desktop (1440 px) and phone (390 px) browser pass checked guided test/source separation, generated installed-adapter configuration with an actual stdio publication, readable transcripts, restore and clearing. The public build's editable simulation checked all characters, a real 1872×1404 PNG download, safe sample replacement, no personal text in requests/storage/URLs, a visible simulation label on phones, reduced motion and contained horizontal scrolling. There were no browser script errors. Two bounded visual rounds covered the initial implementation and the final fixes.
+
+The exact wheel and runtime archive are exercised by `tools/release_check.py`, including a previous 0.1.0 wheel upgrade that preserves keys and retained state. Source checks additionally run Linux/Windows × Python 3.11/3.12, exact-artifact setup on both OSes and native amd64/arm64 container persistence checks. Hosted run and publication results are recorded separately after they complete; a workflow definition alone is not verification.
+
+The compatibility matrix, first-result guide, three recipes, hardware issue form, five contributor tasks and study form are in the beta. GitHub About points to the public website; Discussions has Show your desk, Setup help and Recipes. The [roadmap](roadmap.md) keeps interactive assistant reproduction, a physical model/firmware run, stock account access, live HA/HACS, ten observed users, seven-day retention and promotion open. These gates are not established by the software tests.
+
+## Historical checks
+
 Local checks on **3 October 2026** for version 0.1.0:
 
 | Check | Evidence |

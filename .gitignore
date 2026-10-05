@@ -12,6 +12,7 @@ release/
 .impeccable/
 demo/.impeccable/
 node_modules/
+tests/artifacts/
 *.key
 *.pem
 credentials.json

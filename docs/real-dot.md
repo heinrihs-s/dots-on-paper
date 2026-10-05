@@ -152,7 +152,7 @@ Select `last_reply` for the answer alone or `full_conversation` for the supplied
 
 Choose a fresh `run_id` for each task and use it for the status and answer to prevent stale completion updates. A completion that supplies `run_id` must match the current active thinking run; mismatches are rejected. A standalone answer without `run_id` is accepted, so one-off publishing does not require a preceding thinking update. Keep a stable `event_id` when retrying the same update. The tools expose deliberate display updates, not a full dot activity log. There is no bundled Codex completion hook pretending to observe direct dot conversations.
 
-Thinking is caller-reported state. If a task stops without sending a final answer or `set_dot_status` with `status: "idle"`, the bridge retains thinking until another update arrives; it has no heartbeat or task-expiry timer. Home Assistant and devices poll snapshots, so they may miss short status transitions or animation frames. The rendered animation represents the stored status, not live internal activity.
+Thinking is caller-reported state. The beta expires an interrupted task after `DOTS_THINKING_TIMEOUT_SECONDS` (default 600), reports “No recent update,” and retains the last completed result. Late completion of an expired run is rejected. Restore the result in the preview or start a new task with a fresh run ID. Polling clients can miss short transitions. Animation defaults off; when enabled, it represents stored status rather than live internal activity.
 
 ## Official sources
 

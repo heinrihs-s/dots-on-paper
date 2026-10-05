@@ -4,7 +4,7 @@
 
 If this repository has private vulnerability reporting enabled, use its **Security → Report a vulnerability** entry. Otherwise, open an issue asking the maintainer for a private reporting route without including exploit details, credentials, or private content. No private reporting endpoint is bundled with this source package.
 
-Include the package version, affected endpoint or adapter, a minimal reproduction using generated credentials, and the impact. Do not include an actual dot reply, production token, or device identity. The current development release is 0.1.0; no response-time commitment is made.
+Include the package version, affected endpoint or adapter, a minimal reproduction using generated credentials, and the impact. Do not include an actual dot reply, production token, or device identity. The current engineering beta is 0.2.0b1; no response-time commitment is made.
 
 ## Boundaries
 

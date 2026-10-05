@@ -2,25 +2,34 @@
 
 # Dots on Paper
 
-[Meet the dots, try the demo, and set up your display](https://heinrihs.org/dotsonpaper/).
+[![Source checks](https://github.com/heinrihs-s/dots-on-paper/actions/workflows/ci.yml/badge.svg)](https://github.com/heinrihs-s/dots-on-paper/actions/workflows/ci.yml)
 
-Display your dot's replies on an e-ink screen.
+**Your AI's useful updates, on your desk.**
+
+Keep a finished task, daily brief, or decision visible after your chat moves out of view. Start in the browser, then add an e-ink display. Four characters, one short result that stays put.
+
+[Try your own note](https://heinrihs.org/dotsonpaper/try/) · [Install](docs/first-result.md) · [Beta downloads](https://github.com/heinrihs-s/dots-on-paper/releases/tag/v0.2.0-beta.1) · [Compatibility](docs/compatibility.md)
+
+The website is a browser simulation. The local bridge renders your actual, deliberately published assistant output.
 
 Dots on Paper is a local MCP and Home Assistant bridge. It stores an assistant's answer and renders a PNG or BMP for your display. Choose one of four characters and show either the last reply or the supplied conversation.
 
-[![heidot's staged reminder reply ending with "Your calendar needs a lawyer"](campaign/media/dot-reminders.gif)](campaign/media/dot-reminders.mp4)
+[![heidot's staged reminder reply ending with "Your calendar needs a lawyer"](https://raw.githubusercontent.com/heinrihs-s/dots-on-paper/main/campaign/media/dot-reminders.gif)](https://github.com/heinrihs-s/dots-on-paper/blob/main/campaign/media/dot-reminders.mp4)
 
-Staged reminder example for heidot, using a fictional calendar. [Watch the MP4](campaign/media/dot-reminders.mp4) · [The "NOO" film](campaign/media/dot-noo.mp4) · [X launch package](campaign/README.md)
+Staged reminder example for heidot, using a fictional calendar. [Watch the MP4](https://github.com/heinrihs-s/dots-on-paper/blob/main/campaign/media/dot-reminders.mp4) · [The "NOO" film](https://github.com/heinrihs-s/dots-on-paper/blob/main/campaign/media/dot-noo.mp4) · [Campaign sources](https://github.com/heinrihs-s/dots-on-paper/tree/main/campaign)
 
 Authenticated publishing, rendering, browser preview, and MCP forwarding have passed local checks. The connection to a live dot account, a running Home Assistant installation, and a physical display still needs verification. [Checks and limits](docs/verification.md)
 
 ## What you get
 
-- A local bridge with persistent replies and separate keys for publishing and reading images.
+- A guided local test, browser pairing, source checklist, and installed-build diagnostics.
+- A local bridge with a retained last result, thinking timeout, recovery and explicit clearing.
+- Separate keys for publishing and reading images; full text stays available locally.
 - Three MCP tools: `set_dot_status`, `publish_dot_reply`, and `get_dot_state`.
 - Last reply and Full conversation display modes, with distinct user and assistant messages.
 - A Home Assistant image entity, reply/status sensors, character and mode pickers, actions, and new-reply events.
-- TRMNL BYOS endpoints, ESPHome and OpenEPaperLink examples, and custom PNG/BMP sizes.
+- TRMNL BYOS endpoints and an experimental stock Webhook Image delivery queue with coalescing, quotas and persistent retries.
+- ESPHome and OpenEPaperLink examples, and custom PNG/BMP sizes.
 - Artist, Curious, Bookish, and Cool characters.
 - A standalone animation demo and editable campaign assets.
 
@@ -28,7 +37,7 @@ Authenticated publishing, rendering, browser preview, and MCP forwarding have pa
 Your dot or HA assistant → authenticated bridge → PNG / BMP → e-ink display
 ```
 
-Publishing is an explicit tool call from the dot. During thinking, the bridge serves changing e-ink frames. When the answer arrives, it switches to one fixed result image and holds it until the next update. There is no automatic feed of every ChatGPT reply. The films use the actual e-ink renderer at an accelerated cadence; physical refresh depends on your device.
+Publishing is an explicit tool call from the assistant. The default battery preset serves still images; thinking animation is opt-in. A completed result stays fixed. An interrupted run expires after ten minutes by default and retains the prior result. There is no automatic feed of every ChatGPT reply. The films use the renderer at an accelerated cadence; physical refresh depends on your device.
 
 ## Choose a display mode
 
@@ -38,7 +47,7 @@ For Full conversation, pass `mode: "full_conversation"` and the explicit `user_t
 
 ## Run the bridge
 
-Install Python 3.11+ and Node.js 22+, then run this from the repository root:
+Install Python 3.11+, then run this from the repository root. Add Node.js 22+ when connecting the stdio MCP source:
 
 ```sh
 python tools/setup.py
@@ -48,11 +57,11 @@ Then start it:
 
 | Windows PowerShell | macOS / Linux |
 | --- | --- |
-| `.\run.ps1` | `.venv/bin/python -m dots_on_paper --data-dir ./data` |
+| `.\run.ps1` | `.venv/bin/python -m dots_on_paper --data-dir ./data --open` |
 
-Open http://127.0.0.1:9035 and select `data/credentials.json` in the connection panel. Setup creates a local virtual environment, installs the package, and initializes private keys without replacing or displaying them. The first screen says "Waiting for your dot."
+The launcher opens a paired local browser. **Send test card**, generate your MCP client configuration, then ask your assistant to publish its actual completed result. Publishing and display receipts have separate checklist entries. A manual credentials-file fallback remains available. Setup and upgrades preserve your keys and state. [First-result guide](docs/first-result.md)
 
-With the bridge running, check it using `.\run.ps1 -Doctor` on Windows or `.venv/bin/python tools/doctor.py` on macOS/Linux. [Setup, LAN access, Docker, and troubleshooting](docs/setup.md)
+With the bridge running, check it using `.\run.ps1 -Doctor -Mcp` on Windows or `.venv/bin/python tools/doctor.py --mcp` on macOS/Linux. The doctor compares the installed and running build with this checkout. Update with `python tools/setup.py`, then restart using the same data directory. [Setup, LAN access, Docker, and troubleshooting](docs/setup.md)
 
 ## Connect your dot
 
@@ -78,9 +87,9 @@ heidot is the personal dot that inspired the project. Configure your own dot's d
 
 Copy `custom_components/dots_on_paper` into HA's `/config/custom_components/`, restart HA, and add Dots on Paper in Devices & services. Use a bridge address reachable from HA. [HA setup](examples/home-assistant/README.md) · [Profiles, authentication, and refresh behavior](docs/platforms.md)
 
-TRMNL cloud private-plugin rendering follows a different schedule and is not connected by this release. HACS publication is also pending.
+The optional stock Webhook Image route uploads completed PNGs using a private environment setting. It is cloud-dependent and remains experimental until an account and panel are verified. An accepted upload proves receipt, not panel output. HACS publication is pending.
 
-TRMNL uses a 15-second sleep while thinking and returns to the normal 60-second interval after the answer. Boot, Wi-Fi, download, and panel refresh add time. Stock TRMNL X may flash between frames; faster partial animation needs a compatible panel and driver. A sleeping device may miss a short thinking phase. [Animation setup and platform limits](docs/platforms.md#animation-and-physical-panels)
+TRMNL uses the normal 60-second interval in the settled-image preset. Optional thinking animation uses a 15-second sleep. Boot, Wi-Fi, download, and refresh add time; a sleeping device may miss thinking. [Refresh limits](docs/platforms.md#animation-and-physical-panels)
 
 ## Try the animation
 
@@ -94,7 +103,9 @@ The [campaign](campaign/README.md) includes GIFs, MP4s, native screen stills, an
 
 ## Publish and contribute
 
-The source is on [GitHub](https://github.com/heinrihs-s/dots-on-paper). A tagged release and HACS registration are still pending. [GitHub release guide](docs/github-release.md)
+The source is on [GitHub](https://github.com/heinrihs-s/dots-on-paper). The beta includes versioned runtime/wheel downloads and checksums; the container release workflow publishes a versioned image only after native AMD64 and ARM64 runtime checks. HACS registration remains pending. [Release guide](docs/github-release.md)
+
+The [product and GitHub growth strategy](docs/strategy.md) defines the milestones, with [audit evidence](docs/strategy-evidence.md) from 5 October 2026. [Implementation and remaining gates](docs/roadmap.md) · [Three practical recipes](docs/recipes.md) · [Five bounded contributor tasks](docs/contributor-tasks.md) · [Discussions](https://github.com/heinrihs-s/dots-on-paper/discussions)
 
 The repository also includes a Codex plugin catalog:
 

@@ -9,12 +9,12 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tempfile
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import build_opener, HTTPRedirectHandler, ProxyHandler, Request
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -47,6 +47,7 @@ def request(url: str, *, token: str | None = None, body: dict | None = None) -> 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--offline", action="store_true", help="Check local files and configuration without contacting the bridge")
+    parser.add_argument("--mcp", action="store_true", help="Also require Node and verify the optional stdio source adapter")
     parser.add_argument("--url", help="Bridge origin; defaults to configured DOTS_PUBLIC_URL or loopback")
     parser.add_argument("--config", type=Path, default=Path(os.environ.get("DOTS_CONFIG_FILE", ROOT / "data/credentials.json")))
     args = parser.parse_args()
@@ -95,8 +96,24 @@ def main() -> int:
         return result.stdout.strip()
 
     probe("Python", python_runtime)
+    expected_build = None
+
+    def installed_build():
+        nonlocal expected_build
+        environment = {key: value for key, value in os.environ.items() if key != "PYTHONPATH"}
+        script = "import json; import dots_on_paper; from dots_on_paper.build import build_info; print(json.dumps({**build_info(), 'package_path': dots_on_paper.__file__}))"
+        with tempfile.TemporaryDirectory(prefix="dots-doctor-") as directory:
+            result = subprocess.run([sys.executable, "-c", script], cwd=directory, env=environment, capture_output=True, text=True, timeout=15)
+        check(result.returncode == 0, "Installed build metadata is missing. Run python tools/setup.py, then restart the bridge")
+        installed = json.loads(result.stdout)
+        from dots_on_paper.build import fingerprint
+        expected_build = fingerprint(ROOT / "src/dots_on_paper")
+        check(installed.get("fingerprint") == expected_build, "Installed package differs from this checkout. Run python tools/setup.py, then restart; keep the same data directory")
+        return f"{installed['version']}; {installed['fingerprint'][:12]}; {installed['package_path']}"
+
+    probe("Installed build", installed_build)
     probe("Renderer assets", renderer)
-    node_ok = probe("Node MCP runtime", node_runtime)
+    node_ok = probe("Node MCP runtime", node_runtime) if args.mcp else None
     config = None
 
     def credentials():
@@ -125,7 +142,9 @@ def main() -> int:
         def health():
             value = json.loads(request(origin + "/api/health"))
             check(value.get("status") == "ok", "Bridge health was not successful")
-            return "Bridge is reachable"
+            build = json.loads(request(origin + "/api/build"))
+            check(build.get("fingerprint") == expected_build, "Running bridge differs from this checkout. Reinstall and restart it")
+            return f"Bridge reachable; running build {build['fingerprint'][:12]} matches checkout"
 
         def state():
             value = json.loads(request(origin + "/api/state", token=config.api_token))
@@ -168,6 +187,14 @@ def main() -> int:
         probe("Publishing authentication", state)
         probe("Read-only display image", image)
         probe("HTTP MCP", http_mcp)
+        def delivery():
+            value = json.loads(request(origin + "/api/diagnostics", token=config.api_token))
+            source = "MCP publication received" if value.get("source_test_at") else "No MCP publication received yet"
+            webhook = value.get("webhook", {})
+            hardware = "upload accepted" if webhook.get("last_accepted") else "BYOS requested an image" if value.get("byos_requested_at") else "no hardware receipt"
+            return f"{source}; {hardware}; panel observation still requires the named device"
+
+        probe("Source and delivery receipts", delivery)
         if node_ok is not None:
             probe("Stdio MCP", stdio_mcp)
     failures = sum(result["status"] == "failed" for result in results)

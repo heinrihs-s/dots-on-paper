@@ -1,6 +1,6 @@
 {
   "name": "dots-on-paper-tooling",
-  "version": "0.1.0",
+  "version": "0.2.0-beta.1",
   "private": true,
   "description": "Optional development tools for the Dots on Paper demo and campaign",
   "scripts": {
@@ -10,7 +10,8 @@
     "media:verify": "python tools/finalize_campaign.py",
     "brand:svg": "python tools/build_brand.py",
     "brand:render": "node tools/build-brand.mjs",
-    "visual:verify": "node demo/tools/verify-replies.mjs"
+    "visual:verify": "node demo/tools/verify-replies.mjs",
+    "beta:verify": "node tools/verify-beta.mjs"
   },
   "engines": {"node": ">=22"},
   "devDependencies": {

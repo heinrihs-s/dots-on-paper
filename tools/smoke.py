@@ -78,6 +78,8 @@ def main() -> int:
         child = launch()
         try:
             initial = json.loads(request("/api/state", credentials["api_token"]))
+            build = json.loads(request("/api/build"))
+            check({"local-pairing", "thinking-timeout", "webhook-queue"}.issubset(build.get("capabilities", [])), "Installed bridge is missing beta capabilities")
             check(initial["status"] == "idle" and initial["revision"] == 0, "Cold state was not clean")
             try:
                 request("/api/state", credentials["image_token"])
@@ -100,6 +102,8 @@ def main() -> int:
             check(len(replies) == 4 and all("result" in item for item in replies), "MCP exchange was incomplete")
             check(all(not item["result"].get("isError", False) for item in replies), "MCP tool rejected smoke state")
             state = json.loads(request("/api/state", credentials["api_token"]))
+            diagnostics = json.loads(request("/api/diagnostics", credentials["api_token"]))
+            check(bool(diagnostics.get("source_test_at")), "MCP publication receipt was not recorded")
             check(state["status"] == "answer" and state["character"] == "cool" and state["revision"] == 2, "Reply did not reach the installed bridge")
             dimensions = []
             for profile, expected_size, levels in (("trmnl_x", (1872, 1404), 16), ("oep_296", (296, 128), 2)):

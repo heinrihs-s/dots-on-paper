@@ -7,6 +7,14 @@ The publishing key authorizes state reads, updates, and MCP requests. The separa
 | Endpoint | Authentication | Result |
 | --- | --- | --- |
 | `GET /api/health` | Public | Minimal health/version, without reply or credentials. |
+| `GET /api/build` | Public | Content fingerprint, version and capabilities; no paths or private data. |
+| `POST /api/pair` | One-use launcher nonce, same-origin loopback browser | Pair publishing access to the launched page in memory. |
+| `GET /api/diagnostics` | Publishing bearer key | Effective build/path and local-test/source/image/BYOS/upload receipts; no webhook URL. |
+| `GET /api/client-config` | Publishing bearer key | Installed adapter and credentials-file references, without key values. |
+| `POST /api/test-card` | Publishing bearer key | Optional `text`; a local test independent of source verification. |
+| `POST /api/clear` | Publishing bearer key | Required `history` boolean: blank screen, optionally erase retained result and turns. |
+| `POST /api/restore` | Publishing bearer key | Empty object; restore the last result with its original timestamp. |
+| `POST /api/delivery/retry` | Publishing bearer key | Empty object; unblock an upload without bypassing quota. |
 | `GET /api/state` | Publishing bearer key | Current reply, display mode and supplied conversation turns. |
 | `GET /api/profiles` | Publishing bearer key | Named render profiles. |
 | `POST /api/events` | Publishing bearer key | Store a deliberate display update. |
@@ -39,6 +47,10 @@ For another assistant's actual output, use `examples/publish.py --text-file actu
 For a thinking → answer sequence, send `thinking` with a fresh `run_id`, then reuse that ID for the answer or error. An explicitly supplied completion ID must match the current active thinking run; a late answer cannot replace a newer task. A standalone answer omits `run_id` and does not need a preceding thinking update.
 
 Use a stable `event_id` for retries of an identical event. Reusing it with changed content returns 409. Retry history retains the most recent 1000 revisions. Use a separate event ID for each new transition.
+
+Thinking has an absolute configurable timeout. Repeated events for the same run and settings changes do not extend it. An expired run is terminal. State also includes `last_result`, `thinking_since`, `recovery_reason` and optional `source`. Source and a fixed UTC update time render on roomy answer cards. Settings/restoration keep that time rather than making an old result look new.
+
+Images use a profile length budget with visible ellipsis; state and the local full-result view retain complete text. Still frames are the default. Explicit frame requests remain available; automatic cycling and shorter BYOS thinking intervals require `DOTS_ANIMATE_THINKING=true`.
 
 `PATCH /api/settings` accepts `character` and/or `mode`, such as `{ "mode": "full_conversation" }`. A settings change redraws the stored content without publishing a new answer.
 

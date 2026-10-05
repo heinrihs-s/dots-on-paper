@@ -18,6 +18,7 @@ def main():
     parser.add_argument("--text-file", type=Path)
     parser.add_argument("--dot-name", default="Your dot")
     parser.add_argument("--title", default="Your dot replied")
+    parser.add_argument("--source", default="", help="Short source label frozen into the card")
     parser.add_argument("--character", choices=("artist", "curious", "bookish", "cool"))
     args = parser.parse_args()
     endpoint = os.environ.get("DOTS_BRIDGE_URL", "http://127.0.0.1:9035").rstrip("/")
@@ -34,7 +35,7 @@ def main():
     text = args.text_file.read_text(encoding="utf-8") if args.text_file else sys.stdin.read(12001)
     if not text.strip() or len(text) > 12000:
         parser.error("Answer text must contain 1–12000 characters")
-    payload = dict(status="answer", text=text, dot_name=args.dot_name, title=args.title)
+    payload = dict(status="answer", text=text, dot_name=args.dot_name, title=args.title, source=args.source)
     if args.character:
         payload["character"] = args.character
     request = Request(endpoint + "/api/events", data=json.dumps(payload).encode("utf-8"), method="POST", headers={"Authorization": "Bearer " + token, "Content-Type": "application/json"})
