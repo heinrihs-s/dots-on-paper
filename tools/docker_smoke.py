@@ -34,10 +34,14 @@ def main():
         with opener.open(Request(origin + path, data=json.dumps(body).encode() if body is not None else None, headers=headers), timeout=10) as response:
             return response.read()
 
+    def exposed_origin():
+        return "http://" + docker("port", name, "9035/tcp").splitlines()[0]
+
     def launch():
         docker("run", "-d", "--name", name, "-p", "127.0.0.1::9035", "--env", "DOTS_API_TOKEN", "--env", "DOTS_IMAGE_TOKEN", "--mount", f"type=volume,source={volume},target=/data", args.image)
-        origin = "http://" + docker("port", name, "9035/tcp").splitlines()[0]
+        origin = exposed_origin()
         ready(origin)
+        assert docker("exec", name, "id", "-u") == "10001"
         return origin
 
     def ready(origin):
@@ -58,6 +62,8 @@ def main():
         published = json.loads(request(origin, "/api/events", dict(status="answer", text="Disposable container result", event_id="container-proof")))
         assert request(origin, "/image.png?profile=trmnl", token=image_token).startswith(b"\x89PNG")
         docker("restart", name)
+        # Docker can assign a new ephemeral host port when this container restarts.
+        origin = exposed_origin()
         ready(origin)
         assert json.loads(request(origin, "/api/state")) == published
         docker("rm", "--force", name)
